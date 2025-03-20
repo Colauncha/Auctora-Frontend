@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  tab-size: 4;
+  font-family: "Mulish", sans-serif;
+  font-optical-sizing: auto;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  scroll-behavior: smooth; 
+}
+
+
+/* .formatter {
+  width: 87%;
+  margin: 0 auto;
+} */
+
+.formatter {
+  width: 100%;
+  max-width: 1433px;
+  margin: 0 auto;
+  padding: 0 16px; /* Reduce spacing */
+  overflow-x: hidden; /* No horizontal scrolling on large screens */
+}
+
+.format {
+  min-width: 100%; /* Stretches to full container width */
+  overflow-x: hidden; /* No scroll by default */
+  white-space: nowrap; /* Prevent content from wrapping */
+}
+
+@media screen and (max-width: 1324px) {
+  .format {
+    min-width: 900px; /* Set a smaller minimum width on smaller screens */
+    overflow-x: auto; /* Enable horizontal scrolling when screen width is reduced */
+    overflow-y: hidden; /* Prevent vertical scrolling */
+  }
+}
+
+@media (min-width: 759px) and (max-width: 1023px) {
+  .icon-container {
+    background-color: #f2f0f1; /* Match the background color */
+    padding: 10px;
+    border-radius: 12px;
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.format::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+.format {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+
+
+.active {
+  background-color: #9f3247;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* For the whole page */
+::-webkit-scrollbar {
+  width: 10px; /* Width of vertical scrollbar */
+  height: 10px; /* Height of horizontal scrollbar */
+}
+
+/* Track (background) */
+::-webkit-scrollbar-track {
+  background: #f0f0f080; 
+  border-radius: 15px; 
+}
+
+/* Thumb (scrollable part) */
+::-webkit-scrollbar-thumb {
+  background: #9f3247; 
+  border-radius: 15px; 
+  border: 3px solid #f0f0f0; /* Space between thumb and track */
+}
+
+/* On hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #9f324780; 
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+/* Resp breaskpoints */
+
+  .mobile {
+    width: 390px;
+  }
+
+  
+
+
+/* External Styling */
+/* .state-area {
+  width: 648px;
+} */
