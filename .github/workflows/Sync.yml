@@ -30,7 +30,9 @@ jobs:
 
       - name: Copy Files
         run: |
-          rsync -av --delete ./ personal-repo/
+              mkdir -p temp_dir
+              rsync -av --delete ./ temp_dir/
+              rsync -av --delete temp_dir/ personal-repo/
 
       - name: Commit and Push to Personal Repo
         run: |
