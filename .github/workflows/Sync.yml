@@ -28,18 +28,24 @@ jobs:
           path: personal-repo
           token: ${{ secrets.OWNER }}
 
+      - name: Verify Personal Repo Checkout
+        run: |
+            ls -l personal-repo
+            cd personal-repo
+            git remote -v
+            git branch
+
       - name: Copy Files
         run: |
-              ls -l | tail -15
               mkdir -p temp_dir
               rsync -av --delete ./ temp_dir/
               rsync -av --delete temp_dir/ personal-repo/
 
       - name: Commit and Push to Personal Repo
         run: |
-              git remote -v
               cd personal-repo
-              ls -l | tail -15
+              git remote set-url origin https://x-access-token:${{ secrets.OWNER }}@github.com/colauncha-dev/auctora-frontend.git
+              git remote -v
               git status
               git add .
               git commit -m "Sync from organization repo" || echo "No changes to commit"
