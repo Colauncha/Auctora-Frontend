@@ -30,7 +30,7 @@ jobs:
 
       - name: Copy Files
         run: |
-              ls -l | tail 15
+              ls -l | tail -15
               mkdir -p temp_dir
               rsync -av --delete ./ temp_dir/
               rsync -av --delete temp_dir/ personal-repo/
@@ -39,7 +39,7 @@ jobs:
         run: |
               git remote -v
               cd personal-repo
-              ls -l | tail 15
+              ls -l | tail -15
               git status
               git add .
               git commit -m "Sync from organization repo" || echo "No changes to commit"
