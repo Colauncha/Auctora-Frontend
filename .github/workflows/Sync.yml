@@ -19,7 +19,7 @@ jobs:
       - name: Configure Git
         run: |
           git config --global user.email "colauncha@gmail.com"
-          git config --global user.name "Colauncha"
+          git config --global user.name "colauncha-dev"
 
       - name: Clone Personal Repo
         uses: actions/checkout@v3
