@@ -28,26 +28,19 @@ jobs:
           path: personal-repo
           token: ${{ secrets.OWNER }}
 
-      - name: Verify Remote Origin
-        run: |
-          cd personal-repo
-          git remote -v
-
       - name: Copy Files
         run: |
+              ls -l | tail 15
               mkdir -p temp_dir
               rsync -av --delete ./ temp_dir/
               rsync -av --delete temp_dir/ personal-repo/
 
-      - name: Check Git Status
-        run: |
-          cd personal-repo
-          ls -l
-          git status
-
       - name: Commit and Push to Personal Repo
         run: |
+              git remote -v
               cd personal-repo
+              ls -l | tail 15
+              git status
               git add .
               git commit -m "Sync from organization repo" || echo "No changes to commit"
               git push origin main --force
