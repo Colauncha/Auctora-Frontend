@@ -3,7 +3,7 @@ name: Sync Organization Repo to Personal Repo
 on:
   push:
     branches:
-      - main # Or your desired branch
+      - main
 
 jobs:
   sync:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Organization Repo
         uses: actions/checkout@v3
         with:
-          repository: Colauncha/Auctora-Frontend # Replace with your organization's repo
+          repository: Colauncha/Auctora-Frontend
           ref: ${{ github.ref_name }}
 
       - name: Configure Git
@@ -24,7 +24,7 @@ jobs:
       - name: Clone Personal Repo
         uses: actions/checkout@v3
         with:
-          repository: colauncha-dev/auctora-frontend # Replace with your personal repo
+          repository: colauncha-dev/auctora-frontend
           path: personal-repo
           token: ${{ secrets.OWNER }}
 
@@ -42,6 +42,7 @@ jobs:
       - name: Check Git Status
         run: |
           cd personal-repo
+          ls -l
           git status
 
       - name: Commit and Push to Personal Repo
