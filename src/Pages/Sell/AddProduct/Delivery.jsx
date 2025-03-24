@@ -1,13 +1,3 @@
-// const Delivery = ({ activeStep, handleStepChange }) => {
-//     return (
-//       <div className="w-full max-w-4xl p-6 bg-white rounded-lg shadow-md mb-[30px]">
-//         <h2 className="text-xl font-bold mb-4">Delivery Page</h2>
-//         <p>This is the content for the Delivery step.</p>
-//       </div>
-//     );
-//   };
-  
-//   export default Delivery;
 
 import { useState } from "react";
 
