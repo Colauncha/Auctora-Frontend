@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PayModal from "../../Payment/PayModal";
 import PaymentFailed from "../../Payment/PaymentFailed";
+import PaymentSuccesfull from "../PaymentSuccesfull";
 
 const PaymentModal = ({ onClose }) => {
   const [pin, setPin] = useState("");
@@ -84,7 +85,7 @@ const PaymentModal = ({ onClose }) => {
         isVisible={isPayModalVisible} 
         onClose={handleCloseAllModals} 
       >
-        <PaymentFailed 
+        <PaymentSuccesfull 
           amount={5000} 
           onClose={handleCloseAllModals} 
         />

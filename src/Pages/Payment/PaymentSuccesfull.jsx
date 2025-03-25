@@ -1,41 +1,35 @@
-import React from "react";
-import success from "../../assets/svg/success.svg";
+import React from 'react';
+import success from "../../assets/svg/Success.svg"
 
-const PaymentFailed = ({ amount, onClose }) => {
+const PaymentSuccesfull = ({ amount, onClose}) => {
   return (
-    <div className="text-center">
-     
-      <div className="flex justify-center mb-6">
-        <div className="w-21 h-21 mt-8 flex items-center justify-center rounded-full">
-          <img src={success} alt="Error" />
+    <div className='text-center'>
+
+      <div className='flex justify-center mb-6'>
+        <div className='w-21 h-21 mt-8 flex items-center justify-center rounded-full'>
+          <img src={success} alt="" />
         </div>
+
       </div>
 
-    
-      <p className="text-lg font-bold text-gray-800 mb-1">
-        Payment Unsuccessful !
+      <p className='text-lg font-bold text-gray-800 mb-1'>
+        Payment Successful
       </p>
 
-    
-      {amount && (
-        <h2 className="text-lg font-bold text-gray-800 mt-8">
-       
-          $ 250.0 USD
-        </h2>
-      )}
+      <h2 className='text-lg font-bold text-gray-800 mb-1'>$ 250.0 USD</h2>
 
-      
-      <p className="text-sm text-gray-500 mb-24">has been received from your credi card</p>
+      <p className="text-sm text-gray-500 mb-24">has been removed from <br />
+      your credit card</p>
 
-      
       <button
         className="w-full mt-14 bg-red-800 text-white py-2 rounded-lg hover:bg-red-900 transition duration-300"
         onClick={onClose} 
       >
-        Back
+        Done
       </button>
-    </div>
-  );
-};
 
-export default PaymentFailed;
+    </div>
+  )
+}
+
+export default PaymentSuccesfull
