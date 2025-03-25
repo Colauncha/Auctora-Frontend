@@ -40,6 +40,9 @@ const Dashboard = () => {
       try {
         const response = await fetch(endpoint, {
           method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           credentials: "include",
         })
         if (response.ok) {
