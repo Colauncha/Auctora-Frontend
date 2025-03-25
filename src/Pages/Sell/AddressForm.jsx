@@ -1,50 +1,3 @@
-// import React from "react";
-
-// const AccountForm = () => {
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-white">
-//       <div className="bg-gray-100 rounded-lg shadow-lg p-8 w-full max-w-7xl">
-//         <h1 className="text-red-500 font-bold text-left text-xxl mb-6">
-//           Address Information
-//         </h1>
-//         <form className="space-y-6">
-//           {/* Row 1: Country and State */}
-//           <div className="flex space-x-6">
-//             <select className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-//               <option value="nigerian">Nigerian</option>
-//             </select>
-//             <select className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-//               <option value="">Select State</option>
-//             </select>
-//           </div>
-//           {/* Row 2: Area */}
-//           <div>
-//             <select className="w-1/2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-//               <option value="">Select Area</option>
-//             </select>
-//           </div>
-//           {/* Row 3: Complete Address */}
-//           <div>
-//             <textarea
-//               placeholder="Enter complete address here."
-//               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 resize-none h-28"
-//             ></textarea>
-//           </div>
-//           {/* Row 4: Button */}
-//           <button
-//             type="submit"
-//             className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 focus:outline-none"
-//           >
-//             Next
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AccountForm;
-
 import React, { useState } from "react";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
@@ -175,15 +128,7 @@ const AddressForm = () => {
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 resize-none h-32"
             ></textarea>
           </div>
-          {/* Row 4: Button */}
-          {/* <button
-            type="submit"
-            className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 focus:outline-none"
-          >
-            Next
-          </button> */}
-
-              <button
+                        <button
               onClick={Next}
                 type="button"
                 className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"

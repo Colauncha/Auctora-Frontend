@@ -25,13 +25,21 @@ import ProtectedRoute from "./Pages/ProtectedRoute/ProtectedRoute";
 import AddProduct from "./Pages/Dashboard/AddProduct";
 import ProductPhoto from "./Pages/Dashboard/AddProduct/ProductPhoto";
 import Dashboard from "./Pages/Dashboard/Dashboard";
+
+//Sell Routes
 import SellAccount from "./Pages/Sell/SellAccount";
 import CreateAccount from "./Pages/Sell/CreateAccount";
 import AddressForm from "./Pages/Sell/AddressForm";
 import AccountForm from "./Pages/Sell/AccountForm";
 import Verification from "./Pages/Sell/Verification";
 import GetStarted from "./Pages/Sell/GetStarted";
+
+// Progress Routes
 import ProgressTracker from "./Pages/Sell/AddProduct/ProgressTracker";
+
+// Payment Routes
+import Payment from "./Pages/Payment/Payment";
+// import AppTest from "./Pages/Payment/AppTest";
 // import ProgressTracker from "./Pages/Sell/ProgressTracker";
 
 const App = () => {
@@ -68,8 +76,14 @@ const App = () => {
         <Route path="/AccountForm" element={<AccountForm />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/getstarted" element={<GetStarted />} />
+
+        {/* Progress Tracker Routes */}
         <Route path="/Add-Product" element={<ProgressTracker />} />
-        {/* <Route path="/progresstracker" element={<ProgressTracker />} /> */}
+
+        {/* Payment Routes */}
+        <Route path="/payment" element={<Payment />} /> 
+        {/* <Route path="/app" element={<AppTest />} />  */}
+        
 
 
         {/* Protected Routes */}
