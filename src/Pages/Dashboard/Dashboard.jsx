@@ -118,6 +118,18 @@ const Dashboard = () => {
     navigate("/add-product")
   }
 
+  const updateProfile = () => {
+    navigate("/update-profile")
+  }
+
+  const updateAddress = () => {
+    navigate("/update-address")
+  }
+
+  const updateBank = () => {
+    navigate("/bank-account")
+  }
+
   return (
     <>
       <div className={style.container}>
@@ -145,10 +157,10 @@ const Dashboard = () => {
             <div className={style.greet}>
               <h1>Welcome back, {charLimit(displayName, 20)}</h1>
               <div className="flex gap-3 flex-wrap">
-                <Button icon={Money} className={style.panelButton} iconClassName={style.buttonIcon} label="Account details" onClick={() => {}} />
-                <Button icon={Edit} className={style.panelButton} iconClassName={style.buttonIcon} label="Update profile" onClick={() => {}} />
+                <Button icon={Money} className={style.panelButton} iconClassName={style.buttonIcon} label="Account details" onClick={() => updateBank()} />
+                <Button icon={Edit} className={style.panelButton} iconClassName={style.buttonIcon} label="Update profile" onClick={() => updateProfile()} />
                 <Button icon={AddIcon} className={style.panelButton} iconClassName={style.buttonIcon} label="Create Auction" onClick={() => AddProduct()} />
-                {/* <Button icon={FundWallet} className={style.panelButton} iconClassName={style.buttonIcon} label="Update profile" onClick={() => {}} /> */}
+                <Button icon={Edit} className={style.panelButton} iconClassName={style.buttonIcon} label="Update address" onClick={() => updateAddress()} />
               </div>
             </div>
             <div className={style.wallet}>

@@ -355,6 +355,7 @@
 
     .bottomLeft > .auctionTable {
         height: 30dvh;
+        font-size: 0.7rem;
     }
 
     .bottomRight {
@@ -363,5 +364,12 @@
         height: 30dvh;
     }
 
+    .avatar > p {
+        font-size: 1.2rem;
+    }
+
+    .avatarEmail {
+        font-size: 1rem !important;
+    }
 
 }

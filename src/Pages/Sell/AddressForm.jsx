@@ -1,63 +1,68 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
+import { current } from '../../utils'
 
 const AddressForm = () => {
-
-
+  const [country, setCountry] = useState("")
+  const [countryStates, setCountryStates] = useState([]);
+  const [state, setState] = useState("");
+  const [areas, setAreas] = useState([]);
   const navigate = useNavigate();
+
+  const runFetch = async (state = null) => {
+    let endpoint;
+    if (state === null) {
+      endpoint = `${current}misc/states`
+    } else {
+      endpoint = `${current}misc/cities/${state}`
+    }
+    console.log(endpoint)
+    try {
+      const response = await fetch(endpoint, {
+        method: "GET",
+        credentials: "include",
+      })
+      if (!response.ok) {
+        throw new Error(response.json())
+      }
+      const resp = await response.json()
+      console.log("Success: ", resp)
+      setCountryStates(resp.data)
+      return resp.data
+    } catch (error) {
+      console.error("Error: ", error)
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    const run = async () => await runFetch()
+    try {
+      run()
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
 
   const Next = () => {
     navigate("/AccountForm");
   };
 
-  const [country, setCountry] = useState("");
-  const [states, setStates] = useState([]);
-  const [state, setState] = useState("");
-  const [areas, setAreas] = useState([]);
-
-  const countryOptions = {
-    Nigerian: {
-      states: ["Lagos", "Abuja", "Kano", "Rivers"],
-      areas: {
-        Lagos: ["Ikeja", "Surulere", "Lekki", "Yaba"],
-        Abuja: ["Garki", "Asokoro", "Maitama", "Wuse"],
-        Kano: ["Nassarawa", "Fagge", "Tarauni", "Ungogo"],
-        Rivers: ["Port Harcourt", "Obio-Akpor", "Bonny", "Degema"],
-      },
-    },
-    USA: {
-      states: ["California", "Texas", "Florida", "New York"],
-      areas: {
-        California: ["Los Angeles", "San Francisco", "San Diego", "Sacramento"],
-        Texas: ["Houston", "Austin", "Dallas", "San Antonio"],
-        Florida: ["Miami", "Orlando", "Tampa", "Tallahassee"],
-        "New York": ["Manhattan", "Brooklyn", "Queens", "Bronx"] // No trailing comma here
-      },
-    },
-    India: {
-      states: ["Delhi", "Mumbai", "Bangalore", "Chennai"],
-      areas: {
-        Delhi: ["South Delhi", "Rohini", "Dwarka", "Karol Bagh"],
-        Mumbai: ["Andheri", "Bandra", "Colaba", "Goregaon"],
-        Bangalore: ["Whitefield", "Koramangala", "Indiranagar", "Jayanagar"],
-        Chennai: ["T. Nagar", "Velachery", "Adyar", "Anna Nagar"],
-      },
-    },
-  };
-
   const handleCountryChange = (e) => {
     const selectedCountry = e.target.value;
     setCountry(selectedCountry);
-    setStates(countryOptions[selectedCountry]?.states || []);
     setState(""); // Reset state selection
     setAreas([]); // Reset areas
   };
 
-  const handleStateChange = (e) => {
+  const handleStateChange = async (e) => {
     const selectedState = e.target.value;
     setState(selectedState);
-    setAreas(countryOptions[country]?.areas[selectedState] || []);
+    const cities = await runFetch(selectedState);
+    console.log(cities)
+    setAreas(cities);
+    // setAreas(countryOptions[country]?.areas[selectedState] || []);
   };
 
   return (
@@ -84,20 +89,18 @@ const AddressForm = () => {
             >
               <option value="">Select Country</option>
               <option value="Nigerian">Nigerian</option>
-              <option value="USA">USA</option>
-              <option value="India">India</option>
             </select>
             {/* Select State */}
             <select
               value={state}
               onChange={handleStateChange}
               className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-              disabled={!states.length}
+              disabled={!countryStates.length}
             >
               <option value="">
-                {states.length ? "Select State" : "Select Country First"}
+                {countryStates.length ? "Select State" : "Select Country First"}
               </option>
-              {states.map((state, index) => (
+              {countryStates.map((state, index) => (
                 <option key={index} value={state}>
                   {state}
                 </option>
@@ -107,18 +110,18 @@ const AddressForm = () => {
           {/* Row 2: Area */}
           <div>
           <select
-  className="state-area p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 w-full sm:w-96 md:w-[648px] lg:w-[648px]"
-  disabled={!areas.length}
->
-  <option value="">
-    {areas.length ? "Select Area" : "Select State First"}
-  </option>
-  {areas.map((area, index) => (
-    <option key={index} value={area}>
-      {area}
-    </option>
-  ))}
-</select>
+              className="state-area p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 w-full sm:w-96 md:w-[648px] lg:w-[648px]"
+              disabled={!areas.length}
+            >
+            <option value="">
+              {areas.length ? "Select Area" : "Select State First"}
+            </option>
+            {areas.map((area, index) => (
+              <option key={index} value={area}>
+                {area}
+              </option>
+            ))}
+          </select>
 
           </div>
           {/* Row 3: Complete Address */}
@@ -128,13 +131,13 @@ const AddressForm = () => {
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 resize-none h-32"
             ></textarea>
           </div>
-                        <button
-              onClick={Next}
-                type="button"
-                className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
-              >
-                Next
-              </button>
+          <button
+            onClick={Next}
+              type="button"
+              className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
+            >
+              Next
+          </button>
         </form>
       </div>
     </div>

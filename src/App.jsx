@@ -12,12 +12,12 @@ import CategoryResult from "./Pages/Category/CategoryResult";
 import DetailPage from "./Pages/Detail/Detail";
 
 // verification pages
-import Otp from "./Pages/Account/Otp";
-import Profile from "./Pages/Dashboard/Profile";
-import AddressVerification from "./Pages/Dashboard/AddressVerification";
+// import Otp from "./Pages/Account/Otp";
+// import Profile from "./Pages/Dashboard/Profile";
+// import AddressVerification from "./Pages/Dashboard/AddressVerification";
 import Notification from "./Pages/Notification/Notification";
-import BankVerification from "./Pages/Dashboard/BankVerification";
-import VerificationLoading from "./Pages/Dashboard/VerificationLoading";
+// import BankVerification from "./Pages/Dashboard/BankVerification";
+// import VerificationLoading from "./Pages/Dashboard/VerificationLoading";
 
 // protected route
 import ProtectedRoute from "./Pages/ProtectedRoute/ProtectedRoute";
@@ -61,19 +61,19 @@ const App = () => {
         <Route path="/sign-in" element={<SignIn />} />
 
         {/* Verification Routes */}
-        <Route path="/otp" element={<Otp />} />
+        {/* <Route path="/otp" element={<Otp />} /> */}
         {/* complete logic for Otp and redirect to Profile */}
-        <Route path="/profile" element={<Profile />} />
+        {/* <Route path="/profile" element={<Profile />} />
         <Route path="/address-verification" element={<AddressVerification />} />
         <Route path="/bank-verification" element={<BankVerification />} />
-        <Route path="/verification-loading" element={<VerificationLoading />} />
+        <Route path="/verification-loading" element={<VerificationLoading />} /> */}
 
         {/* Sell Routes */}
         {/* <Route path="/Account" element={<SellAccount />} /> */}
-        <Route path="/Account" element={<SellAccount />} />
-        <Route path="/CreateAccount" element={<CreateAccount />} />
-        <Route path="/AddressForm" element={<AddressForm />} />
-        <Route path="/AccountForm" element={<AccountForm />} />
+        <Route path="/otp" element={<SellAccount />} />
+        <Route path="/update-profile" element={<CreateAccount />} />
+        <Route path="/update-address" element={<AddressForm />} />
+        <Route path="/bank-account" element={<AccountForm />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/getstarted" element={<GetStarted />} />
 
