@@ -1,22 +1,19 @@
 
 import { useState } from "react";
+import { PropTypes } from "prop-types";
 
 const Description = ({ handleStepChange, activeStep }) => {
   const [product, setProduct] = useState({
-    // name: "",
-    // description: "",
-    // // availability: "",
-    // // dimensions: { length: 0, width: 0, height: 0 },
-    start_price: "",
-    current_price: "",
+    start_price: 0,
+    current_price: 0,
     buy_now: false,
-    buy_now_price: "",
-    start_date: Date.now(),
+    buy_now_price: 0,
+    start_date: new Date().toISOString(),
     end_date: "",
-    // users_id: "",
-    // users_id: "",
-    users_id: sessionStorage.getItem("_user") ? JSON.parse(sessionStorage.getItem("_user")).id : ""
-    // users_id: JSON.parse(sessionStorage.getItem("_user")).id
+    users_id: sessionStorage.getItem("_user") ? JSON.parse(sessionStorage.getItem("_user")).id : "",
+    private: false,
+    participants: [],
+    status: "pending"
   });
 
 
@@ -24,12 +21,13 @@ const Description = ({ handleStepChange, activeStep }) => {
   const [item, setItem] = useState({
     name: "",
     description: "",
-    // availability: "",
-    // dimensions: { length: 0, width: 0, height: 0 },
-    // start_price: "",
+    category_id: "",
+    sub_category_id: ""
   });
 
+  // Handle change for item state object
   const handleChange = (e) => {
+    console.log(e.target.value);
     const { name, value, type, checked } = e.target;
     setItem(prev => ({
       ...prev,
@@ -42,12 +40,24 @@ const Description = ({ handleStepChange, activeStep }) => {
     console.log(product);
   };
 
-  // const handleChanged = (e) => {
-  //   const { name, value } = e.target;
-  //   setProduct({ ...product, [name]: value });
-  // };
+  // Handle change for product state object
   const handleChanged = (e) => {
+    console.log(e.target.value);
     const { name, value, type, checked } = e.target;
+    if (name === 'start_price') {
+      setProduct(prev => ({
+        ...prev,
+        [name]: value,
+        current_price: value
+      }));
+    } else if (name === 'start_date' || name === 'end_date') {
+      let value_ = new Date(value);
+      setProduct(prev => ({
+        ...prev,
+        [name]: value_.toISOString()
+      }));
+
+    }
     setProduct(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -210,7 +220,7 @@ const Description = ({ handleStepChange, activeStep }) => {
                       name="buy_now_price"
                       placeholder="Buy Now price"
                       value={item.buy_now_price}
-                      onChange={handleChange}
+                      onChange={handleChanged}
                       className="w-2/4 mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
                     />
                   </div>
@@ -219,10 +229,9 @@ const Description = ({ handleStepChange, activeStep }) => {
               <div>
                 <label className="block text-black font-semibold">
                   <input
-                    type="date"
+                    type="datetime-local"
                     name="start_date"
-                    // checked={product.buyNow}
-                    // onChange={handleChange}
+                    onChange={handleChanged}
                     className="mr-2"
                   />
                   Start Date
@@ -233,10 +242,9 @@ const Description = ({ handleStepChange, activeStep }) => {
               <div>
                 <label className="block text-black font-semibold">
                   <input
-                    type="date"
+                    type="datetime-local"
                     name="end_date"
-                    // checked={product.buyNow}
-                    // onChange={handleChange}
+                    onChange={handleChanged}
                     className="mr-2"
                   />
                   End Date
@@ -250,6 +258,11 @@ const Description = ({ handleStepChange, activeStep }) => {
       </div>
     </div>
   );
+};
+
+Description.propTypes = {
+  handleStepChange: PropTypes.func.isRequired,
+  activeStep: PropTypes.number.isRequired,
 };
 
 export default Description;
