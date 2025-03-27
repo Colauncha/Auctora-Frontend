@@ -45,6 +45,7 @@ const AuthFormSginUp = ({ heading }) => {
         setAlert({isAlert: true, level: "success", message: "Sign Up Successful"})
         setTimeout(() => {
           sessionStorage.setItem("email-otp", email)
+          sessionStorage.setItem("newAccount", JSON.stringify(true))
           setLoading(false)
           navigate("/sign-in")
         }, 500)

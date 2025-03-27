@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { current } from "../../utils";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +27,7 @@ const CreateAccount = () => {
       if (!response.ok) {
         throw new Error(response.json())
       }
-      const resp = response.json
+      const resp = await response.json()
       console.log("Success: ", resp)
       return true
     } catch (error) {
@@ -36,9 +36,20 @@ const CreateAccount = () => {
     }
   }
 
+  useEffect(() => {
+    const newAcct = JSON.parse(sessionStorage.getItem('newAccount'))
+    if (!newAcct) {
+      const { first_name, last_name, username, phone_number } = JSON.parse(sessionStorage.getItem('_user'));
+      setProfile({ first_name, last_name, username, phone_number })
+      return
+    } else {
+      return
+    }
+  }, [])
+
   const Next = async () => {
     const data = profile
-    await runFetch(data) && navigate("/update-address")
+    await runFetch(data) && (!JSON.parse(sessionStorage.getItem("newAccount")) ? navigate('/dashboard') : navigate("/update-address"))
   };
 
   const handleChange = (event) => {
@@ -70,6 +81,7 @@ const CreateAccount = () => {
                       id="first_name"
                       placeholder="First Name"
                       onChange={e => handleChange(e)}
+                      value={profile.first_name}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-maroon"
                     />
                   </div>
@@ -80,6 +92,7 @@ const CreateAccount = () => {
                       id="last_name"
                       placeholder="Last Name"
                       onChange={e => handleChange(e)}
+                      value={profile.last_name}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-maroon"
                     />
                   </div>
@@ -94,6 +107,7 @@ const CreateAccount = () => {
                       name="username"
                       placeholder="Username"
                       onChange={e => handleChange(e)}
+                      value={profile.username}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-maroon"
                     />
                   </div>
@@ -104,6 +118,7 @@ const CreateAccount = () => {
                       name="phone_number"
                       placeholder="Phone"
                       onChange={e => handleChange(e)}
+                      value={profile.phone_number}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-maroon"
                     />
                   </div>

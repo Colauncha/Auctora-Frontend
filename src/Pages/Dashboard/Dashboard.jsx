@@ -34,6 +34,7 @@ const Dashboard = () => {
   useEffect(() => {
     setLoading(true)
     offCta()
+    sessionStorage.removeItem('_user')
 
     const getUser = async () => { 
       let endpoint = `${current}users/profile`;
@@ -65,8 +66,9 @@ const Dashboard = () => {
         navigate("/sign-in")
       }
     }
+    let userId = localStorage.getItem('userId')
     let data = JSON.parse(sessionStorage.getItem('_user'))
-    if (!data) {
+    if (!data || !userId ) {
       getUser();
       return
     } else {
