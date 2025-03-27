@@ -34,6 +34,7 @@ const Dashboard = () => {
   useEffect(() => {
     setLoading(true)
     offCta()
+    sessionStorage.removeItem('newAccount')
     sessionStorage.removeItem('_user')
 
     const getUser = async () => { 
