@@ -22,7 +22,6 @@ import Notification from "./Pages/Notification/Notification";
 // protected route
 import ProtectedRoute from "./Pages/ProtectedRoute/ProtectedRoute";
 // import GetStarted from "./Pages/Dashboard/GetStarted";
-import AddProduct from "./Pages/Dashboard/AddProduct";
 import ProductPhoto from "./Pages/Dashboard/AddProduct/ProductPhoto";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 
@@ -95,7 +94,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/add-product" element={<AddProduct />} />
       </Routes>
       <Footer />
     </div>
