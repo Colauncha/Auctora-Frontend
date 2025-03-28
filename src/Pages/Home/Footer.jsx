@@ -186,7 +186,7 @@ const Footer = () => {
 
         {/* Copyright Section */}
         <div className="mt-12 mb-6 border-t border-[#9F3247] border-opacity-20 pt-6 text-center text-sm sm:text-base">
-          Auctora © 2024, All Rights Reserved
+          Auctora © {new Date().getFullYear()}, All Rights Reserved
         </div>
       </footer>
     </div>
