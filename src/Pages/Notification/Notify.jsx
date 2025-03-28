@@ -1,18 +1,21 @@
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { current, formatDateTime } from "../../utils";
+import Loader from "../../assets/loader"; // Update the path to the correct location of the Loader component
 
 const Notify = () => {
   const [notice, setNotice] = useState([]);
   const [read, setRead] = useState([]);
   const [activeTab, setActiveTab] = useState("notice");
   const [sort, setSort] = useState("asc");
+  const [loading, setLoading] = useState(false);
   const notifications = {
     notice: notice,
     read: read,
   };
 
   useEffect(() => {
+    setLoading(true);
     const inboxEndpoint = `${current}users/notifications`;
     const readEndpoint = `${current}users/notifications/?read=true`;
     const fetchNotifications = async (endpoint, func) => {
@@ -24,14 +27,16 @@ const Notify = () => {
         credentials: "include",
       });
       if (!response.ok) {
+        setLoading(false);
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to fetch notifications");
       }
       const data = await response.json();
       func(data.data);
+      setLoading(false);
     }
     fetchNotifications(inboxEndpoint, setNotice);
-    fetchNotifications(readEndpoint, setRead);    
+    fetchNotifications(readEndpoint, setRead);
   }, []);
 
   const handleNotificationSort = () => {
@@ -82,6 +87,7 @@ const Notify = () => {
 
   return (
     <div className="bg-[#FFEEF499] rounded-xl shadow-lg">
+      {/* <Loader /> */}
       <div className="flex justify-between items-center border-b-[1px] p-4">
         <h1 className="text-[16px] lg:text-[28px] font-[700]">Notifications</h1>
         <button
@@ -122,9 +128,11 @@ const Notify = () => {
       </div>
 
       {/* Notification List */}
-      <div className="mt-3">
+      <div className="flex flex-col mt-3">
         {notifications[activeTab]?.length === 0 ? (
-          <p className="text-center text-gray-500">No notifications</p>
+          <div className="flex items-center justify-around h-[30vh] w-[60%] ml-[20%]">
+            {loading ? <Loader /> : <p className="text-center text-gray-500">No notifications</p>}
+          </div>
         ) : (
           notifications[activeTab]?.map((item) => (
             <div
