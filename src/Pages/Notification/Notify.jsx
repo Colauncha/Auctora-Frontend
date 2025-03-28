@@ -7,7 +7,6 @@ const Notify = () => {
   const [notice, setNotice] = useState([]);
   const [read, setRead] = useState([]);
   const [activeTab, setActiveTab] = useState("notice");
-  const [updated, setUpdated] = useState(false);
   const notifications = {
     notice: notice,
     read: read,
@@ -28,39 +27,46 @@ const Notify = () => {
         throw new Error(response.json());
       }
       const data = await response.json();
-      func(data.data);
+      func(data.data.reverse());
     }
-    if (updated) {
-      fetchNotifications(inboxEndpoint, setNotice);
-      fetchNotifications(readEndpoint, setRead);
-      setUpdated(false);
-    }
-  }, [updated]);
+    fetchNotifications(inboxEndpoint, setNotice);
+    fetchNotifications(readEndpoint, setRead);    
+  }, []);
 
   const handleNotificationClose = () => {
     console.log("closing notification");
   };
 
-  const toggleRead = async (id, read) => {
+  const toggleRead = async (id, read_) => {
+    const tempNotice = notice;
+    const tempRead = read;
+    if (!read_) {
+      setNotice((prev) => prev.filter((item) => item.id !== id));
+      setRead((prev) => [...prev, notice.find((item) => item.id === id)]);
+    } else {
+      setRead((prev) => prev.filter((item) => item.id !== id));
+      setNotice((prev) => [...prev, read.find((item) => item.id === id)]);
+    }
+
     const endpoint = `${current}users/notifications/${id}`;
     const response = await fetch(endpoint, {
       method: "PUT",
-      body: JSON.stringify({ read: !read }),
+      body: JSON.stringify({ read: !read_ }),
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
     });
     if (!response.ok) {
-      throw new Error(response.json());
+      throw new Error(await response.json());
     }
     const data = await response.json();
-    if (data.data) {
-      const updateNotice = notice.filter((item) => item.id !== id);
-      const updateRead = [...read, notice.find((item) => item.id === id)];
-      setNotice(updateNotice);
-      setRead(updateRead);
-      setUpdated(true);
+    if (!data.data && !read_) {
+      setNotice(tempNotice);
+      setRead(tempRead);
+    } else if (!data.data && read_) {
+      setRead(tempRead);
+      setNotice(tempNotice);
     }
   };
 
@@ -106,23 +112,21 @@ const Notify = () => {
       {/* Notification List */}
       <div className="mt-3">
         {notifications[activeTab]?.length === 0 ? (
-          console.log(notifications[activeTab]),
           <p className="text-center text-gray-500">No notifications</p>
         ) : (
-          console.log(notifications[activeTab]),
           notifications[activeTab]?.map((item) => (
             <div
-              key={item.id}
+              key={item?.id}
               className="flex items-center p-3 bg-white rounded-lg shadow-sm mb-2"
             >
-              <div className="ml-3 flex-1" onClick={async () => await toggleRead(item.id, item.read)}>
-                <p className="font-bold text-[18px]">{item.title}</p>
+              <div className="ml-3 flex-1" onClick={async () => await toggleRead(item?.id, item?.read)}>
+                <p className="font-bold text-[18px]">{item?.title}</p>
                 <p className="text-red-500">
                   {item.message}
                 </p>
-                <p className="text-gray-400 text-sm">{formatDateTime(item.created_at)}</p>
+                <p className="text-gray-400 text-sm">{formatDateTime(item?.created_at)}</p>
               </div>
-              <button className="text-gray-600">🔳</button>
+              <button className="text-gray-600">Mark as read ✉️</button>
             </div>
           ))
         )}
