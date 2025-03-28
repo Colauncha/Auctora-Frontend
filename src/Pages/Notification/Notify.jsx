@@ -1,12 +1,12 @@
-import { FaTimes } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { useEffect, useState } from "react";
-// import { camera, Nikon } from "../../Constants";
 import { current, formatDateTime } from "../../utils";
 
 const Notify = () => {
   const [notice, setNotice] = useState([]);
   const [read, setRead] = useState([]);
   const [activeTab, setActiveTab] = useState("notice");
+  const [sort, setSort] = useState("asc");
   const notifications = {
     notice: notice,
     read: read,
@@ -24,17 +24,20 @@ const Notify = () => {
         credentials: "include",
       });
       if (!response.ok) {
-        throw new Error(response.json());
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch notifications");
       }
       const data = await response.json();
-      func(data.data.reverse());
+      func(data.data);
     }
     fetchNotifications(inboxEndpoint, setNotice);
     fetchNotifications(readEndpoint, setRead);    
   }, []);
 
-  const handleNotificationClose = () => {
-    console.log("closing notification");
+  const handleNotificationSort = () => {
+    setNotice((prev) => prev.reverse());
+    setRead((prev) => prev.reverse());
+    setSort((prevSort) => (prevSort === "desc" ? "asc" : "desc"));
   };
 
   const toggleRead = async (id, read_) => {
@@ -42,10 +45,16 @@ const Notify = () => {
     const tempRead = read;
     if (!read_) {
       setNotice((prev) => prev.filter((item) => item.id !== id));
-      setRead((prev) => [...prev, notice.find((item) => item.id === id)]);
+      setRead((prev) => [...prev, tempNotice.find((item) => {
+        item.read = true;
+        return item.id === id
+      })]);
     } else {
       setRead((prev) => prev.filter((item) => item.id !== id));
-      setNotice((prev) => [...prev, read.find((item) => item.id === id)]);
+      setNotice((prev) => [...prev, tempRead.find((item) => {
+        item.read = false;
+        return item.id === id
+      })]);
     }
 
     const endpoint = `${current}users/notifications/${id}`;
@@ -58,7 +67,8 @@ const Notify = () => {
       credentials: "include",
     });
     if (!response.ok) {
-      throw new Error(await response.json());
+      const errorText = await response.text();
+      throw new Error(errorText || "An error occurred while updating the notification.");
     }
     const data = await response.json();
     if (!data.data && !read_) {
@@ -74,10 +84,12 @@ const Notify = () => {
     <div className="bg-[#FFEEF499] rounded-xl shadow-lg">
       <div className="flex justify-between items-center border-b-[1px] p-4">
         <h1 className="text-[16px] lg:text-[28px] font-[700]">Notifications</h1>
-        <FaTimes
-          className="cursor-pointer font-[100]"
-          onClick={handleNotificationClose}
-        />
+        <button
+          className="cursor-pointer font-[200] flex items-center gap-1"
+          onClick={e => handleNotificationSort(e)}
+        >
+          Sort by Time {sort === "asc" ? <FaArrowDown className="inline" /> : <FaArrowUp className="inline" />}
+        </button>
       </div>
       {/* Tabs */}
       <div className="flex mt-3 border-b">
@@ -122,11 +134,16 @@ const Notify = () => {
               <div className="ml-3 flex-1" onClick={async () => await toggleRead(item?.id, item?.read)}>
                 <p className="font-bold text-[18px]">{item?.title}</p>
                 <p className="text-red-500">
-                  {item.message}
+                  {item?.message}
                 </p>
                 <p className="text-gray-400 text-sm">{formatDateTime(item?.created_at)}</p>
               </div>
-              <button className="text-gray-600">Mark as read ✉️</button>
+              <button
+                className="text-gray-600"
+                onClick={async () => await toggleRead(item?.id, item?.read)}
+              >
+                {activeTab == "notice" ? "Mark as read ✉️" : "Mark as unread 📩"}
+              </button>
             </div>
           ))
         )}
