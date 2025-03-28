@@ -11,8 +11,8 @@ import useModeStore from "../../Store/Store";
 const Nav = () => {
   const menuArr = [
     { _id: 1, label: "Home", link: "/" },
-    { _id: 2, label: "Auctlist", link: "/list" },
-    { _id: 3, label: "Sell", link: "/Account" },
+    { _id: 2, label: "Auctlist", link: "/Ongoing-Auction" },
+    { _id: 3, label: "Sell", link: "/Add-product" },
     { _id: 4, label: "About Us", link: "/about-us" },
   ];
 

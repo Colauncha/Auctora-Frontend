@@ -68,7 +68,6 @@ const App = () => {
         <Route path="/verification-loading" element={<VerificationLoading />} /> */}
 
         {/* Sell Routes */}
-        {/* <Route path="/Account" element={<SellAccount />} /> */}
         <Route path="/otp" element={<SellAccount />} />
         <Route path="/update-profile" element={<CreateAccount />} />
         <Route path="/update-address" element={<AddressForm />} />
@@ -77,13 +76,24 @@ const App = () => {
         <Route path="/getstarted" element={<GetStarted />} />
 
         {/* Progress Tracker Routes */}
-        <Route path="/Add-Product" element={<ProgressTracker />} />
+        <Route
+          path="/Add-Product"
+          element={
+            <ProtectedRoute>
+              <ProgressTracker />
+            </ProtectedRoute>
+          } 
+        />
 
         {/* Payment Routes */}
-        <Route path="/payment" element={<Payment />} /> 
-        {/* <Route path="/app" element={<AppTest />} />  */}
-        
-
+        <Route
+          path="/payment"
+          element={
+            <ProtectedRoute>
+              <Payment />
+            </ProtectedRoute>
+          } 
+        />         
 
         {/* Protected Routes */}
         <Route
