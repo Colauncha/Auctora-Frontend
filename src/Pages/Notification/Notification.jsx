@@ -25,10 +25,7 @@ const Notification = () => {
     <div className="formatter">
       <Breadcrumbs />
       <div className="flex flex-col items-center lg:my-10">
-        <div className="w-full flex flex-col justify-between lg:flex-row  ">
-          <div className="w-full lg:w-[15%] hidden lg:block p-2">
-            <Slider />
-          </div>
+        <div className="w-full flex flex-col justify-center lg:flex-row  ">
           <div className="w-full lg:w-[70%]">
             <div className="flex items-center justify-end pb-4">
               <h1 className="text-start text-[#9f3248] font-[700] text-[18px] hidden">

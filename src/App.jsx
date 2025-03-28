@@ -52,8 +52,15 @@ const App = () => {
         <Route path="/category" element={<CategoryResult />} />
         <Route path="/category/:slug" element={<DetailPage />} />
         <Route path="/list" element={<ProductPhoto />} />
-        <Route path="/notification" element={<Notification />} />
         <Route path="/Ongoing-Auction" element={<ViewAll />} />
+        <Route
+        path="/notification"
+        element={
+          <ProtectedRoute>
+            <Notification />
+          </ProtectedRoute>
+        }
+        />
 
         {/* Auth Routes */}
         <Route path="/sign-up" element={<SignUp />} />
