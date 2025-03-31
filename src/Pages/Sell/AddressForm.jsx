@@ -8,28 +8,35 @@ const AddressForm = () => {
   const [countryStates, setCountryStates] = useState([]);
   const [state, setState] = useState("");
   const [areas, setAreas] = useState([]);
+  const [selectedArea, setSelectedArea] = useState("");
+  const [address, setAddress] = useState("");
   const navigate = useNavigate();
 
-  const runFetch = async (state = null) => {
-    let endpoint;
-    if (state === null) {
-      endpoint = `${current}misc/states`
-    } else {
+  const runFetch = async ({state = null, data = null, method = 'GET'}) => {
+    let endpoint = `${current}misc/states`;
+    if (method === "GET" && state) {
       endpoint = `${current}misc/cities/${state}`
+    } else if (method !== "GET") {
+      endpoint = `${current}users/update_address/`;
     }
     console.log(endpoint)
     try {
       const response = await fetch(endpoint, {
-        method: "GET",
+        method,
+        body: data ? JSON.stringify(data) : null,
+        headers: {
+          "Content-Type": "application/json",
+        },
         credentials: "include",
-      })
+      });
       if (!response.ok) {
-        throw new Error(response.json())
+        const error = await response.json();
+        console.error("Error response: ", error);
+        throw new Error(error.message || "An error occurred");
       }
-      const resp = await response.json()
-      console.log("Success: ", resp)
-      setCountryStates(resp.data)
-      return resp.data
+      const resp = await response.json();
+      console.log("Success: ", resp);
+      return resp.data || [];
     } catch (error) {
       console.error("Error: ", error)
       return false;
@@ -37,16 +44,36 @@ const AddressForm = () => {
   }
 
   useEffect(() => {
-    const run = async () => await runFetch()
-    try {
-      run()
-    } catch (error) {
-      console.error(error)
-    }
-  }, [])
+    const run = async () => {
+      const response = await runFetch({method: "GET"});
+      if (response) {
+        setCountryStates(response);
+      } else {
+        console.log("Error fetching states");
+      }
+    };
+    run();
+  }, []);
 
-  const Next = () => {
-    navigate("/AccountForm");
+  const Next = async () => {
+    const data = {
+      country,
+      state,
+      city: selectedArea,
+      address,
+    };
+
+    const result = await runFetch({
+      method: "PUT",
+      data,
+    });
+
+    if (result) {
+      !JSON.parse(sessionStorage.getItem("newAccount")) ? navigate('/dashboard') : navigate("/AccountForm");
+    } else {
+      alert("Address details not saved.");
+    }
+
   };
 
   const handleCountryChange = (e) => {
@@ -57,13 +84,24 @@ const AddressForm = () => {
   };
 
   const handleStateChange = async (e) => {
-    const selectedState = e.target.value;
-    setState(selectedState);
-    const cities = await runFetch(selectedState);
-    console.log(cities)
-    setAreas(cities);
-    // setAreas(countryOptions[country]?.areas[selectedState] || []);
+    try {
+      const selectedState = e.target.value;
+      setState(selectedState);
+      setAreas([]); // Reset areas when state changes
+      const cities = await runFetch({ state: selectedState });
+      console.log(cities);
+      setAreas(cities || []);
+    } catch (error) {
+      console.error("Failed to fetch cities: ", error);
+      setAreas([]);
+    }
+
   };
+
+  const handleAreaChange = (e) => {
+    const selectedArea = e.target.value;
+    setSelectedArea(selectedArea);
+  }
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
@@ -72,9 +110,6 @@ const AddressForm = () => {
       <Breadcrumbs />
     <div className="flex items-center justify-center">
       <div className="bg-white rounded-lg p-10 mb-6 mt-4 w-full max-w-full">
-        {/* <h1 className="text-red-500 font-bold text-left text-3xl mb-6">
-          Address Information
-        </h1> */}
         <h1 className="text-left text-4xl mb-4 font-bold text-maroon"> {/* Reduced margin */}
         Address Information
           </h1>
@@ -88,7 +123,7 @@ const AddressForm = () => {
               className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
             >
               <option value="">Select Country</option>
-              <option value="Nigerian">Nigerian</option>
+              <option value="Nigerian">Nigeria</option>
             </select>
             {/* Select State */}
             <select
@@ -100,7 +135,7 @@ const AddressForm = () => {
               <option value="">
                 {countryStates.length ? "Select State" : "Select Country First"}
               </option>
-              {countryStates.map((state, index) => (
+              {countryStates?.map((state, index) => (
                 <option key={index} value={state}>
                   {state}
                 </option>
@@ -112,6 +147,8 @@ const AddressForm = () => {
           <select
               className="state-area p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 w-full sm:w-96 md:w-[648px] lg:w-[648px]"
               disabled={!areas.length}
+              value={selectedArea}
+              onChange={handleAreaChange}
             >
             <option value="">
               {areas.length ? "Select Area" : "Select State First"}
@@ -128,6 +165,8 @@ const AddressForm = () => {
           <div>
             <textarea
               placeholder="Enter complete address here."
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 resize-none h-32"
             ></textarea>
           </div>
