@@ -1,0 +1,57 @@
+name: Sync Organization Repo to Personal Repo
+
+on:
+  push:
+    branches:
+      - main # Adjust if needed
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Organization Repo
+        uses: actions/checkout@v3
+        with:
+          repository: Colauncha/Auctora-Frontend # Organization repo
+          ref: ${{ github.ref_name }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "colauncha@gmail.com"
+          git config --global user.name "Colauncha"
+
+      - name: Clone Personal Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.OWNER }}@github.com/colauncha-dev/auctora-frontend.git personal-repo || echo "Personal repo is empty, will initialize later."
+        env:
+          OWNER: ${{ secrets.OWNER }}
+
+      - name: Copy Files
+        run: |
+          rsync -av --delete --exclude=.git ./ personal-repo/
+
+      - name: Commit and Push to Personal Repo
+        run: |
+          cd personal-repo
+          
+          # Ensure the remote URL is correctly set
+          git remote set-url origin https://x-access-token:${{ secrets.OWNER }}@github.com/colauncha-dev/auctora-frontend.git
+
+          # Ensure the branch exists
+          git fetch origin || echo "No remote branches found, initializing repo..."
+          if git show-ref --verify --quiet refs/heads/main; then
+            git checkout main
+          else
+            git checkout --orphan main
+          fi
+
+          git add .
+          git commit -m "Sync from organization repo" || echo "No changes to commit"
+          git push origin main --force
+          
+        env:
+          OWNER: ${{ secrets.OWNER }}
+
+      - name: Cleanup
+        run: rm -rf personal-repo

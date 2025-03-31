@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Pixodesk SVG (https://pixodesk.com) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48.27530000000001 144.3913 310.6081 144.85537444954494" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" fill="#ae5252">
+  <defs>
+    <linearGradient id="822" x1="-1.4492753623188719" y1="98.83349759158523" x2="307.1588522553633" y2="98.83349759158523" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgb(246,235,237)"/>
+      <stop offset="83.89999999999999%" stop-color="rgb(255,255,255)"/>
+    </linearGradient>
+    <linearGradient id="844" x1="146.37681159420293" y1="70.53137681159421" x2="150.72463768115946" y2="106.76326086956524" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgb(255,255,255)"/>
+      <stop offset="100%" stop-color="rgb(158,49,70)"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <path fill="url(#822)" stroke="url(#844)" stroke-width="3" transform="translate(201.8116, 236.2319)translate(-151.087, -101.4493)" d="M306.5217,44.2029C309.2832,44.2029,302.1739,67.7615,302.1739,69.1121C302.1739,69.1066,300.7246,118.2583,300.7246,121.0145C300.7246,123.1714,302.0483,142.1307,297.8261,142.7536C293.6039,143.3766,286.1452,142.5759,283.3333,140.5797C196.6875,79.0674,109.8717,89.2853,21.9843,151.2294C19.1338,153.2384,14.9969,153.8524,10.7613,153.2337C6.5257,152.6151,3.6232,150.7097,3.6232,148.5478C3.6232,148.5478,-1.4493,94.6817,-1.4493,93.4783C-1.4493,92.1277,7.3835,73.1884,10.1449,73.1884C10.1278,73.1884,305.8015,44.2029,306.5217,44.2029z"/>
+    <text fill="#9e3146" stroke="#9e3146" stroke-width="3" text-anchor="middle" letter-spacing="3" font-family="Trebuchet MS" font-style="italic" font-size="80px" xml:space="preserve" transform="translate(200.7246, 220.3913)" data-gn-el-type="text" style="white-space:pre"><tspan>Biddius</tspan></text>
+  </g>
+</svg>

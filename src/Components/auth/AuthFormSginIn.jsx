@@ -51,7 +51,7 @@ const AuthFormSginIn = ({ heading }) => {
         setTimeout(() => {
           login(data.data.token.split('.')[0])
           setLoading(false)
-          navigate('/dashboard')
+          sessionStorage.getItem('email-otp') ? navigate('/otp') : navigate('/dashboard')
         }, 500)
       } else{
         const errorData = await response.json();

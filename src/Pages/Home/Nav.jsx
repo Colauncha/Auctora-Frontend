@@ -11,8 +11,8 @@ import useModeStore from "../../Store/Store";
 const Nav = () => {
   const menuArr = [
     { _id: 1, label: "Home", link: "/" },
-    { _id: 2, label: "Auctlist", link: "/list" },
-    { _id: 3, label: "Sell", link: "/Account" },
+    { _id: 2, label: "Auctlist", link: "/Ongoing-Auction" },
+    { _id: 3, label: "Sell", link: "/Add-product" },
     { _id: 4, label: "About Us", link: "/about-us" },
   ];
 
@@ -47,7 +47,7 @@ const Nav = () => {
   };
 
   return (
-    <div className="h-[36px] my-[20px] w-full overflow-hidden">
+    <div className="h-[36px] my-[20px] w-full overflow-visible">
       {isMobile ? (
         <div className="formatter flex justify-between items-center w-full px-4">
           <div className="flex items-center gap-4 relative">
@@ -65,11 +65,10 @@ const Nav = () => {
               />
             )}
             <Link to={`/`}>
-              <img src={logo} alt="logo" className="w-[130px]" />
+              <img src={logo} alt="logo" className="w-20 h-12" />
             </Link>
           </div>
           {isMenuOpen && (
-            // <nav className="text-[16px] absolute z-10 text-white bg-gradient-to-r from-[#7B2334] to-[#9F3247] left-0 top-0 w-full p-10">
             <nav className="text-[16px] absolute z-10 text-white bg-gradient-to-r from-[#7B2334] to-[#9F3247] left-0 top-0 w-full px-4 py-6">
 
               <ul className="flex flex-col gap-8 pb-10 m-auto">
@@ -100,9 +99,9 @@ const Nav = () => {
           </div>
         </div>
       ) : (
-        <div className="formatter flex justify-between items-center w-full px-4 max-w-[1280px] mx-auto">
+        <div className="flex justify-between items-center w-full px-4 max-w-[1280px] mx-auto">
           <Link to={`/`}>
-            <img src={logo} alt="logo" className="w-[130px]" />
+            <img src={logo} alt="logo" className="w-[130px] h-[45px]" />
           </Link>
           <nav className="sm:text-[15px] text-[16px]">
             <ul className="flex gap-8">

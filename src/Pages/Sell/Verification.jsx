@@ -1,13 +1,12 @@
-import React from "react";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 
 const Verification = () => {
 
-    const navigate = useNavigate();
-    const Next = () => {
-      navigate("/Add-Product");
-    };
+  const navigate = useNavigate();
+  const Next = () => {
+    navigate("/Add-Product");
+  };
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
