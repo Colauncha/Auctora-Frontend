@@ -110,6 +110,7 @@ const Notify = () => {
           Inbox{" "}
           <span className="bg-[#9f3248] text-white px-2 rounded-full text-sm">
             {notice.length}
+
           </span>
         </button>
         <button
@@ -133,6 +134,7 @@ const Notify = () => {
           <div className="flex items-center justify-around h-[30vh] w-[60%] ml-[20%]">
             {loading ? <Loader /> : <p className="text-center text-gray-500">No notifications</p>}
           </div>
+
         ) : (
           notifications[activeTab]?.map((item) => (
             <div
@@ -145,6 +147,7 @@ const Notify = () => {
                   {item?.message}
                 </p>
                 <p className="text-gray-400 text-sm">{formatDateTime(item?.created_at)}</p>
+
               </div>
               <button
                 className="text-gray-600"

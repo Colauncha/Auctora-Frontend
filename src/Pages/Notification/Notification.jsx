@@ -1,10 +1,11 @@
 import Slider from "../../Components/Slider";
-import AuctionListing from "../Home/AuctionListing";
+// import AuctionListing from "../Home/AuctionListing";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import Pagination from "../../Components/Pagination";
 import { useState } from "react";
 import useModeStore from "../../Store/Store";
-import { FaAngleDown, FaTimes } from "react-icons/fa";
+// import { FaAngleDown, FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { filter_icom } from "../../Constants";
 import Modal from "../../Components/Modal";
 import Notify from "./Notify";
@@ -56,7 +57,7 @@ const Notification = () => {
             onPageChange={handlePageChange}
           />
         </>
-      </div>
+      {/* </div> */}
     </div>
   );
 };

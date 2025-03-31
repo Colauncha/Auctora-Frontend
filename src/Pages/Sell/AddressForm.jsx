@@ -75,6 +75,7 @@ const AddressForm = () => {
     }
 
   };
+//
 
   const handleCountryChange = (e) => {
     const selectedCountry = e.target.value;
@@ -160,7 +161,39 @@ const AddressForm = () => {
             ))}
           </select>
 
-          </div>
+                  {/* This loads the State field only when the country is selected */}
+                  <div className="flex-1">
+                    <select
+                      value={state}
+                      onChange={handleStateChange}
+                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                      disabled={!country}
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {countryStates.map((state, index) => (
+                        <option key={index} value={state}>{state}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+
+                {/* This loads the Area field only when the state is selected */}
+                <div>
+                  <select
+                    value={selectedArea}
+                    onChange={(e) => setSelectedArea(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                    disabled={!state}
+                    required
+                  >
+                    <option value="">Select Area</option>
+                    {areas.map((area, index) => (
+                      <option key={index} value={area}>{area}</option>
+                    ))}
+                  </select>
+                </div>
           {/* Row 3: Complete Address */}
           <div>
             <textarea
@@ -179,9 +212,6 @@ const AddressForm = () => {
           </button>
         </form>
       </div>
-    </div>
-    </div>
-    </div>
     </div>
   );
 };

@@ -11,18 +11,51 @@ import Breadcrumbs from "../../../Components/Breadcrumbs";
 
 const ProgressTracker = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState([]); 
+  const [completedSteps, setCompletedSteps] = useState([]);
+  const [formValidity, setFormValidity] = useState({
+    0: false, // Description
+    1: false, // Categories
+    2: false, // Photos
+    3: false, // Delivery
+  });
 
   const steps = ["Description", "Categories", "Photos", "Delivery"];
 
   const handleStepChange = (index) => {
+    // If trying to go forward
     if (index > activeStep) {
- 
+      // Only allow if current step is completed
+      if (!formValidity[activeStep]) return;
+      
+      // Update completed steps
       setCompletedSteps([...completedSteps, activeStep]);
     }
+    // If going backward, remove all completed steps after the new index
+    else if (index < activeStep) {
+      setCompletedSteps(completedSteps.filter(step => step < index));
+    }
+    
     setActiveStep(index);
   };
 
+  // Function to update form validity
+  const updateFormValidity = (stepIndex, isValid) => {
+    setFormValidity(prev => ({
+      ...prev,
+      [stepIndex]: isValid
+    }));
+    
+    // If the form becomes valid and we're on this step, mark as completed
+  //   if (isValid && !completedSteps.includes(stepIndex) {
+  //     setCompletedSteps([...completedSteps, stepIndex]);
+  //   }
+  // };
+
+
+  if (isValid && !completedSteps.includes(stepIndex)) {
+    setCompletedSteps([...completedSteps, stepIndex]);
+  }
+};  
 
   const stepIcons = [descriptionIcon, categoryIcon, photosIcon, deliveryIcon];
 
@@ -50,7 +83,6 @@ const ProgressTracker = () => {
                           : "bg-white" 
                       }`}
                     >
-                      {/* Using the SVG */}
                       <img
                         src={stepIcons[index]}
                         alt={step}
@@ -74,12 +106,12 @@ const ProgressTracker = () => {
                     </p>
                   </div>
 
-                  {/*  Dotted Line */}
+                  {/* Dotted Line */}
                   {index < steps.length - 1 && (
                     <div className="flex items-center justify-center mx-1 relative top-[-12px]">
                       <div
                         className="w-12 h-0.5 border-t-2 border-dotted border-red-500"
-                        style={{ borderSpacing: "2px" }} // Reduce dot density
+                        style={{ borderSpacing: "2px" }}
                       />
                     </div>
                   )}
@@ -92,44 +124,52 @@ const ProgressTracker = () => {
               <Description
                 activeStep={activeStep}
                 handleStepChange={handleStepChange}
+                updateFormValidity={updateFormValidity}
               />
             )}
             {activeStep === 1 && (
               <Categories
                 activeStep={activeStep}
                 handleStepChange={handleStepChange}
+                updateFormValidity={updateFormValidity}
               />
             )}
             {activeStep === 2 && (
               <Photos
                 activeStep={activeStep}
                 handleStepChange={handleStepChange}
+                updateFormValidity={updateFormValidity}
               />
             )}
             {activeStep === 3 && (
               <Delivery
                 activeStep={activeStep}
                 handleStepChange={handleStepChange}
+                updateFormValidity={updateFormValidity}
               />
             )}
 
-            
+            {/* Navigation Buttons */}
             <div className="flex space-x-4">
               <button
-                onClick={() =>
-                  handleStepChange(activeStep > 0 ? activeStep - 1 : 0)
-                }
-                className="px-3 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition duration-300"
+                onClick={() => handleStepChange(activeStep - 1)}
+                disabled={activeStep === 0}
+                className={`px-3 py-2 rounded-lg transition duration-300 ${
+                  activeStep === 0
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                }`}
               >
                 Previous
               </button>
               <button
-                onClick={() =>
-                  handleStepChange(
-                    activeStep < steps.length - 1 ? activeStep + 1 : activeStep
-                  )
-                }
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
+                onClick={() => handleStepChange(activeStep + 1)}
+                disabled={!formValidity[activeStep] || activeStep === steps.length - 1}
+                className={`px-6 py-2 rounded-lg transition duration-300 ${
+                  !formValidity[activeStep] || activeStep === steps.length - 1
+                    ? "bg-blue-300 text-white cursor-not-allowed"
+                    : "bg-blue-500 text-white hover:bg-blue-600"
+                }`}
               >
                 Next
               </button>
