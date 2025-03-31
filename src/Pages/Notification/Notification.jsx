@@ -57,7 +57,7 @@ const Notification = () => {
             onPageChange={handlePageChange}
           />
         </>
-      {/* </div> */}
+      </div>
     </div>
   );
 };
