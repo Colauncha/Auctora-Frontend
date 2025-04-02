@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../../Components/Breadcrumbs";
 import image1 from "../../../assets/uploads/photo+icon (1).png";
@@ -8,6 +8,24 @@ import { FiPlus } from "react-icons/fi";
 
 const YourProduct = () => {
   const navigate = useNavigate();
+
+  const [auctions, setAuctions ] = useState([]);
+
+  // const [auctions, setAuctions ] = useState({} => {
+  //   try {
+  //     const userData = sessionStorage.getItem("_user");
+  //     return userData ? JSON.parse(userData).auctions : [];
+  //   } catch (error) {
+  //     console.error("Error parsing user data from sessionStorage:", error);
+  //     return [];
+  //   }
+  // });
+
+  useEffect(() => { 
+      setAuctions(JSON.parse(sessionStorage.getItem("_user")).auctions); 
+      console.log(JSON.parse(sessionStorage.getItem("_user")).auctions);
+  }, []); 
+
   const [items, setItems] = useState([
     {
       id: 1,
@@ -59,6 +77,8 @@ const YourProduct = () => {
     }
   };
 
+
+
   const handleProductClick = (product) => {
     navigate('/auctiondetails', { state: { product } });
   };
@@ -75,7 +95,7 @@ const YourProduct = () => {
               </h1>
               
               <div className="flex flex-wrap gap-6">
-                {items.map((item) => (
+                {auctions.map((item) => (
                   <div 
                     key={item.id} 
                     className="relative group cursor-pointer"
@@ -83,7 +103,7 @@ const YourProduct = () => {
                   >
                     <div className="w-[100px] h-[100px] rounded-lg overflow-hidden">
                       <img
-                        src={item.image}
+                        src={item.item[0].image_link.link || 'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743008126/ddsdomp6w9lwqb2igqx7.jpg'} 
                         alt="Product"
                         className="w-full h-full object-cover"
                       />

@@ -95,7 +95,7 @@ const App = () => {
           } 
         />
         <Route path="/product-detials" element={<ProductAuctionDetails />} />
-        <Route path="/products" element={<YourProduct />} />
+        <Route path="/products" element={<ProtectedRoute> <YourProduct /> </ProtectedRoute> } />
         <Route path="/auctiondetails" element={<AuctionDetails />} />
 
         {/* Payment Routes */}
