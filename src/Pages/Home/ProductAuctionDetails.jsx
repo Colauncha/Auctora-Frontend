@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { PropTypes } from "prop-types";
 import { 
   FiArrowLeft, FiHeart, FiShare2, FiDollarSign, 
   FiClock, FiUser, FiCheck, FiShield, FiTruck 
@@ -74,16 +75,24 @@ const ProductAuctionDetails = () => {
   }, []);
 
   // Memoized star rating component
-  const StarRating = useMemo(() => ({ rating }) => (
-    <>
-      {Array(5).fill(0).map((_, i) => (
-        <BsStarFill 
-          key={i} 
-          className={`${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'} w-4 h-4`}
-        />
-      ))}
-    </>
-  ), []);
+  const StarRating = useMemo(() => {
+    const Component = ({ rating }) => (
+      <>
+        {Array(5).fill(0).map((_, i) => (
+          <BsStarFill 
+            key={i} 
+            className={`${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'} w-4 h-4`}
+          />
+        ))}
+      </>
+    );
+
+    Component.propTypes = {
+      rating: PropTypes.number.isRequired,
+    };
+
+    return Component;
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 mb-40">

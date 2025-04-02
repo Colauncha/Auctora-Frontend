@@ -57,12 +57,12 @@ const App = () => {
         <Route path="/list" element={<ProductPhoto />} />
         <Route path="/Ongoing-Auction" element={<ViewAll />} />
         <Route
-        path="/notification"
-        element={
-          <ProtectedRoute>
-            <Notification />
-          </ProtectedRoute>
-        }
+          path="/notification"
+          element={
+            <ProtectedRoute>
+              <Notification />
+            </ProtectedRoute>
+          }
         />
 
         {/* Auth Routes */}
@@ -92,11 +92,34 @@ const App = () => {
             <ProtectedRoute>
               <ProgressTracker />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route path="/product-detials" element={<ProductAuctionDetails />} />
-        <Route path="/products" element={<ProtectedRoute> <YourProduct /> </ProtectedRoute> } />
-        <Route path="/auctiondetails" element={<AuctionDetails />} />
+        <Route
+          path="/product-detials/:id"
+          element={
+            <ProtectedRoute>
+              {' '}
+              <ProductAuctionDetails />{' '}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoute>
+              {' '}
+              <YourProduct />{' '}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/auctiondetails/:id"
+          element={
+            <ProtectedRoute>
+              <AuctionDetails />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Payment Routes */}
         <Route
@@ -105,8 +128,8 @@ const App = () => {
             <ProtectedRoute>
               <Payment />
             </ProtectedRoute>
-          } 
-        />         
+          }
+        />
 
         {/* Protected Routes */}
         <Route

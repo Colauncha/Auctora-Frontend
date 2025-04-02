@@ -1,14 +1,7 @@
 import { Link } from "react-router-dom";
+import { PropTypes } from 'prop-types';
 
-const Card = ({
-  imgUrl,
-  itemName,
-  price,
-  sellerName,
-  bid,
-  countDown,
-  to
-}) => {
+const Card = ({ imgUrl, itemName, price, sellerName, bid, countDown, to }) => {
   return (
     <Link className="flex flex-col relative" to={to}>
       <img
@@ -42,6 +35,16 @@ const Card = ({
       </div>
     </Link>
   );
+};
+
+Card.propTypes = {
+  imgUrl: PropTypes.string.isRequired,
+  itemName: PropTypes.string.isRequired,
+  price: PropTypes.string.isRequired,
+  sellerName: PropTypes.string.isRequired,
+  bid: PropTypes.number.isRequired,
+  countDown: PropTypes.string.isRequired,
+  to: PropTypes.string.isRequired,
 };
 
 export default Card;
