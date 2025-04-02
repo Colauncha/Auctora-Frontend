@@ -221,11 +221,11 @@ import Card from "../../Components/Card";
 import { useState, useEffect } from "react";
 import Button from "../../Components/Button";
 import { useNavigate, useLocation } from "react-router-dom";
-import useModeStore from "../../Store/Store";
+// import useModeStore from "../../Store/Store";
 import { currencyFormat } from "../../utils"
 
 const AuctionListing = () => {
-  const { isMobile } = useModeStore();
+  // const { isMobile } = useModeStore();
 
   const [visibleCards, setVisibleCards] = useState(4);
 
