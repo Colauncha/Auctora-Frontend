@@ -59,6 +59,7 @@ const Notification = () => {
         </>
       </div>
     </div>
+    </div>
   );
 };
 

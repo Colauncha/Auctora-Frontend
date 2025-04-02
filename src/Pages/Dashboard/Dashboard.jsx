@@ -133,6 +133,10 @@ const Dashboard = () => {
     navigate("/bank-account")
   }
 
+  const viewAuctions = () => {
+    navigate("/products")
+  }
+
   return (
     <>
       <div className={style.container}>
@@ -145,7 +149,7 @@ const Dashboard = () => {
           </div>
           <div className={style.actions}>
             <Button icon={AddIcon} className={style.button} iconClassName={style.buttonIcon} label="Create New" onClick={() => AddProduct()} />
-            <Button icon={ActivityIcon} className={style.button} iconClassName={style.buttonIcon} label="Auctions" onClick={() => {}} />
+            <Button icon={ActivityIcon} className={style.button} iconClassName={style.buttonIcon} label="Auctions" onClick={() => viewAuctions()} />
             <Button icon={WalletHistory} className={style.button} iconClassName={style.buttonIcon} label="Wallet History" onClick={() => {}} />
           </div>
           <div className={style.preferences}>
