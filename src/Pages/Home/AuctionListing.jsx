@@ -1,4 +1,222 @@
-import { productListArr } from "../../Constants";
+// import { productListArr } from "../../Constants";
+// import Card from "../../Components/Card";
+// import { useState, useEffect } from "react";
+// import Button from "../../Components/Button";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import useModeStore from "../../Store/Store";
+
+// const AuctionListing = () => {
+//   const { isMobile } = useModeStore();
+//   const [visibleCards, setVisibleCards] = useState(4);
+//   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+//   useEffect(() => {
+//     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+//     window.addEventListener("resize", handleResize);
+//     return () => window.removeEventListener("resize", handleResize);
+//   }, []);
+
+//   const loadMore = () => {
+//     setVisibleCards((prev) => Math.min(prev + 4, productListArr.length));
+//   };
+
+//   const displayedCards = isDesktop
+//     ? productListArr
+//     : productListArr.slice(0, visibleCards);
+
+//   const navigate = useNavigate();
+//   const viewAll = () => navigate("/Ongoing-Auction");
+
+//   const location = useLocation();
+//   const isHomePath = location.pathname === "/";
+
+//   return (
+//     <div className="w-full flex justify-center">
+//       <div className="w-full max-w-[1280px] px-4">
+//         {/* Cards Grid with Bigger Cards */}
+//         <div
+//           className={`grid gap-10
+//             ${isHomePath ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}
+//           `}
+//         >
+//           {displayedCards.map((item, idx) => (
+//             <div key={idx} className="w-full flex justify-center">
+//               <Card
+//                 imgUrl={item.imgUrl}
+//                 itemName={item.itemName}
+//                 bid={item.bid}
+//                 bidTimes={item.bidTimes}
+//                 sellerName={item.sellerName}
+//                 price={item.price}
+//                 countDown={item.countDown}
+//                 to={`/category/${item.slug}`}
+//                 className="w-full max-w-[400px] min-h-[500px]"
+//               />
+//             </div>
+//           ))}
+//         </div>
+
+//         {/* "View All" Button - Properly Centered */}
+//         {/* "View All" Button - Properly Centered & Styled */}
+// {isHomePath && (
+//   <div className="w-full flex justify-center mt-8">
+//     <Button
+//       label="View All"
+//       onClick={viewAll}
+//       className="bg-gradient-to-r from-[#7B2334] to-[#9F3247]
+//                  w-[180px] h-[50px] text-white text-center font-medium
+//                  flex items-center justify-center rounded-full
+//                  shadow-md hover:scale-105 transition-transform duration-300"
+//     />
+//   </div>
+// )}
+
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AuctionListing;
+
+//Sample code for the API  - 3/29/2025
+// import Card from "../../Components/Card";
+// import { useState, useEffect } from "react";
+// import Button from "../../Components/Button";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import useModeStore from "../../Store/Store";
+
+// const AuctionListing = () => {
+//   const { isMobile } = useModeStore();
+//   const [visibleCards, setVisibleCards] = useState(4);
+//   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+//   const [auctions, setAuctions] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   // Fetch auctions from API
+//   useEffect(() => {
+//     const fetchAuctions = async () => {
+//       try {
+//         const response = await fetch("YOUR_API_ENDPOINT_HERE", {
+//           method: "GET",
+//           headers: {
+//             "x-api-key": "YOUR_API_KEY_HERE", // Add your API key here
+//             "Content-Type": "application/json"
+//           }
+//         });
+
+//         if (!response.ok) {
+//           throw new Error(`Failed to fetch: ${response.status}`);
+//         }
+
+//         const data = await response.json();
+//         setAuctions(data.data || data); // Adjust based on your API response structure
+//       } catch (err) {
+//         setError(err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchAuctions();
+//   }, []);
+
+//   useEffect(() => {
+//     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+//     window.addEventListener("resize", handleResize);
+//     return () => window.removeEventListener("resize", handleResize);
+//   }, []);
+
+//   const loadMore = () => {
+//     setVisibleCards((prev) => Math.min(prev + 4, auctions.length));
+//   };
+
+//   const displayedCards = isDesktop
+//     ? auctions
+//     : auctions.slice(0, visibleCards);
+
+//   const navigate = useNavigate();
+//   const viewAll = () => navigate("/Ongoing-Auction");
+
+//   const location = useLocation();
+//   const isHomePath = location.pathname === "/";
+
+//   if (loading) {
+//     return (
+//       <div className="w-full flex justify-center py-8">
+//         <div className="w-full max-w-[1280px] px-4 text-center">
+//           Loading auctions...
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="w-full flex justify-center py-8">
+//         <div className="w-full max-w-[1280px] px-4 text-center text-red-500">
+//           Error: {error}
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (auctions.length === 0) {
+//     return (
+//       <div className="w-full flex justify-center py-8">
+//         <div className="w-full max-w-[1280px] px-4 text-center">
+//           No auctions available
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="w-full flex justify-center">
+//       <div className="w-full max-w-[1280px] px-4">
+//         {/* Cards Grid with Bigger Cards */}
+//         <div
+//           className={`grid gap-10
+//             ${isHomePath ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}
+//           `}
+//         >
+//           {displayedCards.map((item, idx) => (
+//             <div key={idx} className="w-full flex justify-center">
+//               <Card
+//                 imgUrl={item.imgUrl}
+//                 itemName={item.name || item.itemName}
+//                 bid={item.currentBid || item.bid}
+//                 bidTimes={item.bidCount || item.bidTimes}
+//                 sellerName={item.seller || item.sellerName}
+//                 price={item.price}
+//                 countDown={item.timeLeft || item.countDown}
+//                 to={`/category/${item.slug || item.id}`}
+//                 className="w-full max-w-[400px] min-h-[500px]"
+//               />
+//             </div>
+//           ))}
+//         </div>
+
+//         {isHomePath && (
+//           <div className="w-full flex justify-center mt-8">
+//             <Button
+//               label="View All"
+//               onClick={viewAll}
+//               className="bg-gradient-to-r from-[#7B2334] to-[#9F3247]
+//                          w-[180px] h-[50px] text-white text-center font-medium
+//                          flex items-center justify-center rounded-full
+//                          shadow-md hover:scale-105 transition-transform duration-300"
+//             />
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AuctionListing;
+
+//Implemented the Endpoint Key
 import Card from "../../Components/Card";
 import { useState, useEffect } from "react";
 import Button from "../../Components/Button";
@@ -7,8 +225,80 @@ import useModeStore from "../../Store/Store";
 
 const AuctionListing = () => {
   const { isMobile } = useModeStore();
+
   const [visibleCards, setVisibleCards] = useState(4);
+
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  const [auctions, setAuctions] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAuctions = async () => {
+      try {
+        const response = await fetch(
+          "https://api-auctora.vercel.app/api/landing/trending_auctions",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+
+              // Add any required API keys or headers here
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.status}`);
+        }
+
+        const data = await response.json(); // Log the entire response from the API endpoint
+        console.log("API Response:", data); // Transform API data to match your card component's expected format
+        // const formattedAuctions = data.data.map((auction) => ({
+        //   imgUrl:
+        //     "https://res.cloudinary.com/dtkv6il4e/image/upload/v1743011639/qet83lshyl43jfyfugoh.jpg" ||
+        //     "/default-auction.jpg",
+        //   name: auction.title || "Untitled Auction",
+        //   currentBid: auction.current_bid || 0,
+        //   bidCount: auction.bid_count || 0,
+        //   seller: auction.seller_name || "Unknown Seller",
+        //   price: auction.starting_price || 0,
+        //   timeLeft: auction.time_remaining || "N/A",
+        //   slug: auction.id || "no-id",
+        // }));
+
+        // In your AuctionListing component
+const formattedAuctions = data.data.map((auction) => ({
+  imgUrls: auction.images || [
+    'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743008126/ddsdomp6w9lwqb2igqx7.jpg',
+    'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743008125/u0cs9mpcz12imsdrcrri.jpg',
+    'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743008124/vsqw42b2ncomplmqpcr3.jpg',
+    'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743011639/qet83lshyl43jfyfugoh.jpg'
+  ],
+  name: auction.title || "Untitled Auction",
+  currentBid: auction.current_bid || 0,
+  startingPrice: auction.starting_price || 0,
+  buyNowPrice: auction.buy_now_price || 0,
+  bidCount: auction.bid_count || 0,
+  seller: auction.seller_name || "Unknown Seller",
+  description: auction.description || "No description available",
+  timeLeft: auction.time_remaining || "N/A",
+  slug: auction.id || "no-id",
+}));
+
+        // Log formatted auctions to verify transformation
+        console.log("Formatted Auctions:", formattedAuctions);
+        setAuctions(formattedAuctions);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAuctions();
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
@@ -17,63 +307,127 @@ const AuctionListing = () => {
   }, []);
 
   const loadMore = () => {
-    setVisibleCards((prev) => Math.min(prev + 4, productListArr.length));
+    setVisibleCards((prev) => Math.min(prev + 4, auctions.length));
   };
 
-  const displayedCards = isDesktop
-    ? productListArr
-    : productListArr.slice(0, visibleCards);
+  const displayedCards = isDesktop ? auctions : auctions.slice(0, visibleCards);
 
   const navigate = useNavigate();
+
   const viewAll = () => navigate("/Ongoing-Auction");
 
   const location = useLocation();
-  const isHomePath = location.pathname === "/";
 
+  const isHomePath = location.pathname === "/";
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center py-8">
+        {" "}
+        <div className="w-full max-w-[1280px] px-4 text-center">
+          {" "}
+          <div className="animate-pulse flex space-x-4">
+            {" "}
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex-1 space-y-4 py-1">
+                {" "}
+                <div className="h-48 bg-gray-200 rounded"></div>{" "}
+                <div className="space-y-2">
+                  {" "}
+                  <div className="h-4 bg-gray-200 rounded"></div>{" "}
+                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>{" "}
+                </div>{" "}
+              </div>
+            ))}{" "}
+          </div>{" "}
+        </div>{" "}
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="w-full flex justify-center py-8">
+        {" "}
+        <div className="w-full max-w-[1280px] px-4 text-center text-red-500">
+          {" "}
+          Error loading auctions: {error}{" "}
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 px-4 py-2 bg-[#9F3247] text-white rounded"
+          >
+            {" "}
+            Retry{" "}
+          </button>{" "}
+        </div>{" "}
+      </div>
+    );
+  }
+
+  if (auctions.length === 0) {
+    return (
+      <div className="w-full flex justify-center py-8">
+        {" "}
+        <div className="w-full max-w-[1280px] px-4 text-center">
+          {" "}
+          No trending auctions available at the moment{" "}
+        </div>{" "}
+      </div>
+    );
+  }
   return (
     <div className="w-full flex justify-center">
+      {" "}
       <div className="w-full max-w-[1280px] px-4">
-        {/* Cards Grid with Bigger Cards */}
+        {" "}
         <div
-          className={`grid gap-10  
-            ${isHomePath ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}
-          `}
+          className={`grid gap-10 ${
+            isHomePath
+              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          } `}
         >
+          {" "}
           {displayedCards.map((item, idx) => (
             <div key={idx} className="w-full flex justify-center">
+              {" "}
               <Card
                 imgUrl={item.imgUrl}
-                itemName={item.itemName}
-                bid={item.bid}
-                bidTimes={item.bidTimes}
-                sellerName={item.sellerName}
+                // Display auction
+
+                image
+                itemName={item.name}
+                bid={item.currentBid}
+                bidTimes={item.bidCount}
+                sellerName={item.seller}
                 price={item.price}
-                countDown={item.countDown}
-                to={`/category/${item.slug}`}
+                countDown={item.timeLeft}
+                to={`/auction/${item.slug}`}
                 className="w-full max-w-[400px] min-h-[500px]"
-              />
+              />{" "}
             </div>
-          ))}
-        </div>
-
-        {/* "View All" Button - Properly Centered */}
-        {/* "View All" Button - Properly Centered & Styled */}
-{isHomePath && (
-  <div className="w-full flex justify-center mt-8">
-    <Button
-      label="View All"
-      onClick={viewAll}
-      className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] 
-                 w-[180px] h-[50px] text-white text-center font-medium 
-                 flex items-center justify-center rounded-full 
-                 shadow-md hover:scale-105 transition-transform duration-300"
-    />
-  </div>
-)}
-
-      </div>
+          ))}{" "}
+        </div>{" "}
+        {isHomePath && !isDesktop && auctions.length > visibleCards && (
+          <div className="w-full flex justify-center mt-8">
+            {" "}
+            <Button
+              label="Load More"
+              onClick={loadMore}
+              className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] w-[180px] h-[50px] text-white text-center font-medium flex items-center justify-center rounded-full shadow-md hover:scale-105 transition-transform duration-300"
+            />{" "}
+          </div>
+        )}{" "}
+        {isHomePath && (
+          <div className="w-full flex justify-center mt-8">
+            {" "}
+            <Button
+              label="View All"
+              onClick={viewAll}
+              className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] w-[180px] h-[50px] text-white text-center font-medium flex items-center justify-center rounded-full shadow-md hover:scale-105 transition-transform duration-300"
+            />{" "}
+          </div>
+        )}{" "}
+      </div>{" "}
     </div>
   );
 };
-
 export default AuctionListing;
