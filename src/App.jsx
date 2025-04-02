@@ -39,6 +39,9 @@ import ProgressTracker from "./Pages/Sell/AddProduct/ProgressTracker";
 
 // Payment Routes
 import Payment from "./Pages/Payment/Payment";
+import ProductAuctionDetails from "./Pages/Home/ProductAuctionDetails";
+import YourProduct from "./Pages/Sell/AddProduct/YourProduct";
+import AuctionDetails from "./Pages/Sell/AddProduct/AuctionDetails";
 // import AppTest from "./Pages/Payment/AppTest";
 // import ProgressTracker from "./Pages/Sell/ProgressTracker";
 
@@ -79,6 +82,9 @@ const App = () => {
 
         {/* Progress Tracker Routes */}
         <Route path="/Add-Product" element={<ProgressTracker />} />
+        <Route path="/product-detials" element={<ProductAuctionDetails />} />
+        <Route path="/products" element={<YourProduct />} />
+        <Route path="/auctiondetails" element={<AuctionDetails />} />
 
         {/* Payment Routes */}
         <Route path="/payment" element={<Payment />} /> 
