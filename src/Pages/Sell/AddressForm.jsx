@@ -105,118 +105,88 @@ const AddressForm = () => {
   }
 
   return (
-    <div className="bg-[#F2F0F1] min-h-screen">
-  <div className="formatter">
-    <div className="py-6"> {/* Reduced padding */}
-      <Breadcrumbs />
-    <div className="flex items-center justify-center">
-      <div className="bg-white rounded-lg p-10 mb-6 mt-4 w-full max-w-full">
-        <h1 className="text-left text-4xl mb-4 font-bold text-maroon"> {/* Reduced margin */}
-        Address Information
-          </h1>
-        <form className="space-y-6">
-          {/* Row 1: Country and State */}
-          <div className="flex space-x-6">
-            {/* Select Country */}
-            <select
-              value={country}
-              onChange={handleCountryChange}
-              className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-            >
-              <option value="">Select Country</option>
-              <option value="Nigerian">Nigeria</option>
-            </select>
-            {/* Select State */}
-            <select
-              value={state}
-              onChange={handleStateChange}
-              className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-              disabled={!countryStates.length}
-            >
-              <option value="">
-                {countryStates.length ? "Select State" : "Select Country First"}
-              </option>
-              {countryStates?.map((state, index) => (
-                <option key={index} value={state}>
-                  {state}
-                </option>
-              ))}
-            </select>
+  <div className="bg-[#F2F0F1] min-h-screen">
+    <div className="formatter">
+      <div className="py-6"> {/* Reduced padding */}
+        <Breadcrumbs />
+        <div className="flex items-center justify-center">
+          <div className="bg-white rounded-lg p-10 mb-6 mt-4 w-full max-w-full">
+            <h1 className="text-left text-4xl mb-4 font-bold text-maroon"> {/* Reduced margin */}
+              Address Information
+            </h1>
+            <form className="space-y-6">
+              {/* Row 1: Country and State */}
+              <div className="flex space-x-6">
+                {/* Select Country */}
+                <select
+                  value={country}
+                  onChange={handleCountryChange}
+                  className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                >
+                  <option value="">Select Country</option>
+                  <option value="Nigerian">Nigeria</option>
+                </select>
+                {/* Select State */}
+                <select
+                  value={state}
+                  onChange={handleStateChange}
+                  className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                  disabled={!countryStates.length}
+                >
+                  <option value="">
+                    {countryStates.length ? "Select State" : "Select Country First"}
+                  </option>
+                  {countryStates?.map((state, index) => (
+                    <option key={index} value={state}>
+                      {state}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Row 2: Area */}
+              <div>
+                <select
+                  className="state-area p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 w-full sm:w-96 md:w-[648px] lg:w-[648px]"
+                  disabled={!areas.length}
+                  value={selectedArea}
+                  onChange={handleAreaChange}
+                >
+                  <option value="">
+                    {areas.length ? "Select Area" : "Select State First"}
+                  </option>
+                  {areas.map((area, index) => (
+                    <option key={index} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Row 3: Complete Address */}
+              <div>
+                <textarea
+                  placeholder="Enter complete address here."
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 resize-none h-32"
+                ></textarea>
+              </div>
+              <button
+                onClick={Next}
+                type="button"
+                className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
+              >
+                Next
+              </button>
+            </form>
           </div>
-          {/* Row 2: Area */}
-          <div>
-          <select
-              className="state-area p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 w-full sm:w-96 md:w-[648px] lg:w-[648px]"
-              disabled={!areas.length}
-              value={selectedArea}
-              onChange={handleAreaChange}
-            >
-            <option value="">
-              {areas.length ? "Select Area" : "Select State First"}
-            </option>
-            {areas.map((area, index) => (
-              <option key={index} value={area}>
-                {area}
-              </option>
-            ))}
-          </select>
-
-                  {/* This loads the State field only when the country is selected */}
-                  <div className="flex-1">
-                    <select
-                      value={state}
-                      onChange={handleStateChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                      disabled={!country}
-                      required
-                    >
-                      <option value="">Select State</option>
-                      {countryStates.map((state, index) => (
-                        <option key={index} value={state}>{state}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                
-
-                {/* This loads the Area field only when the state is selected */}
-                <div>
-                  <select
-                    value={selectedArea}
-                    onChange={(e) => setSelectedArea(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                    disabled={!state}
-                    required
-                  >
-                    <option value="">Select Area</option>
-                    {areas.map((area, index) => (
-                      <option key={index} value={area}>{area}</option>
-                    ))}
-                  </select>
-                </div>
-          {/* Row 3: Complete Address */}
-          <div>
-            <textarea
-              placeholder="Enter complete address here."
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 resize-none h-32"
-            ></textarea>
-          </div>
-          <button
-            onClick={Next}
-              type="button"
-              className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
-            >
-              Next
-          </button>
-        </form>
+        </div>
       </div>
     </div>
     </div>
     </div>
     </div>
   );
-};
+}
+
 
 export default AddressForm;
