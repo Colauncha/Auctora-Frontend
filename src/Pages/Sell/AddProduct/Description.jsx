@@ -1,76 +1,30 @@
-import { useState, useEffect } from "react";
-// import PropTypes from 'prop-types';
+import { useState } from "react";
+import { PropTypes } from "prop-types";
 
 const Description = ({ handleStepChange, activeStep }) => {
-  // Helper function to format date with time for datetime-local input
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const pad = (num) => num.toString().padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-  };
-
-  // Helper function to parse datetime-local value to ISO string
-  const parseDateTime = (datetimeString) => {
-    if (!datetimeString) return "";
-    return new Date(datetimeString).toISOString();
-  };
-
-  const productState = {
-    start_price: "",
-    current_price: "",
+  const [product, setProduct] = useState({
+    start_price: 0,
+    current_price: 0,
     buy_now: false,
-    buy_now_price: "",
+    buy_now_price: 0,
     start_date: new Date().toISOString(),
     end_date: "",
-    // users_id: sessionStorage.getItem("_user") 
-    //   ? JSON.parse(sessionStorage.getItem("_user")).id 
-    //   : ""
-      users_id: sessionStorage.getItem("_user") ? JSON.parse(sessionStorage.getItem("_user")).id : "",
-  };
+    users_id: sessionStorage.getItem("_user") ? JSON.parse(sessionStorage.getItem("_user")).id : "",
+    private: false,
+    participants: [],
+    status: "pending"
+  });
 
-  const itemState = {
+  const [item, setItem] = useState({
     name: "",
-    description: ""
-  };
+    description: "",
+    category_id: "",
+    sub_category_id: ""
+  });
 
-  const [product, setProduct] = useState(productState);
-  const [item, setItem] = useState(itemState);
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!item.name.trim()) {
-      newErrors.name = "Product name is required";
-    } else if (item.name.length > 60) {
-      newErrors.name = "Product name must be 60 characters or less";
-    }
-
-    if (!item.description.trim()) {
-      newErrors.description = "Description is required";
-    }
-
-    if (!product.start_price || isNaN(product.start_price) || product.start_price <= 0) {
-      newErrors.start_price = "Valid starting price is required";
-    }
-
-    if (product.buy_now && (!product.buy_now_price || isNaN(product.buy_now_price) || product.buy_now_price <= 0)) {
-      newErrors.buy_now_price = "Valid buy now price is required";
-    }
-
-    if (!product.end_date) {
-      newErrors.end_date = "End date and time is required";
-    } else if (new Date(product.end_date) <= new Date(product.start_date)) {
-      newErrors.end_date = "End date must be after start date";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
+  // Handle change for item state object
   const handleChange = (e) => {
+    console.log(e.target.value);
     const { name, value, type, checked } = e.target;
     setItem(prev => ({
       ...prev,
@@ -78,8 +32,29 @@ const Description = ({ handleStepChange, activeStep }) => {
     }));
   };
 
-  const handleProductChange = (e) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(product);
+  };
+
+  // Handle change for product state object
+  const handleChanged = (e) => {
+    console.log(e.target.value);
     const { name, value, type, checked } = e.target;
+    if (name === 'start_price') {
+      setProduct(prev => ({
+        ...prev,
+        [name]: value,
+        current_price: value
+      }));
+    } else if (name === 'start_date' || name === 'end_date') {
+      let value_ = new Date(value);
+      setProduct(prev => ({
+        ...prev,
+        [name]: value_.toISOString()
+      }));
+
+    }
     setProduct(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -211,27 +186,14 @@ const Description = ({ handleStepChange, activeStep }) => {
                 {product.buy_now && (
                   <div className="mt-3 ml-7">
                     <label className="block text-black font-semibold">Buy Now Price</label>
-                    <div className="flex items-center">
-                      <span className="mr-2">$</span>
-                      <input
-                        type="number"
-                        name="buy_now_price"
-                        placeholder="0.00"
-                        value={product.buy_now_price}
-                        onChange={handleProductChange}
-                        min="0"
-                        step="0.01"
-                        className={`w-2/4 mt-1 p-2 border rounded-lg bg-gray-100 ${
-                          errors.buy_now_price ? 'border-red-500' : 'border-gray-200'
-                        }`}
-                      />
-                    </div>
-                    {errors.buy_now_price && (
-                      <p className="text-sm text-red-500 mt-1">{errors.buy_now_price}</p>
-                    )}
-                    <p className="text-sm text-gray-500 mt-1">
-                      Customers can purchase immediately at this price
-                    </p>
+                    <input
+                      type="number"
+                      name="buy_now_price"
+                      placeholder="Buy Now price"
+                      value={item.buy_now_price}
+                      onChange={handleChanged}
+                      className="w-2/4 mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
+                    />
                   </div>
                 )}
               </div>
@@ -243,10 +205,8 @@ const Description = ({ handleStepChange, activeStep }) => {
                   <input
                     type="datetime-local"
                     name="start_date"
-                    value={formatDateTime(product.start_date)}
-                    onChange={handleDateTimeChange}
-                    min={formatDateTime(new Date())}
-                    className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
+                    onChange={handleChanged}
+                    className="mr-2"
                   />
                 </div>
                 <div>
@@ -254,12 +214,8 @@ const Description = ({ handleStepChange, activeStep }) => {
                   <input
                     type="datetime-local"
                     name="end_date"
-                    value={formatDateTime(product.end_date)}
-                    onChange={handleDateTimeChange}
-                    min={formatDateTime(product.start_date)}
-                    className={`w-full mt-1 p-2 border rounded-lg bg-gray-100 ${
-                      errors.end_date ? 'border-red-500' : 'border-gray-200'
-                    }`}
+                    onChange={handleChanged}
+                    className="mr-2"
                   />
                   {errors.end_date && (
                     <p className="text-sm text-red-500 mt-1">{errors.end_date}</p>
@@ -287,9 +243,9 @@ const Description = ({ handleStepChange, activeStep }) => {
   );
 };
 
-// Description.propTypes = {
-//   handleStepChange: PropTypes.func.isRequired,
-//   activeStep: PropTypes.number.isRequired
-// };
+Description.propTypes = {
+  handleStepChange: PropTypes.func.isRequired,
+  activeStep: PropTypes.number.isRequired,
+};
 
 export default Description;

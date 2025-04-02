@@ -34,6 +34,8 @@ const Dashboard = () => {
   useEffect(() => {
     setLoading(true)
     offCta()
+    sessionStorage.removeItem('newAccount')
+    sessionStorage.removeItem('_user')
 
     const getUser = async () => { 
       let endpoint = `${current}users/profile`;
@@ -65,8 +67,9 @@ const Dashboard = () => {
         navigate("/sign-in")
       }
     }
+    let userId = localStorage.getItem('userId')
     let data = JSON.parse(sessionStorage.getItem('_user'))
-    if (!data) {
+    if (!data || !userId ) {
       getUser();
       return
     } else {
@@ -114,6 +117,22 @@ const Dashboard = () => {
     console.log(id)
   }
 
+  const AddProduct = () => {
+    navigate("/add-product")
+  }
+
+  const updateProfile = () => {
+    navigate("/update-profile")
+  }
+
+  const updateAddress = () => {
+    navigate("/update-address")
+  }
+
+  const updateBank = () => {
+    navigate("/bank-account")
+  }
+
   return (
     <>
       <div className={style.container}>
@@ -125,7 +144,7 @@ const Dashboard = () => {
             <p className={style.avatarEmail}>{user.username ? charLimit(user.email, 20) : ''}</p>
           </div>
           <div className={style.actions}>
-            <Button icon={AddIcon} className={style.button} iconClassName={style.buttonIcon} label="Create New" onClick={() => {}} />
+            <Button icon={AddIcon} className={style.button} iconClassName={style.buttonIcon} label="Create New" onClick={() => AddProduct()} />
             <Button icon={ActivityIcon} className={style.button} iconClassName={style.buttonIcon} label="Auctions" onClick={() => {}} />
             <Button icon={WalletHistory} className={style.button} iconClassName={style.buttonIcon} label="Wallet History" onClick={() => {}} />
           </div>
@@ -141,10 +160,10 @@ const Dashboard = () => {
             <div className={style.greet}>
               <h1>Welcome back, {charLimit(displayName, 20)}</h1>
               <div className="flex gap-3 flex-wrap">
-                <Button icon={Money} className={style.panelButton} iconClassName={style.buttonIcon} label="Account details" onClick={() => {}} />
-                <Button icon={Edit} className={style.panelButton} iconClassName={style.buttonIcon} label="Update profile" onClick={() => {}} />
-                <Button icon={AddIcon} className={style.panelButton} iconClassName={style.buttonIcon} label="Create Auction" onClick={() => {}} />
-                {/* <Button icon={FundWallet} className={style.panelButton} iconClassName={style.buttonIcon} label="Update profile" onClick={() => {}} /> */}
+                <Button icon={Money} className={style.panelButton} iconClassName={style.buttonIcon} label="Account details" onClick={() => updateBank()} />
+                <Button icon={Edit} className={style.panelButton} iconClassName={style.buttonIcon} label="Update profile" onClick={() => updateProfile()} />
+                <Button icon={AddIcon} className={style.panelButton} iconClassName={style.buttonIcon} label="Create Auction" onClick={() => AddProduct()} />
+                <Button icon={Edit} className={style.panelButton} iconClassName={style.buttonIcon} label="Update address" onClick={() => updateAddress()} />
               </div>
             </div>
             <div className={style.wallet}>

@@ -44,8 +44,10 @@ const AuthFormSginUp = ({ heading }) => {
         console.log("Sign Up Successful", data);
         setAlert({isAlert: true, level: "success", message: "Sign Up Successful"})
         setTimeout(() => {
+          sessionStorage.setItem("email-otp", email)
+          sessionStorage.setItem("newAccount", JSON.stringify(true))
           setLoading(false)
-          navigate("/otp")
+          navigate("/sign-in")
         }, 500)
       } else {
         const errorData = await response.json();
