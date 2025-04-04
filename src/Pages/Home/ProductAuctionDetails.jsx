@@ -27,10 +27,7 @@ const ProductAuctionDetails = () => {
     minutes: 23,
     seconds: 45,
   });
-  const id =
-    useLocation().pathname.split('/')[
-      useLocation().pathname.split('/').length - 2
-    ];
+  const id = useLocation().pathname.split('/').pop();
   const endpoint = current;
 
   const runFetch = async ({
@@ -60,6 +57,7 @@ const ProductAuctionDetails = () => {
 
   // Optimized countdown timer
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchSellerData = async (sellers_id) => {
       const seller = await runFetch({
         endpoint: `${endpoint}users/retrieve/${sellers_id}`,
