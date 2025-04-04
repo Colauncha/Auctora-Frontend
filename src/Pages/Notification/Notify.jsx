@@ -1,7 +1,7 @@
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { current, formatDateTime } from "../../utils";
-import Loader from "../../assets/loader"; // Update the path to the correct location of the Loader component
+import Loader from "../../assets/loader2"; // Update the path to the correct location of the Loader component
 
 const Notify = () => {
   const [notice, setNotice] = useState([]);

@@ -3,22 +3,27 @@ import { PropTypes } from 'prop-types';
 import arrowright from "../../../assets/svg/arrow-right.svg";
 import x from "../../../assets/svg/x.svg";
 import { current } from "../../../utils";
+import Loader from '../../../assets/loader2';
 
 const Categories = ({ handleStepChange, activeStep }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [catLoading, setcatLoading] = useState(false);
 
   useEffect(() => {
+    setcatLoading(true);
     let endpoint = `${current}categories`;
     fetch(endpoint)
       .then((response) => response.json())
       .then((data) => {
-        setCategories(data.data)
+        console.log(data.data);
+        setCategories(data.data);
+        setcatLoading(false);
       })
-      .catch((error) => console.error("Error fetching categories: ", error));
+      .catch((error) => console.error('Error fetching categories: ', error));
   }, []);
-
 
   const handleCheckboxChange = (item) => {
     console.log(item);
@@ -29,7 +34,7 @@ const Categories = ({ handleStepChange, activeStep }) => {
         return prevSelected.filter((category) => category.name !== item.name);
       } else {
         if (prevSelected.length >= 1) {
-          alert("You can only select up to 1 categories.");
+          alert('You can only select up to 1 categories.');
           return prevSelected;
         }
         // Check the checkbox
@@ -41,7 +46,7 @@ const Categories = ({ handleStepChange, activeStep }) => {
 
   const handleRemoveCategory = (item) => {
     setSelectedCategories((prevSelected) =>
-      prevSelected.filter((category) => category.name !== item.name)
+      prevSelected.filter((category) => category.name !== item.name),
     );
     // Uncheck the checkbox when removing the category
     setCheckedItems((prev) => ({ ...prev, [item.name]: false }));
@@ -49,32 +54,32 @@ const Categories = ({ handleStepChange, activeStep }) => {
 
   const submit = async () => {
     const endpoint = `${current}auctions/`;
-    let data = JSON.parse(sessionStorage.getItem("product"));
+    let data = JSON.parse(sessionStorage.getItem('product'));
     data.item.category_id = selectedCategories[0].category_id;
     data.item.sub_category_id = selectedCategories[0].id;
 
     try {
       const response = await fetch(endpoint, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(data),
         credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("Product submitted successfully: ", data);
-        sessionStorage.setItem("product", JSON.stringify(data));
+        console.log('Product submitted successfully: ', data);
+        sessionStorage.setItem('product', JSON.stringify(data));
         return true;
       } else {
         const errorData = await response.json();
-        console.error("Error submitting product: ", errorData);
+        console.error('Error submitting product: ', errorData);
         return false;
       }
     } catch (error) {
-      console.error("Error submitting product: ", error);
+      console.error('Error submitting product: ', error);
     }
   };
 
@@ -92,15 +97,15 @@ const Categories = ({ handleStepChange, activeStep }) => {
             {/* First Column */}
             <div className="w-[750px] h-[460px] bg-white py-7 px-6">
               {[
-                "Electronics",
-                "Fashion",
-                "Home and Garden",
-                "Supermarket",
-                "Beauty",
-                "Culture",
-                "Sports and tourism",
-                "Automotive",
-                "Properties",
+                'Electronics',
+                'Fashion',
+                'Home and Garden',
+                'Supermarket',
+                'Beauty',
+                'Culture',
+                'Sports and tourism',
+                'Automotive',
+                'Properties',
               ].map((category, index) => (
                 <div key={index} className="flex flex-row items-center mb-5">
                   <p className="text-[16px] text-black w-[190px]">{category}</p>
@@ -111,31 +116,42 @@ const Categories = ({ handleStepChange, activeStep }) => {
 
             {/* Second Column */}
             <div className="w-[750px] h-[460px] bg-white p-5">
-              {categories.map((category, index) => (
-                <div key={index} className="mb-4">
-                  <p
-                    className={`text-[16px] text-black ${
-                      index > 0 ? "mt-8" : ""
-                    } mb-2 font-bold`}
-                  >
-                    {category.name}
-                  </p>
-                  {category.subcategories.map((item, itemIndex) => (
-                    <div
-                      key={itemIndex}
-                      className="flex flex-row gap-4 py-1 items-center"
-                    >
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 border rounded-full border-gray-200 accent-maroon"
-                        checked={checkedItems[item.name] || false}
-                        onChange={() => handleCheckboxChange({...item, category_id: category.id})}
-                      />
-                      <p>{item.name}</p>
-                    </div>
-                  ))}
+              {catLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader />
                 </div>
-              ))}
+              ) : (
+                categories.map((category, index) => (
+                  <div key={index} className="mb-4">
+                    <p
+                      className={`text-[16px] text-black ${
+                        index > 0 ? 'mt-8' : ''
+                      } mb-2 font-bold`}
+                    >
+                      {category.name}
+                    </p>
+                    {category.subcategories.map((item, itemIndex) => (
+                      <div
+                        key={itemIndex}
+                        className="flex flex-row gap-4 py-1 items-center"
+                      >
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 border rounded-full border-gray-200 accent-maroon"
+                          checked={checkedItems[item.name] || false}
+                          onChange={() =>
+                            handleCheckboxChange({
+                              ...item,
+                              category_id: category.id,
+                            })
+                          }
+                        />
+                        <p>{item.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Third Column */}
@@ -226,9 +242,8 @@ const Categories = ({ handleStepChange, activeStep }) => {
             </div> */}
           </section>
 
-          
           <p className="font-bold mb-6 mt-[-10px]">
-            Selected categories:{" "}
+            Selected categories:{' '}
             {selectedCategories.map((category) => (
               <span
                 key={category}
@@ -245,17 +260,20 @@ const Categories = ({ handleStepChange, activeStep }) => {
             ))}
           </p>
 
-          
-          <button
-            onClick={async () => {
-              await submit() ? 
-              handleStepChange(activeStep + 1) : () => {};
-            }}
-            type="button"
-            className="mt-6 w-40 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon mx-auto block"
-          >
-            Next
-          </button>
+          <div className="flex flex-row items-center justify-center gap-5 space-y-5 w-max mx-auto">
+            <button
+              onClick={async () => {
+                setLoading(true);
+                (await submit()) ? handleStepChange(activeStep + 1) : () => {};
+                setLoading(false);
+              }}
+              type="button"
+              className="mt-6 w-40 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon mx-auto block"
+            >
+              Next
+            </button>
+            {loading && <Loader />}
+          </div>
         </div>
       </div>
     </div>

@@ -25,37 +25,42 @@ const ProgressTracker = () => {
     // If trying to go forward
     if (index > activeStep) {
       // Only allow if current step is completed
-      if (!formValidity[activeStep]) return;
-      
+      if (formValidity[activeStep]) {
+        console.log(
+          `Cannot proceed to ${steps[index]}: Current step ${steps[activeStep]} is not valid.`,
+          `validity: ${formValidity}`,
+        );
+        return;
+      }
+
       // Update completed steps
       setCompletedSteps([...completedSteps, activeStep]);
     }
     // If going backward, remove all completed steps after the new index
     else if (index < activeStep) {
-      setCompletedSteps(completedSteps.filter(step => step < index));
+      setCompletedSteps(completedSteps.filter((step) => step < index));
     }
-    
+
     setActiveStep(index);
   };
 
   // Function to update form validity
   const updateFormValidity = (stepIndex, isValid) => {
-    setFormValidity(prev => ({
+    setFormValidity((prev) => ({
       ...prev,
-      [stepIndex]: isValid
+      [stepIndex]: isValid,
     }));
-    
+
     // If the form becomes valid and we're on this step, mark as completed
-  //   if (isValid && !completedSteps.includes(stepIndex) {
-  //     setCompletedSteps([...completedSteps, stepIndex]);
-  //   }
-  // };
+    //   if (isValid && !completedSteps.includes(stepIndex) {
+    //     setCompletedSteps([...completedSteps, stepIndex]);
+    //   }
+    // };
 
-
-  if (isValid && !completedSteps.includes(stepIndex)) {
-    setCompletedSteps([...completedSteps, stepIndex]);
-  }
-};  
+    if (isValid && !completedSteps.includes(stepIndex)) {
+      setCompletedSteps([...completedSteps, stepIndex]);
+    }
+  };
 
   const stepIcons = [descriptionIcon, categoryIcon, photosIcon, deliveryIcon];
 
@@ -77,10 +82,10 @@ const ProgressTracker = () => {
                     <div
                       className={`w-10 h-10 flex items-center justify-center rounded-full ${
                         index === activeStep
-                          ? "bg-maroon" 
+                          ? 'bg-maroon'
                           : completedSteps.includes(index)
-                          ? "bg-green-500" 
-                          : "bg-white" 
+                          ? 'bg-green-500'
+                          : 'bg-white'
                       }`}
                     >
                       <img
@@ -88,9 +93,9 @@ const ProgressTracker = () => {
                         alt={step}
                         className={`w-4 h-4 ${
                           index === activeStep || completedSteps.includes(index)
-                            ? "filter brightness-0 invert"
-                            : ""
-                        }`} 
+                            ? 'filter brightness-0 invert'
+                            : ''
+                        }`}
                       />
                     </div>
 
@@ -98,8 +103,8 @@ const ProgressTracker = () => {
                     <p
                       className={`text-sm mt-2 font-bold ${
                         completedSteps.includes(index)
-                          ? "text-green-500" 
-                          : "text-black"
+                          ? 'text-green-500'
+                          : 'text-black'
                       }`}
                     >
                       {step}
@@ -111,7 +116,7 @@ const ProgressTracker = () => {
                     <div className="flex items-center justify-center mx-1 relative top-[-12px]">
                       <div
                         className="w-12 h-0.5 border-t-2 border-dotted border-red-500"
-                        style={{ borderSpacing: "2px" }}
+                        style={{ borderSpacing: '2px' }}
                       />
                     </div>
                   )}
@@ -123,29 +128,29 @@ const ProgressTracker = () => {
             {activeStep === 0 && (
               <Description
                 activeStep={activeStep}
-                handleStepChange={handleStepChange}
                 updateFormValidity={updateFormValidity}
+                handleStepChange={handleStepChange}
               />
             )}
             {activeStep === 1 && (
               <Categories
                 activeStep={activeStep}
-                handleStepChange={handleStepChange}
                 updateFormValidity={updateFormValidity}
+                handleStepChange={handleStepChange}
               />
             )}
             {activeStep === 2 && (
               <Photos
                 activeStep={activeStep}
-                handleStepChange={handleStepChange}
                 updateFormValidity={updateFormValidity}
+                handleStepChange={handleStepChange}
               />
             )}
             {activeStep === 3 && (
               <Delivery
                 activeStep={activeStep}
-                handleStepChange={handleStepChange}
                 updateFormValidity={updateFormValidity}
+                handleStepChange={handleStepChange}
               />
             )}
 
@@ -156,19 +161,21 @@ const ProgressTracker = () => {
                 disabled={activeStep === 0}
                 className={`px-3 py-2 rounded-lg transition duration-300 ${
                   activeStep === 0
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                 }`}
               >
                 Previous
               </button>
               <button
                 onClick={() => handleStepChange(activeStep + 1)}
-                disabled={!formValidity[activeStep] || activeStep === steps.length - 1}
+                disabled={
+                  !formValidity[activeStep] || activeStep === steps.length - 1
+                }
                 className={`px-6 py-2 rounded-lg transition duration-300 ${
                   !formValidity[activeStep] || activeStep === steps.length - 1
-                    ? "bg-blue-300 text-white cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
+                    ? 'bg-blue-300 text-white cursor-not-allowed'
+                    : 'bg-blue-500 text-white hover:bg-blue-600'
                 }`}
               >
                 Next

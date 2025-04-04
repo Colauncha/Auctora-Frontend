@@ -1,34 +1,38 @@
-import { useState } from "react";
-import { PropTypes } from "prop-types";
+import { useState } from 'react';
+import { PropTypes } from 'prop-types';
+import Loader from '../../../assets/loader2';
 
-const Description = ({ handleStepChange, activeStep }) => {
+const Description = ({ handleStepChange, activeStep, updateFormValidity }) => {
+  const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState({
     start_price: 0,
     current_price: 0,
     buy_now: false,
     buy_now_price: 0,
     start_date: new Date().toISOString(),
-    end_date: "",
-    users_id: sessionStorage.getItem("_user") ? JSON.parse(sessionStorage.getItem("_user")).id : "",
+    end_date: '',
+    users_id: sessionStorage.getItem('_user')
+      ? JSON.parse(sessionStorage.getItem('_user')).id
+      : '',
     private: false,
     participants: [],
-    status: "pending"
+    status: 'pending',
   });
 
   const [item, setItem] = useState({
-    name: "",
-    description: "",
-    category_id: "",
-    sub_category_id: ""
+    name: '',
+    description: '',
+    category_id: '',
+    sub_category_id: '',
   });
 
   // Handle change for item state object
   const handleChange = (e) => {
     console.log(e.target.value);
     const { name, value, type, checked } = e.target;
-    setItem(prev => ({
+    setItem((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -42,22 +46,21 @@ const Description = ({ handleStepChange, activeStep }) => {
     console.log(e.target.value);
     const { name, value, type, checked } = e.target;
     if (name === 'start_price') {
-      setProduct(prev => ({
+      setProduct((prev) => ({
         ...prev,
         [name]: value,
-        current_price: value
+        current_price: value,
       }));
     } else if (name === 'start_date' || name === 'end_date') {
       let value_ = new Date(value);
-      setProduct(prev => ({
+      setProduct((prev) => ({
         ...prev,
-        [name]: value_.toISOString()
+        [name]: value_.toISOString(),
       }));
-
     }
-    setProduct(prev => ({
+    setProduct((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -73,7 +76,9 @@ const Description = ({ handleStepChange, activeStep }) => {
             <div className="flex flex-col space-y-4">
               {/* Product Name */}
               <div>
-                <label className="block text-black font-semibold">Product name</label>
+                <label className="block text-black font-semibold">
+                  Product name
+                </label>
                 <input
                   type="text"
                   name="name"
@@ -83,12 +88,16 @@ const Description = ({ handleStepChange, activeStep }) => {
                   className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
                   maxLength={60}
                 />
-                <p className="text-sm text-gray-500 mt-1">{item.name.length}/60</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {item.name.length}/60
+                </p>
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-black font-semibold">Description</label>
+                <label className="block text-black font-semibold">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   placeholder="Enter product details..."
@@ -97,20 +106,32 @@ const Description = ({ handleStepChange, activeStep }) => {
                   className="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-gray-100 h-60"
                   maxLength={1200}
                 />
-                <p className="text-sm text-gray-500 mt-1">{item.description.length}/1200</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {item.description.length}/1200
+                </p>
               </div>
 
-              <button
-                // onClick={() => handleStepChange(activeStep + 1)} 
-                onClick={() => {
-                  sessionStorage.setItem("product", JSON.stringify({ ...product, item }));
-                  handleStepChange(activeStep + 1)
-                }}
-                type="button"
-                className="w-1/3 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
-              >
-                Next
-              </button>
+              <div className="flex flex-row space-y-2.5 gap-4">
+                <button
+                  onClick={() => {
+                    setLoading(true);
+                    sessionStorage.setItem(
+                      'product',
+                      JSON.stringify({ ...product, item }),
+                    );
+                    setTimeout(() => {
+                      setLoading(false);
+                      updateFormValidity(activeStep, true);
+                      handleStepChange(activeStep + 1);
+                    }, 1000);
+                  }}
+                  type="button"
+                  className="flex flex-row item-center justify-evenly w-1/3 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
+                >
+                  Next
+                </button>
+                {loading && <Loader />}
+              </div>
             </div>
 
             {/* Right Side - Units, Dimensions, & Price */}
@@ -185,7 +206,9 @@ const Description = ({ handleStepChange, activeStep }) => {
 
               {/* Price */}
               <div>
-                <label className="block text-black font-semibold">Initial price</label>
+                <label className="block text-black font-semibold">
+                  Initial price
+                </label>
                 <input
                   type="number"
                   name="start_price"
@@ -195,8 +218,8 @@ const Description = ({ handleStepChange, activeStep }) => {
                   className="w-2/4 mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
                 />
               </div>
-               {/* Buy Now Checkbox and Conditional Price */}
-               <div>
+              {/* Buy Now Checkbox and Conditional Price */}
+              <div>
                 <label className="block text-black font-semibold">
                   <input
                     type="checkbox"
@@ -207,10 +230,12 @@ const Description = ({ handleStepChange, activeStep }) => {
                   />
                   Buy Now
                 </label>
-                
+
                 {product.buy_now && (
                   <div className="mt-2">
-                    <label className="block text-black font-semibold">Buy Now Price</label>
+                    <label className="block text-black font-semibold">
+                      Buy Now Price
+                    </label>
                     <input
                       type="number"
                       name="buy_now_price"
@@ -232,8 +257,6 @@ const Description = ({ handleStepChange, activeStep }) => {
                   />
                   Start Date
                 </label>
-                
-                
               </div>
               <div>
                 <label className="block text-black font-semibold">
@@ -245,8 +268,6 @@ const Description = ({ handleStepChange, activeStep }) => {
                   />
                   End Date
                 </label>
-                
-                
               </div>
             </div>
           </form>
@@ -259,6 +280,7 @@ const Description = ({ handleStepChange, activeStep }) => {
 Description.propTypes = {
   handleStepChange: PropTypes.func.isRequired,
   activeStep: PropTypes.number.isRequired,
+  updateFormValidity: PropTypes.func.isRequired,
 };
 
 export default Description;

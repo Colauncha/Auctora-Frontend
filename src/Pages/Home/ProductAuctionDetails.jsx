@@ -57,6 +57,7 @@ const ProductAuctionDetails = () => {
 
   // Optimized countdown timer
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchSellerData = async (sellers_id) => {
       const seller = await runFetch({
         endpoint: `${endpoint}users/retrieve/${sellers_id}`,
@@ -171,7 +172,7 @@ const ProductAuctionDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 mb-40">
+    <div className="min-h-screen bg-gray-50 mb-40" id="Top">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
