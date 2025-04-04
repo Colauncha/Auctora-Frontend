@@ -95,7 +95,7 @@ const App = () => {
           }
         />
         <Route
-          path="/product-detials/:id"
+          path="/product-details/:id"
           element={
             <ProtectedRoute>
               {' '}

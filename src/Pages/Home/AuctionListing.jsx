@@ -401,7 +401,7 @@ const AuctionListing = () => {
                 sellerName={item.seller}
                 price={item.price}
                 countDown={item.timeLeft}
-                to={`/product-detials/${item.slug}`}
+                to={`/product-details/${item.slug}/#Top`}
                 className="w-full max-w-[400px] min-h-[500px]"
               />{' '}
             </div>

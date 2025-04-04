@@ -1,18 +1,18 @@
 .loader {
-    border: 4px solid rgba(0, 0, 0, .1);
+    border: 4px solid rgba(255, 255, 255, 0.70);
     border-left-color: transparent;
     border-radius: 50%;
   }
 
   .loader {
-    border: 4px solid rgba(0, 0, 0, .1);
+    border: 4px solid rgb(144, 44, 63, 0.5);
     border-left-color: transparent;
     width: 36px;
     height: 36px;
   }
 
   .loader {
-    border: 4px solid rgba(0, 0, 0, .1);
+    border: 4px solid rgb(144, 44, 63);
     border-left-color: transparent;
     width: 36px;
     height: 36px;
