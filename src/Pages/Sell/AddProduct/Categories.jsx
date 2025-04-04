@@ -84,195 +84,122 @@ const Categories = ({ handleStepChange, activeStep }) => {
   };
 
   return (
-    <div className="bg-[#F2F0F1] min-h-screen w-full">
-      <div className="formatter format">
-        <div className="bg-white rounded-lg py-6 px-10 mb-20 mt-4">
-          {/* Header */}
-          <h2 className="w-full font-bold mb-6">
-            Select the category your goods belong to
-          </h2>
-
-          {/* Categories Section */}
-          <section className="flex flex-nowrap justify-between items-start content-start w-full h-[80vh] overflow-y-hidden overflow-x-auto gap-3 format">
-            {/* First Column */}
-            <div className="w-[750px] h-[460px] bg-white py-7 px-6">
-              {[
-                'Electronics',
-                'Fashion',
-                'Home and Garden',
-                'Supermarket',
-                'Beauty',
-                'Culture',
-                'Sports and tourism',
-                'Automotive',
-                'Properties',
-              ].map((category, index) => (
-                <div key={index} className="flex flex-row items-center mb-5">
-                  <p className="text-[16px] text-black w-[190px]">{category}</p>
-                  <img src={arrowright} alt="" className="w-3 h-3" />
-                </div>
-              ))}
+    <div className="bg-[#F2F0F1] min-h-screen w-full py-8">
+      <div className="formatter mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="md:grid md:grid-cols-3 md:gap-6 p-6">
+            {/* First Column (Main Categories - visible on larger screens) */}
+            <div className="hidden md:block bg-white p-6 border-r border-gray-200">
+              <h2 className="text-lg font-semibold mb-6 text-gray-800">
+                Select Category
+              </h2>
+              <div className="h-[400px] overflow-y-auto">
+                {[
+                  'Electronics',
+                  'Fashion',
+                  'Home and Garden',
+                  'Supermarket',
+                  'Beauty',
+                  'Culture',
+                  'Sports and Tourism',
+                  'Automotive',
+                  'Properties',
+                ].map((category, index) => (
+                  <button
+                    key={index}
+                    className="flex items-center justify-between w-full px-4 py-3 mb-2 text-left rounded-md hover:bg-gray-100 focus:outline-none transition"
+                  >
+                    <span className="text-sm md:text-base text-gray-800">
+                      {category}
+                    </span>
+                    <img src={arrowright} alt="arrow" className="w-4 h-4" />
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Second Column */}
-            <div className="w-[750px] h-[460px] bg-white p-5">
+            {/* Second Column (Subcategories) */}
+            <div className="md:col-span-2 bg-white p-5">
+              <h2 className="block md:hidden text-lg font-semibold mb-4 text-gray-800">
+                Select Subcategory
+              </h2>
               {catLoading ? (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex items-center justify-center h-[300px]">
                   <Loader />
                 </div>
               ) : (
-                categories.map((category, index) => (
-                  <div key={index} className="mb-4">
-                    <p
-                      className={`text-[16px] text-black ${
-                        index > 0 ? 'mt-8' : ''
-                      } mb-2 font-bold`}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[60vh] md:max-h-[400px]">
+                  {categories.map((category, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 p-4 rounded-md shadow-sm"
                     >
-                      {category.name}
-                    </p>
-                    {category.subcategories.map((item, itemIndex) => (
-                      <div
-                        key={itemIndex}
-                        className="flex flex-row gap-4 py-1 items-center"
-                      >
-                        <input
-                          type="checkbox"
-                          className="w-5 h-5 border rounded-full border-gray-200 accent-maroon"
-                          checked={checkedItems[item.name] || false}
-                          onChange={() =>
-                            handleCheckboxChange({
-                              ...item,
-                              category_id: category.id,
-                            })
-                          }
-                        />
-                        <p>{item.name}</p>
-                      </div>
-                    ))}
-                  </div>
-                ))
+                      <p className="text-sm md:text-base text-black font-bold mb-2">
+                        {category.name}
+                      </p>
+                      {category.subcategories.map((item, itemIndex) => (
+                        <div
+                          key={itemIndex}
+                          className="flex items-center gap-2 py-1"
+                        >
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 md:w-5 md:h-5 border rounded-full border-gray-200 accent-maroon"
+                            checked={checkedItems[item.name] || false}
+                            onChange={() =>
+                              handleCheckboxChange({
+                                ...item,
+                                category_id: category.id,
+                              })
+                            }
+                          />
+                          <p className="text-xs md:text-sm">{item.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
+          </div>
 
-            {/* Third Column */}
-            {/* <div className="w-[800px] h-[460px] bg-white p-5">
-              {categoriesComputer.map((category, index) => (
-                <div key={index} className="mb-4">
-                  <p
-                    className={`text-[16px] text-black ${
-                      index > 0 ? "mt-8" : ""
-                    } mb-2 font-bold`}
-                  >
-                    {category.title}
-                  </p>
-                  {category.items.map((item, itemIndex) => (
-                    <div
-                      key={itemIndex}
-                      className="flex flex-row gap-4 py-1 items-center"
-                    >
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 border rounded-full border-gray-200 accent-maroon"
-                        checked={checkedItems[item.name] || false}
-                        onChange={() => handleCheckboxChange(item)}
-                      />
-                      <p>{item}</p>
-                    </div>
-                  ))}
-                </div>
+          {/* Selected Categories and Next Button */}
+          <div className="bg-gray-100 p-6 rounded-b-lg">
+            <p className="font-semibold mb-4">
+              Selected category:{' '}
+              {selectedCategories.map((category) => (
+                <span
+                  key={category.id}
+                  className="inline-flex items-center bg-white rounded-full px-3 py-1 mr-2 text-xs md:text-sm"
+                >
+                  {category.name}
+                  <img
+                    src={x}
+                    alt="Remove"
+                    className="w-3 h-3 ml-2 cursor-pointer"
+                    onClick={() => handleRemoveCategory(category)}
+                  />
+                </span>
               ))}
-            </div> */}
+            </p>
 
-            {/* Fourth Column */}
-            {/* <div className="w-[800px] h-[460px] bg-white p-5">
-              {categoriesTV.map((category, index) => (
-                <div key={index} className="mb-4">
-                  <p
-                    className={`text-[16px] text-black ${
-                      index > 0 ? "mt-8" : ""
-                    } mb-2 font-bold`}
-                  >
-                    {category.title}
-                  </p>
-                  {category.items.map((item, itemIndex) => (
-                    <div
-                      key={itemIndex}
-                      className="flex flex-row gap-4 py-1 items-center"
-                    >
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 border rounded-full border-gray-200 accent-maroon"
-                        checked={checkedItems[item.name] || false}
-                        onChange={() => handleCheckboxChange(item)}
-                      />
-                      <p>{item}</p>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div> */}
-
-            {/* Fifth Column */}
-            {/* <div className="w-[950px] h-[460px] bg-white p-5">
-              {categoriesConsoles.map((category, index) => (
-                <div key={index} className="mb-4">
-                  <p
-                    className={`text-[16px] text-black ${
-                      index > 0 ? "mt-8" : ""
-                    } mb-2 font-bold`}
-                  >
-                    {category.title}
-                  </p>
-                  {category.items.map((item, itemIndex) => (
-                    <div
-                      key={itemIndex}
-                      className="flex flex-row gap-4 py-1 items-center"
-                    >
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 border rounded-full border-gray-200 accent-maroon"
-                        checked={checkedItems[item.name] || false}
-                        onChange={() => handleCheckboxChange(item)}
-                      />
-                      <p>{item}</p>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div> */}
-          </section>
-
-          <p className="font-bold mb-6 mt-[-10px]">
-            Selected categories:{' '}
-            {selectedCategories.map((category) => (
-              <span
-                key={category}
-                className="inline-flex items-center bg-gray-100 rounded-full px-3 py-1 m-1"
+            <div className="flex items-center justify-end">
+              <button
+                onClick={async () => {
+                  setLoading(true);
+                  (await submit())
+                    ? handleStepChange(activeStep + 1)
+                    : () => {};
+                  setLoading(false);
+                }}
+                type="button"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
+                disabled={selectedCategories.length === 0 || loading}
               >
-                {category.name}
-                <img
-                  src={x}
-                  alt="Remove"
-                  className="w-3 h-3 ml-2 cursor-pointer"
-                  onClick={() => handleRemoveCategory(category)}
-                />
-              </span>
-            ))}
-          </p>
-
-          <div className="flex flex-row items-center justify-center gap-5 space-y-5 w-max mx-auto">
-            <button
-              onClick={async () => {
-                setLoading(true);
-                (await submit()) ? handleStepChange(activeStep + 1) : () => {};
-                setLoading(false);
-              }}
-              type="button"
-              className="mt-6 w-40 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon mx-auto block"
-            >
-              Next
-            </button>
-            {loading && <Loader />}
+                Next
+                {loading && <Loader className="ml-2 w-5 h-5" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
