@@ -13,6 +13,7 @@ import { BsLightningCharge, BsStarFill } from 'react-icons/bs';
 import { FaEthereum } from 'react-icons/fa';
 import { capitalize, currencyFormat, current } from '../../utils';
 import style from './css/ProductAuctionDetails.module.css';
+import Loading from '../../assets/loader2';
 
 const ProductAuctionDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -21,6 +22,9 @@ const ProductAuctionDetails = () => {
   const [bids, setBids] = useState(null);
   const [biddersPrice, setBiddersPrice] = useState(0);
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [sellerLoading, setSellerLoading] = useState(false);
+  const [biddersLoading, setBiddersLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     days: 2,
     hours: 14,
@@ -58,12 +62,16 @@ const ProductAuctionDetails = () => {
   // Optimized countdown timer
   useEffect(() => {
     window.scrollTo(0, 0);
+    setSellerLoading(true);
+    setBiddersLoading(true);
+
     const fetchSellerData = async (sellers_id) => {
       const seller = await runFetch({
         endpoint: `${endpoint}users/retrieve/${sellers_id}`,
         method: 'GET',
       });
       setSeller(seller);
+      setSellerLoading(false);
     };
 
     const fetchBiddersData = async (auction_id) => {
@@ -74,9 +82,11 @@ const ProductAuctionDetails = () => {
         method: 'GET',
       });
       setBids(bids);
+      setBiddersLoading(false);
     };
 
     const fetchAuctionData = async () => {
+      setLoading(true);
       const data = await runFetch({
         endpoint: `${endpoint}auctions/${id}`,
         method: 'GET',
@@ -93,6 +103,7 @@ const ProductAuctionDetails = () => {
           data?.item[0]?.image_link_4?.link || null,
         ].filter((val) => val !== null),
       );
+      setLoading(false);
       await fetchBiddersData(data.id);
       await fetchSellerData(data.users_id);
     };
@@ -178,13 +189,19 @@ const ProductAuctionDetails = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Image Gallery */}
           <div className="lg:w-2/3">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden mb-4 relative">
-              <img
-                src={images[selectedImage]}
-                alt={auction?.item[0]?.name}
-                className="w-full h-96 object-contain"
-                loading="lazy"
-              />
+            <div className="flex items-center bg-[#252525] rounded-xl shadow-md overflow-hidden mb-4 relative">
+              {loading ? (
+                <div className="w-full h-96 flex items-center justify-center">
+                  <Loading />
+                </div>
+              ) : (
+                <img
+                  src={images[selectedImage]}
+                  alt={auction?.item[0]?.name}
+                  className="w-full h-96 object-contain"
+                  loading="lazy"
+                />
+              )}
               <div className="absolute bottom-4 left-4 bg-maroon bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
                 {selectedImage + 1}/{images.length}
               </div>
@@ -295,6 +312,10 @@ const ProductAuctionDetails = () => {
                   <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
                     <div>No active Bidders</div>
                   </div>
+                ) : biddersLoading ? (
+                  <div className="flex items-center justify-center h-24">
+                    <Loading />
+                  </div>
                 ) : (
                   bids?.map((bid_) => (
                     <div
@@ -361,7 +382,7 @@ const ProductAuctionDetails = () => {
               {/* Seller Information */}
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <h2 className="text-xl font-bold mb-4 text-maroon">
-                  Seller Information
+                  Sellers Information
                 </h2>
                 <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
                   <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
@@ -372,7 +393,7 @@ const ProductAuctionDetails = () => {
                     <div className="flex items-center">
                       <StarRating rating={seller_?.rating} />
                       <span className="text-gray-500 text-sm ml-2">
-                        {seller_?.rating}
+                        {sellerLoading ? <Loading /> : `${seller_?.rating}`}
                       </span>
                     </div>
                   </div>
