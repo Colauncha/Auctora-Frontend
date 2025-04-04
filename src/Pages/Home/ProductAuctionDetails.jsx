@@ -27,7 +27,10 @@ const ProductAuctionDetails = () => {
     minutes: 23,
     seconds: 45,
   });
-  const id = useLocation().pathname.split('/').pop();
+  const id =
+    useLocation().pathname.split('/')[
+      useLocation().pathname.split('/').length - 2
+    ];
   const endpoint = current;
 
   const runFetch = async ({
