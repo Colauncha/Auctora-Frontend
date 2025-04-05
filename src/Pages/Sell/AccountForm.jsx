@@ -2,33 +2,42 @@ import { useState, useEffect } from "react";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { current } from "../../utils";
+import Loader from '../../assets/loader2';
 
 const AccountForm = () => {
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState(null);
-  const [acctNumber, setAcctNumber] = useState("");
-  const [acctName, setAcctName] = useState("");
+  const [acctNumber, setAcctNumber] = useState('');
+  const [acctName, setAcctName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [nextLoading, setNextLoading] = useState(false);
   const navigate = useNavigate();
 
-  const fetchData = async ({ data = null, method = "GET", params = null } = {}) => {
+  const fetchData = async ({
+    data = null,
+    method = 'GET',
+    params = null,
+  } = {}) => {
     let endpoint = `${current}misc/banks`;
 
-    if (method === "GET" && params) {
-      endpoint = `${current}users/transactions/resolve?account_number=${encodeURIComponent(params.acctN)}&bank_code=${encodeURIComponent(params.bankCode)}`;
-    } else if (method !== "GET") {
+    if (method === 'GET' && params) {
+      endpoint = `${current}users/transactions/resolve?account_number=${encodeURIComponent(
+        params.acctN,
+      )}&bank_code=${encodeURIComponent(params.bankCode)}`;
+    } else if (method !== 'GET') {
       endpoint = `${current}users/transactions/transfer_recipient`;
     }
 
-    console.log("Fetching:", endpoint);
+    console.log('Fetching:', endpoint);
 
     try {
       const response = await fetch(endpoint, {
         method,
         body: data ? JSON.stringify(data) : null,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -36,16 +45,17 @@ const AccountForm = () => {
       }
 
       const result = await response.json();
-      console.log("Success:", result);
+      console.log('Success:', result);
       return result.data;
     } catch (error) {
-      console.error("API Error:", error);
+      console.error('API Error:', error);
       return null;
     }
   };
 
   useEffect(() => {
-    const newAcct = JSON.parse(sessionStorage.getItem('newAccount'))
+    setLoading(true);
+    const newAcct = JSON.parse(sessionStorage.getItem('newAccount'));
 
     const loadBanks = async () => {
       const data = await fetchData();
@@ -53,14 +63,21 @@ const AccountForm = () => {
     };
 
     if (!newAcct) {
-      const { acct_name, acct_no, bank_code } = JSON.parse(sessionStorage.getItem('_user'));
-      setAcctName(acct_name);
-      setAcctNumber(acct_no);
-      setSelectedBank(bank_code);
-      loadBanks();
-      return
+      const { acct_name, acct_no, bank_code } = JSON.parse(
+        sessionStorage.getItem('_user'),
+      );
+      setTimeout(() => {
+        setAcctName(acct_name);
+        setAcctNumber(acct_no);
+        setSelectedBank(bank_code);
+        loadBanks();
+        setLoading(false);
+      }, 1000);
+      return;
     } else {
-      return
+      loadBanks();
+      setLoading(false);
+      return;
     }
   }, []);
 
@@ -69,38 +86,47 @@ const AccountForm = () => {
   };
 
   const resolveRecipient = async () => {
+    setLoading(true);
     if (!acctNumber || !selectedBank) {
-      alert("Please enter account number and select a bank.");
+      alert('Please enter account number and select a bank.');
+      setLoading(false);
       return;
     }
 
     const result = await fetchData({
-      method: "GET",
+      method: 'GET',
       params: { acctN: acctNumber, bankCode: selectedBank },
     });
 
     if (result?.account_name) {
       setAcctName(result.account_name);
     } else {
-      alert("Account name could not be resolved.");
+      alert('Account name could not be resolved.');
     }
+    setLoading(false);
   };
 
   const goToNextPage = async () => {
+    setNextLoading(true);
     if (!acctNumber || !selectedBank) {
-      alert("Please enter account number and select a bank.");
+      alert('Please enter account number and select a bank.');
+      setNextLoading(false);
       return;
     }
 
     const result = await fetchData({
-      method: "POST",
+      method: 'POST',
       data: { account_number: acctNumber, bank_code: selectedBank },
     });
 
     if (result) {
-      !JSON.parse(sessionStorage.getItem("newAccount")) ? navigate('/dashboard') : navigate("/Verification");
+      !JSON.parse(sessionStorage.getItem('newAccount'))
+        ? navigate('/dashboard')
+        : navigate('/Verification');
+      setNextLoading(false);
     } else {
-      alert("Account details not saved.");
+      alert('Account details not saved.');
+      setNextLoading(false);
     }
   };
 
@@ -131,10 +157,10 @@ const AccountForm = () => {
                       type="text"
                       id="name"
                       placeholder="Your name"
-                      value={acctName || ""}
+                      value={acctName || ''}
                       readOnly
                       className={`${
-                        acctName ? "block" : "hidden"
+                        acctName ? 'block' : 'hidden'
                       } w-full bg-gray-200 border border-gray-300 text-gray-700 py-3 px-4 rounded focus:outline-none focus:bg-white focus:border-red-500`}
                     />
                   </div>
@@ -143,7 +169,7 @@ const AccountForm = () => {
                 <div className="mb-6">
                   <select
                     id="bank"
-                    value={selectedBank || ""}
+                    value={selectedBank || ''}
                     onChange={handleBankChange}
                     className="py-3 px-4 border border-gray-300 rounded focus:outline-none focus:bg-white focus:ring-red-500 focus:ring-opacity-50 w-full sm:w-96 md:w-[648px] lg:w-[648px]"
                   >
@@ -156,7 +182,7 @@ const AccountForm = () => {
                   </select>
                 </div>
 
-                <div className="flex justify-start gap-10">
+                <div className="flex justify-start gap-5">
                   <button
                     onClick={goToNextPage}
                     type="button"
@@ -171,6 +197,16 @@ const AccountForm = () => {
                   >
                     Confirm Details
                   </button>
+                  {loading && (
+                    <div className="flex justify-center mt-4">
+                      <Loader />
+                    </div>
+                  )}
+                  {nextLoading && (
+                    <div className="flex justify-center mt-4">
+                      <Loader />
+                    </div>
+                  )}
                 </div>
               </form>
             </div>

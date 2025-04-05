@@ -22,7 +22,6 @@ import Notification from "./Pages/Notification/Notification";
 // protected route
 import ProtectedRoute from "./Pages/ProtectedRoute/ProtectedRoute";
 // import GetStarted from "./Pages/Dashboard/GetStarted";
-import ProductPhoto from "./Pages/Dashboard/AddProduct/ProductPhoto";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 
 //Sell Routes
@@ -54,7 +53,6 @@ const App = () => {
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/category" element={<CategoryResult />} />
         <Route path="/category/:slug" element={<DetailPage />} />
-        <Route path="/list" element={<ProductPhoto />} />
         <Route path="/Ongoing-Auction" element={<ViewAll />} />
         <Route
           path="/notification"
