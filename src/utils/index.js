@@ -1,7 +1,8 @@
 const links = {
-  live: "https://api-auctora.vercel.app/api/",
+  live: 'https://api-auctora.vercel.app/api/',
   local: 'http://localhost:8000/api/',
-}
+  host: 'https://biddius.com/api/',
+};
 
 const current = links.live;
 

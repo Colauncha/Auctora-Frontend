@@ -23,13 +23,16 @@ const AuctionListing = () => {
       try {
         const response = await fetch(
           'https://api-auctora.vercel.app/api/landing/trending_auctions',
+          'https://api-auctora.vercel.app/api/landing/trending_auctions',
           {
+            method: 'GET',
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
 
               // Add any required API keys or headers here
             },
+          },
           },
         );
         if (!response.ok) {
@@ -58,8 +61,10 @@ const AuctionListing = () => {
 
         // Log formatted auctions to verify transformation
         console.log('Formatted Auctions:', formattedAuctions);
+        console.log('Formatted Auctions:', formattedAuctions);
         setAuctions(formattedAuctions);
       } catch (err) {
+        console.log('Error fetching auctions:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -70,6 +75,8 @@ const AuctionListing = () => {
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -83,20 +90,27 @@ const AuctionListing = () => {
   const navigate = useNavigate();
 
   const viewAll = () => navigate('/Ongoing-Auction');
+  const viewAll = () => navigate('/Ongoing-Auction');
 
   const location = useLocation();
 
+  const isHomePath = location.pathname === '/';
   const isHomePath = location.pathname === '/';
   if (loading) {
     return (
       <div className="w-full flex justify-center py-8">
         {' '}
+        {' '}
         <div className="w-full max-w-[1280px] px-4 text-center">
+          {' '}
           {' '}
           <div className="animate-pulse flex space-x-4">
             {' '}
+            {' '}
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex-1 space-y-4 py-1">
+                {' '}
+                <div className="h-48 bg-gray-200 rounded"></div>{' '}
                 {' '}
                 <div className="h-48 bg-gray-200 rounded"></div>{' '}
                 <div className="space-y-2">
@@ -104,7 +118,14 @@ const AuctionListing = () => {
                   <div className="h-4 bg-gray-200 rounded"></div>{' '}
                   <div className="h-4 bg-gray-200 rounded w-5/6"></div>{' '}
                 </div>{' '}
+                  {' '}
+                  <div className="h-4 bg-gray-200 rounded"></div>{' '}
+                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>{' '}
+                </div>{' '}
               </div>
+            ))}{' '}
+          </div>{' '}
+        </div>{' '}
             ))}{' '}
           </div>{' '}
         </div>{' '}
@@ -115,13 +136,20 @@ const AuctionListing = () => {
     return (
       <div className="w-full flex justify-center py-8">
         {' '}
+        {' '}
         <div className="w-full max-w-[1280px] px-4 text-center text-red-500">
+          {' '}
+          Error loading auctions: {error}{' '}
           {' '}
           Error loading auctions: {error}{' '}
           <button
             onClick={() => window.location.reload()}
             className="mt-2 px-4 py-2 bg-[#9F3247] text-white rounded"
           >
+            {' '}
+            Retry{' '}
+          </button>{' '}
+        </div>{' '}
             {' '}
             Retry{' '}
           </button>{' '}
@@ -134,7 +162,11 @@ const AuctionListing = () => {
     return (
       <div className="w-full flex justify-center py-8">
         {' '}
+        {' '}
         <div className="w-full max-w-[1280px] px-4 text-center">
+          {' '}
+          No trending auctions available at the moment{' '}
+        </div>{' '}
           {' '}
           No trending auctions available at the moment{' '}
         </div>{' '}
@@ -144,18 +176,24 @@ const AuctionListing = () => {
   return (
     <div className="w-full flex justify-center">
       {' '}
+      {' '}
       <div className="w-full max-w-[1280px] px-4">
+        {' '}
         {' '}
         <div
           className={`grid gap-10 ${
             isHomePath
               ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
               : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
           } `}
         >
           {' '}
+          {' '}
           {displayedCards.map((item, idx) => (
             <div key={idx} className="w-full flex justify-center">
+              {' '}
               {' '}
               <Card
                 imgUrl={item.imgUrl}
@@ -171,28 +209,38 @@ const AuctionListing = () => {
                 to={`/product-details/${item.slug}`}
                 className="w-full max-w-[400px] min-h-[500px]"
               />{' '}
+              />{' '}
             </div>
+          ))}{' '}
+        </div>{' '}
           ))}{' '}
         </div>{' '}
         {isHomePath && !isDesktop && auctions.length > visibleCards && (
           <div className="w-full flex justify-center mt-8">
+            {' '}
             {' '}
             <Button
               label="Load More"
               onClick={loadMore}
               className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] w-[180px] h-[50px] text-white text-center font-medium flex items-center justify-center rounded-full shadow-md hover:scale-105 transition-transform duration-300"
             />{' '}
+            />{' '}
           </div>
+        )}{' '}
         )}{' '}
         {isHomePath && (
           <div className="w-full flex justify-center mt-8">
+            {' '}
             {' '}
             <Button
               label="View All"
               onClick={viewAll}
               className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] w-[180px] h-[50px] text-white text-center font-medium flex items-center justify-center rounded-full shadow-md hover:scale-105 transition-transform duration-300"
             />{' '}
+            />{' '}
           </div>
+        )}{' '}
+      </div>{' '}
         )}{' '}
       </div>{' '}
     </div>
