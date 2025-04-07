@@ -11,7 +11,8 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    cd Auctora-Frontend
+                    pwd
+                    ls -la
                     npm i
                     npm run build
                     sudo rm -rf /var/www/biddius/html/*
