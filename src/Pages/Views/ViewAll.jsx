@@ -33,29 +33,36 @@ const ViewAll = () => {
           </div>
           <div className="w-full lg:w-[70%]">
             <div className="flex items-center justify-between pb-4">
-             <h1 className="text-start text-[#9f3248] font-[700] text-[28px]">
+              <h1 className="text-start text-[#9f3248] font-[700] text-[28px]">
                 Ongoing Auctions
               </h1>
-              {isMobile? <img src={filter_icom} onClick={openModal} className="cursor-pointer"/>
-              :<div className="flex place-items-center">
-                <div className="text-slate-400 text-sm">
-                  Sorted by
-                </div>: 
-                  <span className="font-bold pl-2 text-sm flex gap-1 place-items-center cursor-pointer">Most Popular <FaAngleDown /></span>
-              </div>}
+              {isMobile ? (
+                <img
+                  src={filter_icom}
+                  onClick={openModal}
+                  className="cursor-pointer"
+                />
+              ) : (
+                <div className="flex place-items-center">
+                  <div className="text-slate-400 text-sm">Sorted by</div>:
+                  <span className="font-bold pl-2 text-sm flex gap-1 place-items-center cursor-pointer">
+                    Most Popular <FaAngleDown />
+                  </span>
+                </div>
+              )}
             </div>
             <AuctionListing />
-              <Modal isOpen={modalOpen} onClose={closeModal}>
-                <Slider/>
-              </Modal>
+            <Modal isOpen={modalOpen} onClose={closeModal}>
+              <Slider />
+            </Modal>
           </div>
         </div>
         <>
-        <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
         </>
       </div>
     </div>

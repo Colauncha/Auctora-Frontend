@@ -1,4 +1,4 @@
-import React from "react";
+import { PropTypes } from 'prop-types';
 
 const Pagination = ({ totalPages, currentPage, onPageChange }) => {
   const handlePageClick = (page) => {
@@ -13,7 +13,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
     // Add the first page
     if (currentPage > 3) {
       pages.push(1);
-      if (currentPage > 4) pages.push("...");
+      if (currentPage > 4) pages.push('...');
     }
 
     // Add the current page and its neighbors
@@ -27,7 +27,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 
     // Add the last page
     if (currentPage < totalPages - 2) {
-      if (currentPage < totalPages - 3) pages.push("..");
+      if (currentPage < totalPages - 3) pages.push('..');
       pages.push(totalPages);
     }
 
@@ -42,8 +42,8 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
         disabled={currentPage === 1}
         className={`flex items-center justify-center px-1 lg:px-4 lg:py-2 text-[11px] lg:text-[14px] border rounded-md text-[#7B2334] border-[#7B2334] ${
           currentPage === 1
-            ? "opacity-50 cursor-not-allowed"
-            : "hover:bg-[#7B2334] hover:text-white"
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-[#7B2334] hover:text-white'
         }`}
       >
         &larr; Previous
@@ -51,14 +51,14 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 
       {/* Page Numbers */}
       {renderPageNumbers().map((page, index) =>
-        typeof page === "number" ? (
+        typeof page === 'number' ? (
           <button
             key={index}
             onClick={() => handlePageClick(page)}
             className={`lg:px-4 px-2 text-[10px] lg:text-[14px] lg:py-2 rounded-md ${
               page === currentPage
-                ? "bg-[#7B2334] text-white"
-                : "text-[#7B2334] border border-[#7B2334] hover:bg-[#7B2334] hover:text-white"
+                ? 'bg-[#7B2334] text-white'
+                : 'text-[#7B2334] border border-[#7B2334] hover:bg-[#7B2334] hover:text-white'
             }`}
           >
             {page}
@@ -67,7 +67,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
           <span key={index} className="lg:px-4 lg:py-2 text-[#7B2334]">
             ...
           </span>
-        )
+        ),
       )}
 
       {/* Next Button */}
@@ -76,14 +76,20 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
         disabled={currentPage === totalPages}
         className={`flex items-center justify-center px-1 lg:px-4 lg:py-2 text-[11px] lg:text-[14px] border rounded-md text-[#7B2334] border-[#7B2334] ${
           currentPage === totalPages
-            ? "opacity-50 cursor-not-allowed"
-            : "hover:bg-[#7B2334] hover:text-white"
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:bg-[#7B2334] hover:text-white'
         }`}
       >
         Next &rarr;
       </button>
     </div>
   );
+};
+
+Pagination.propTypes = {
+  totalPages: PropTypes.number.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
 };
 
 export default Pagination;
