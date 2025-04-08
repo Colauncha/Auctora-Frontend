@@ -1,10 +1,10 @@
 const links = {
   live: 'https://api-auctora.vercel.app/api/',
   local: 'http://localhost:8000/api/',
-  host: 'https://biddius.com/api/',
+  host: 'https://api.biddius.com/api/',
 };
 
-const current = links.live;
+const current = links.host;
 
 const capitalize = (s) => {
   if (typeof s !== 'string') return ''
