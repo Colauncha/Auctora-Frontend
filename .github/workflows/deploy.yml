@@ -23,6 +23,7 @@ jobs:
           cd /var/www/biddius || exit 1
           git pull origin main
 
+          ls -la
           cd Auctora-Frontend
           npm install --legacy-peer-deps
           npm run build
