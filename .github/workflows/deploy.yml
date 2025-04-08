@@ -21,11 +21,11 @@ jobs:
         key: ${{ secrets.SERVER_KEY }}
         script: |
           
-          cd /var/www/biddius || exit 1
+          cd /var/www/biddius/Auctora-Frontend || exit 1
           git pull origin main
 
           ls -la
-          cd Auctora-Frontend
+          
           npm install --legacy-peer-deps
           npm run build
 
@@ -33,6 +33,5 @@ jobs:
           sudo rm -rf /var/www/biddius/html/*
           sudo cp -r dist/* /var/www/biddius/html/
 
-          # (Optional) Restart FastAPI service
           sudo systemctl restart biddiusApi.service
         shell: bash -l {0}
