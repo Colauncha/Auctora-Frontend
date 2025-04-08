@@ -40,8 +40,10 @@ import Payment from "./Pages/Payment/Payment";
 import ProductAuctionDetails from "./Pages/Home/ProductAuctionDetails";
 import YourProduct from "./Pages/Sell/AddProduct/YourProduct";
 import AuctionDetails from "./Pages/Sell/AddProduct/AuctionDetails";
+import NotFound from "./Components/NotFound";
 // import AppTest from "./Pages/Payment/AppTest";
 // import ProgressTracker from "./Pages/Sell/ProgressTracker";
+
 
 const App = () => {
   return (
@@ -82,6 +84,7 @@ const App = () => {
         <Route path="/bank-account" element={<AccountForm />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/getstarted" element={<GetStarted />} />
+        <Route path="*" element={<NotFound />} />
 
         {/* Progress Tracker Routes */}
         <Route

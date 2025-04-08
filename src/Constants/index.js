@@ -4,7 +4,7 @@ import notification from "../assets/svg/notification.svg"
 import user from "../assets/icons/user.png";
 import ps_5 from "../assets/uploads/ps_5.png";
 import Nikon from "../assets/uploads/Nikon.png";
-import logo from "../assets/svg/biddiusLogo.svg";
+import logo from "../assets/svg/BiddiusLogo3.svg";
 // import logo from "../assets/icons/Auctora_logo.png";
 // import logo from "../assets/svg/WalletHistory.svg";
 import Fride from "../assets/uploads/Fridge.png";

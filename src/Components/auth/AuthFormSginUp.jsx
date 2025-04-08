@@ -164,3 +164,5 @@ AuthFormSginUp.propTypes = {
 };
 
 export default AuthFormSginUp;
+
+
