@@ -125,24 +125,17 @@ const ProductAuctionDetails = () => {
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      setTimeLeft((prev) => {
-        const totalSeconds =
-          prev.days * days * 86400 +
-          prev.hours * hours * 3600 +
-          prev.minutes * minutes * 60 +
-          prev.seconds * seconds -
-          1;
-
-        if (totalSeconds <= 0) {
+      setTimeLeft(() => {
+        if (distance <= 0) {
           clearInterval(timer);
           return { days: 0, hours: 0, minutes: 0, seconds: 0 };
         }
 
         return {
-          days: Math.floor(totalSeconds / 86400),
-          hours: Math.floor((totalSeconds % 86400) / 3600),
-          minutes: Math.floor((totalSeconds % 3600) / 60),
-          seconds: totalSeconds % 60,
+          days,
+          hours,
+          minutes,
+          seconds,
         };
       });
     }, 1000);
