@@ -4,6 +4,7 @@ import Button from '../../Components/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
 // import useModeStore from "../../Store/Store";
 import { currencyFormat } from '../../utils';
+import { current } from '../../utils';
 
 const AuctionListing = () => {
   // const { isMobile } = useModeStore();
@@ -21,17 +22,14 @@ const AuctionListing = () => {
   useEffect(() => {
     const fetchAuctions = async () => {
       try {
-        const response = await fetch(
-          'https://api-auctora.vercel.app/api/landing/trending_auctions',
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
+        const response = await fetch(`${current}landing/trending_auctions`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
 
-              // Add any required API keys or headers here
-            },
+            // Add any required API keys or headers here
           },
-        );
+        });
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.status}`);
         }
