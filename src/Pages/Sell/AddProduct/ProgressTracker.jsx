@@ -155,7 +155,7 @@ const ProgressTracker = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <button
                 onClick={() => handleStepChange(activeStep - 1)}
                 disabled={activeStep === 0}
@@ -180,7 +180,7 @@ const ProgressTracker = () => {
               >
                 Next
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
