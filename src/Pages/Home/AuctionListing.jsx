@@ -149,7 +149,7 @@ const AuctionListing = () => {
         <div
           className={`grid gap-10 ${
             isHomePath
-              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
               : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
           } `}
         >
@@ -163,13 +163,13 @@ const AuctionListing = () => {
 
                 image
                 itemName={item.name}
-                bid={item.currentBid}
-                bidTimes={item.bidCount}
+                price={item.currentBid}
                 sellerName={item.seller}
-                price={item.price}
+                bid={item.bidCount}
+                bidTimes={item.bidCount}
                 countDown={item.timeLeft}
                 to={`/product-details/${item.slug}`}
-                className="w-full max-w-[400px] min-h-[500px]"
+                className="w-[600px] max-w-[600px] min-h-[500px]"
               />{' '}
             </div>
           ))}{' '}
