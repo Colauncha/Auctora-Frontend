@@ -25,11 +25,12 @@ const ProductAuctionDetails = () => {
   const [loading, setLoading] = useState(false);
   const [sellerLoading, setSellerLoading] = useState(false);
   const [biddersLoading, setBiddersLoading] = useState(false);
+  // const [timeString, setTimeString] = useState('');
   const [timeLeft, setTimeLeft] = useState({
-    days: 2,
-    hours: 14,
-    minutes: 23,
-    seconds: 45,
+    days: 1,
+    hours: 1,
+    minutes: 1,
+    seconds: 1,
   });
   const id = useLocation().pathname.split('/').pop();
   const endpoint = current;
@@ -103,19 +104,33 @@ const ProductAuctionDetails = () => {
           data?.item[0]?.image_link_4?.link || null,
         ].filter((val) => val !== null),
       );
+      // setTimeString(data?.end_date);
       setLoading(false);
       await fetchBiddersData(data.id);
       await fetchSellerData(data.users_id);
     };
     fetchAuctionData();
+  }, [endpoint, id]);
 
+  useEffect(() => {
     const timer = setInterval(() => {
+      if (!auction) return;
+      const endDate = new Date(auction?.end_date);
+      const now = new Date().getTime();
+      const distance = endDate - now;
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
       setTimeLeft((prev) => {
         const totalSeconds =
-          prev.days * 86400 +
-          prev.hours * 3600 +
-          prev.minutes * 60 +
-          prev.seconds -
+          prev.days * days * 86400 +
+          prev.hours * hours * 3600 +
+          prev.minutes * minutes * 60 +
+          prev.seconds * seconds -
           1;
 
         if (totalSeconds <= 0) {
@@ -133,7 +148,7 @@ const ProductAuctionDetails = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [endpoint, id]);
+  }, [auction]);
 
   // Memoized star rating component
   const StarRating = useMemo(() => {
@@ -285,7 +300,7 @@ const ProductAuctionDetails = () => {
               {/* Countdown Timer */}
               <div className="mb-6 bg-red-50 p-4 rounded-lg border border-red-100">
                 <h4 className="text-sm font-medium text-maroon mb-2">
-                  Auction Ending Soon!
+                  Auction Ending In!
                 </h4>
                 <div className="flex justify-between text-center">
                   {Object.entries(timeLeft).map(([unit, value]) => (
