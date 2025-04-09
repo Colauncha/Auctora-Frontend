@@ -16,29 +16,29 @@ const SellAccount = () => {
 
   const navigate = useNavigate();
 
-  // const runFetch = async (cred) => {
-  //   const endpoint = `${current}users/verify_otp`
+  const runFetch = async (cred) => {
+    const endpoint = `${current}users/verify_otp`;
 
-  //   try {
-  //     const response = await fetch(endpoint, {
-  //       method: "POST",
-  //       body: JSON.stringify(cred),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       credentials: "include",
-  //     })
-  //     if (!response.ok) {
-  //       throw new Error(response.json())
-  //     }
-  //     const resp = response.json
-  //     console.log("Success: ", resp)
-  //     return true
-  //   } catch (error) {
-  //     console.error("Error: ", error)
-  //     return false;
-  //   }
-  // }
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(cred),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error(response.json());
+      }
+      const resp = await response.json();
+      console.log('Success: ', resp.success);
+      return resp.success;
+    } catch (error) {
+      console.error('Error: ', error);
+      return false;
+    }
+  };
 
   const Verify = async () => {
     setLoading(true);
@@ -50,12 +50,13 @@ const SellAccount = () => {
     if (otp_.length < 6) {
       alert('OTP must be six characters');
     } else {
-      setTimeout(() => {
+      setTimeout(async () => {
         console.log(cred);
-        // await runFetch(cred)
-        sessionStorage.removeItem('email-otp');
-        setLoading(false);
-        navigate('/update-profile');
+        if (await runFetch(cred)) {
+          sessionStorage.removeItem('email-otp');
+          setLoading(false);
+          navigate('/update-profile');
+        }
       }, 2000);
     }
   };
