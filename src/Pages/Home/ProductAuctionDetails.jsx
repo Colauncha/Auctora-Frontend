@@ -261,7 +261,7 @@ const ProductAuctionDetails = () => {
 
               {/* Price Section */}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex flex-col gap-2 justify-center items-start mb-3">
                   <div>
                     <p className="text-sm text-gray-500">Current Bid</p>
                     <p className="text-2xl font-bold text-gray-900 flex items-center">
@@ -269,9 +269,9 @@ const ProductAuctionDetails = () => {
                       {currencyFormat(auction?.current_price)}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div>
                     <p className="text-sm text-gray-500">Buy Now</p>
-                    <p className="text-2xl font-bold text-green-600 flex items-center justify-end">
+                    <p className="text-2xl font-bold text-green-600 flex items-center">
                       <FaEthereum className="text-green-500 mr-1" />
                       {currencyFormat(auction?.buy_now_price)}
                     </p>
