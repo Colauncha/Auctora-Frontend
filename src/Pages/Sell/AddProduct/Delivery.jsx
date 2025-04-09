@@ -1,24 +1,35 @@
 
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import Loader from '../../../assets/loader2';
 
 const Delivery = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [shippingDate, setShippingDate] = useState("");
+  const [shippingDate, setShippingDate] = useState('');
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleOptionChange = (option) => {
     setSelectedOptions((prev) =>
-      prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]
+      prev.includes(option)
+        ? prev.filter((item) => item !== option)
+        : [...prev, option],
     );
   };
 
+  const Next = () => {
+    setLoading(true);
+    setTimeout(() => {
+      navigate('/product-success');
+    }, 1500);
+  };
+
   return (
-    // <div className="bg-gray-200 p-6 rounded-lg shadow-md">
-    <div className="bg-[#F2F0F1] min-h-screen w-full">
+    <div className="bg-[#F2F0F1] min-h-screen w-full flex items-center justify-center">
       <div className="formatter">
         <div className=" bg-white rounded-lg p-10 mb-4 mt-4">
           {/* Header */}
 
-          {/* <div className="w-full max-w-full mx-auto p-6 bg-white rounded-lg"> */}
           <h4 className="w-full max-w-full text-xl font-bold mb-4">
             Select delivery options
           </h4>
@@ -58,18 +69,24 @@ const Delivery = () => {
             />
           </div>
 
-          <button
-            //   onClick={Next}
-            // onClick={() => handleStepChange(activeStep + 1)}
-            type="button"
-            className="mt-6 w-40 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon mx-auto block"
-          >
-            Next
-          </button>
+          <div className="flex items-center justify-center gap-4 w-[50%] ml-[25%] space-y-5 mt-6">
+            <button
+              onClick={Next}
+              type="button"
+              className="mt-6 w-40 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
+            >
+              Next
+            </button>
+            {loading && (
+              <div className="flex items-center">
+                <Loader />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Delivery;

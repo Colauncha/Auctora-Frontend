@@ -41,6 +41,7 @@ import ProductAuctionDetails from "./Pages/Home/ProductAuctionDetails";
 import YourProduct from "./Pages/Sell/AddProduct/YourProduct";
 import AuctionDetails from "./Pages/Sell/AddProduct/AuctionDetails";
 import NotFound from "./Components/NotFound";
+import ProductSuccess from './Pages/Sell/AddProduct/ProductSuccess'; 
 // import AppTest from "./Pages/Payment/AppTest";
 // import ProgressTracker from "./Pages/Sell/ProgressTracker";
 
@@ -118,6 +119,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AuctionDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/product-success"
+          element={
+            <ProtectedRoute>
+              <ProductSuccess />
             </ProtectedRoute>
           }
         />

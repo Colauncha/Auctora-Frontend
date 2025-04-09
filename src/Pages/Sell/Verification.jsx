@@ -5,7 +5,7 @@ const Verification = () => {
 
   const navigate = useNavigate();
   const Next = () => {
-    navigate("/Add-Product");
+    navigate('/dashboard');
   };
 
   return (
