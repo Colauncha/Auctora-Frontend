@@ -25,6 +25,10 @@ const ProductAuctionDetails = () => {
   const [loading, setLoading] = useState(false);
   const [sellerLoading, setSellerLoading] = useState(false);
   const [biddersLoading, setBiddersLoading] = useState(false);
+
+  const [buyNowLoading, setBuyNowLoading] = useState(false);
+  const [placeBidLoading, setPlaceBidLoading] = useState(false);
+
   // const [timeString, setTimeString] = useState('');
   const [timeLeft, setTimeLeft] = useState({
     days: 1,
@@ -50,7 +54,9 @@ const ProductAuctionDetails = () => {
         body: data ? JSON.stringify(data) : null,
       });
       if (!response.ok) {
-        throw new Error(`Unable to fetch auction data: ${response.json()}`);
+        throw new Error(
+          `Unable to fetch auction data: ${await response.json()}`,
+        );
       }
       const resp = await response.json();
       return resp.data;
@@ -168,10 +174,13 @@ const ProductAuctionDetails = () => {
   }, []);
 
   const placeBid = async (auction_id, amount) => {
+    setPlaceBidLoading(true);
     if (!amount) {
       alert('Please enter a bid amount');
+      setPlaceBidLoading(false);
       return;
     } else if (amount < auction?.current_price) {
+      setPlaceBidLoading(false);
       alert('Bid amount must be greater than the current price');
       return;
     }
@@ -183,10 +192,62 @@ const ProductAuctionDetails = () => {
       });
       if (resp) {
         console.log(resp);
+        setPlaceBidLoading(false);
+        setBiddersPrice(0);
+        setBids((prevBids) => [
+          ...prevBids,
+          {
+            id: resp.id,
+            username: resp.username,
+            amount: resp.amount,
+          },
+        ]);
+        setAuction((prevAuction) => ({
+          ...prevAuction,
+          current_price: resp.amount,
+        }));
         alert('Bid placed successfully');
       }
     } catch (error) {
+      setPlaceBidLoading(false);
+      alert('An error occurred while processing your request.');
       console.error('An error occured: ', error);
+      return;
+    }
+  };
+
+  const handleBuyNow = async (auction_id) => {
+    setBuyNowLoading(true);
+    try {
+      const resp = await runFetch({
+        endpoint: `${current}auctions/bids/buy_now`,
+        method: 'POST',
+        data: { auction_id },
+      });
+      if (resp) {
+        console.log(resp);
+        setBuyNowLoading(false);
+        setBiddersPrice(0);
+        setBids((prevBids) => [
+          ...prevBids,
+          {
+            id: resp.id,
+            username: resp.username,
+            amount: resp.amount,
+          },
+        ]);
+        setAuction((prevAuction) => ({
+          ...prevAuction,
+          current_price: resp.amount,
+          status: 'Completed',
+        }));
+        alert('Purchase successful');
+      }
+    } catch (error) {
+      setBuyNowLoading(false);
+      alert('An error occurred while processing your request.');
+      console.error('An error occurred: ', error);
+      return;
     }
   };
 
@@ -243,6 +304,41 @@ const ProductAuctionDetails = () => {
                 {auction?.item[0]?.name} - Product Description
               </h3>
               <p className="text-gray-700">{auction?.item[0]?.description}</p>
+            </div>
+
+            {/* Seller Information */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h2 className="text-xl font-bold mb-4 text-maroon">
+                Sellers Information
+              </h2>
+              <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
+                <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
+                  <FiUser className="text-gray-500" size={20} />
+                </div>
+                <div>
+                  <h4 className="font-medium">{seller_?.username}</h4>
+                  <div className="flex items-center">
+                    <StarRating rating={seller_?.rating} />
+                    <span className="text-gray-500 text-sm ml-2">
+                      {sellerLoading ? <Loading /> : `${seller_?.rating}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex flex-col space-y-3 text-sm text-gray-600">
+                <div className="flex items-center">
+                  <FiShield className="text-green-500 mr-2" />
+                  <span>Authenticity Guaranteed</span>
+                </div>
+                <div className="flex items-center">
+                  <FiTruck className="text-blue-500 mr-2" />
+                  <span>Free Shipping</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -355,55 +451,38 @@ const ProductAuctionDetails = () => {
                   aria-label="Bid amount"
                   onChange={(e) => setBiddersPrice(e.target.value)}
                 />
-                <button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors"
-                  aria-label="Place a bid"
-                  onClick={() => placeBid(auction?.id, biddersPrice)} // To be updated
-                >
-                  <BsLightningCharge className="mr-2" />
-                  Place Bid
-                </button>
-                <button
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors"
-                  aria-label="Buy now"
-                  onClick={() => {}}
-                >
-                  <FiCheck className="mr-2" />
-                  Buy Now
-                </button>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex flex-col space-y-3 text-sm text-gray-600">
-                  <div className="flex items-center">
-                    <FiShield className="text-green-500 mr-2" />
-                    <span>Authenticity Guaranteed</span>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors"
+                      aria-label="Place a bid"
+                      disabled={placeBidLoading || buyNowLoading}
+                      onClick={() => placeBid(auction?.id, biddersPrice)} // To be updated
+                    >
+                      <BsLightningCharge className="mr-2" />
+                      Place Bid
+                    </button>
+                    {placeBidLoading && (
+                      <div className="ml-2 transition-opacity duration-300 ease-in-out opacity-100">
+                        <Loading />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center">
-                    <FiTruck className="text-blue-500 mr-2" />
-                    <span>Free Shipping</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Seller Information */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <h2 className="text-xl font-bold mb-4 text-maroon">
-                  Sellers Information
-                </h2>
-                <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
-                  <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
-                    <FiUser className="text-gray-500" size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">{seller_?.username}</h4>
-                    <div className="flex items-center">
-                      <StarRating rating={seller_?.rating} />
-                      <span className="text-gray-500 text-sm ml-2">
-                        {sellerLoading ? <Loading /> : `${seller_?.rating}`}
-                      </span>
-                    </div>
+                  <div className="flex items-center justify-between transition-gap">
+                    <button
+                      className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-colors"
+                      aria-label="Buy now"
+                      disabled={buyNowLoading || placeBidLoading}
+                      onClick={() => handleBuyNow(auction?.id)} // To be updated
+                    >
+                      <FiCheck className="mr-2" />
+                      Buy Now
+                    </button>
+                    {buyNowLoading && (
+                      <div className="ml-2 transition-opacity duration-300 ease-in-out opacity-100">
+                        <Loading />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
