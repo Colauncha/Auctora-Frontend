@@ -20,7 +20,8 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_KEY }}
         script: |
-          
+
+          cd /var/www/biddius/Auctora-Frontend || exit 1
           git reset --hard HEAD
           git clean -fd
           git pull --ff-only origin main
