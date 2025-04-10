@@ -70,13 +70,11 @@ const Nav = () => {
 
   return (
     <>
-      <div 
+      <div
         ref={navRef}
         className={`fixed left-0 right-0 z-50 bg-white border-b shadow-sm transition-all duration-300 ${
-          isScrolled ? "top-0" : "top-12"
-        } ${
-          shouldBlur ? "backdrop-blur-md" : "backdrop-blur-none"
-        }`}
+          isScrolled ? 'top-0' : 'top-12'
+        } ${shouldBlur ? 'backdrop-blur-md' : 'backdrop-blur-none'}`}
       >
         {isMobile ? (
           <div className="flex justify-between items-center w-full px-3 py-3">
@@ -100,9 +98,23 @@ const Nav = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <img src={search_glass} alt="" className="h-4 w-4 cursor-pointer" />
-              <img src={likee} alt="" className="h-4 w-4 cursor-pointer" />
-              <img src={user} alt="" className="h-4 w-4 cursor-pointer" />
+              <img
+                src={search_glass}
+                alt=""
+                className="h-4 w-4 cursor-pointer"
+              />
+              <img
+                src={notification}
+                alt=""
+                onClick={handleNotification}
+                className="h-4 w-4 cursor-pointer"
+              />
+              <img
+                src={user}
+                alt=""
+                onClick={() => navigate('/dashboard')}
+                className="h-4 w-4 cursor-pointer"
+              />
             </div>
 
             {isMenuOpen && (
@@ -115,7 +127,7 @@ const Nav = () => {
                       onClick={toggleMenu}
                       className={({ isActive }) =>
                         `transition-colors duration-200 hover:text-yellow-200 ${
-                          isActive ? "text-yellow-300" : ""
+                          isActive ? 'text-yellow-300' : ''
                         }`
                       }
                     >
@@ -150,7 +162,9 @@ const Nav = () => {
                     to={item.link}
                     className={({ isActive }) =>
                       `hover:text-[#9F3247] transition-colors duration-200 ${
-                        isActive ? "text-[#9F3247] font-semibold" : "text-gray-700"
+                        isActive
+                          ? 'text-[#9F3247] font-semibold'
+                          : 'text-gray-700'
                       }`
                     }
                   >
@@ -161,37 +175,39 @@ const Nav = () => {
             </nav>
 
             <div className="flex items-center gap-8">
-  <Search
-    className="w-[300px] md:w-[320px] lg:w-[380px]"
-    img={search_glass}
-    onClick={handleSearch}
-    placeholder="Search for Products..."
-  />
-  <img
-    src={notification}
-    alt=""
-    className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
-    onClick={handleNotification}
-  />
-  <img
-    src={likee}
-    alt=""
-    className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
-  />
-  <img
-    src={user}
-    alt=""
-    className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
-    onClick={() => navigate("/dashboard")}
-  />
-</div>
-
+              <Search
+                className="w-[300px] md:w-[320px] lg:w-[380px]"
+                img={search_glass}
+                onClick={handleSearch}
+                placeholder="Search for Products..."
+              />
+              <img
+                src={notification}
+                alt=""
+                className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
+                onClick={handleNotification}
+              />
+              <img
+                src={likee}
+                alt=""
+                className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
+              />
+              <img
+                src={user}
+                alt=""
+                className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
+                onClick={() => navigate('/dashboard')}
+              />
+            </div>
           </div>
         )}
       </div>
-      
+
       {/* Dynamic Spacer */}
-      <div style={{ height: `${isScrolled ? 0 : 60}px` }} className="w-full"></div>
+      <div
+        style={{ height: `${isScrolled ? 0 : 60}px` }}
+        className="w-full"
+      ></div>
     </>
   );
 };

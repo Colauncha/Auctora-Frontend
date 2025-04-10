@@ -22,13 +22,14 @@ const ProgressTracker = () => {
   const steps = ["Description", "Categories", "Photos", "Delivery"];
 
   const handleStepChange = (index) => {
-    // If trying to go forward
+ 
     if (index > activeStep) {
+      
       // Only allow if current step is completed
-      if (formValidity[activeStep]) {
+      if (!formValidity[activeStep]) {
         console.log(
           `Cannot proceed to ${steps[index]}: Current step ${steps[activeStep]} is not valid.`,
-          `validity: ${formValidity}`,
+          `validity: ${formValidity}`
         );
         return;
       }
@@ -44,18 +45,12 @@ const ProgressTracker = () => {
     setActiveStep(index);
   };
 
-  // Function to update form validity
+ 
   const updateFormValidity = (stepIndex, isValid) => {
     setFormValidity((prev) => ({
       ...prev,
       [stepIndex]: isValid,
     }));
-
-    // If the form becomes valid and we're on this step, mark as completed
-    //   if (isValid && !completedSteps.includes(stepIndex) {
-    //     setCompletedSteps([...completedSteps, stepIndex]);
-    //   }
-    // };
 
     if (isValid && !completedSteps.includes(stepIndex)) {
       setCompletedSteps([...completedSteps, stepIndex]);
@@ -69,10 +64,15 @@ const ProgressTracker = () => {
       <div className="formatter">
         <div className="py-6">
           <Breadcrumbs />
-          <div className="bg-[#F0F0F0] flex flex-col items-center space-y-3 py-3 min-h-[calc(100vh-200px)]">
-            <div className="flex items-center">
+          <div className="bg-[#F0F0F0] flex flex-col items-center space-y-3 mb-14 py-3 min-h-[calc(100vh-200px)]">
+            <div className="flex items-center flex-wrap smCustom:flex-nowrap">
               {steps.map((step, index) => (
-                <div key={index} className="flex items-center">
+                <div
+                  key={index}
+                  className={`flex items-center ${
+                    index !== activeStep && "hidden smCustom:flex"
+                  }`} 
+                >
                   {/* Step Section */}
                   <div
                     className="flex flex-col items-center cursor-pointer"
@@ -82,10 +82,10 @@ const ProgressTracker = () => {
                     <div
                       className={`w-10 h-10 flex items-center justify-center rounded-full ${
                         index === activeStep
-                          ? 'bg-maroon'
+                          ? "bg-maroon"
                           : completedSteps.includes(index)
-                          ? 'bg-green-500'
-                          : 'bg-white'
+                          ? "bg-green-500"
+                          : "bg-white"
                       }`}
                     >
                       <img
@@ -93,8 +93,8 @@ const ProgressTracker = () => {
                         alt={step}
                         className={`w-4 h-4 ${
                           index === activeStep || completedSteps.includes(index)
-                            ? 'filter brightness-0 invert'
-                            : ''
+                            ? "filter brightness-0 invert"
+                            : ""
                         }`}
                       />
                     </div>
@@ -103,8 +103,8 @@ const ProgressTracker = () => {
                     <p
                       className={`text-sm mt-2 font-bold ${
                         completedSteps.includes(index)
-                          ? 'text-green-500'
-                          : 'text-black'
+                          ? "text-green-500"
+                          : "text-black"
                       }`}
                     >
                       {step}
@@ -113,10 +113,10 @@ const ProgressTracker = () => {
 
                   {/* Dotted Line */}
                   {index < steps.length - 1 && (
-                    <div className="flex items-center justify-center mx-1 relative top-[-12px]">
+                    <div className="flex items-center justify-center mx-1 relative top-[-12px] hidden smCustom:flex">
                       <div
                         className="w-12 h-0.5 border-t-2 border-dotted border-red-500"
-                        style={{ borderSpacing: '2px' }}
+                        style={{ borderSpacing: "2px" }}
                       />
                     </div>
                   )}
@@ -124,7 +124,7 @@ const ProgressTracker = () => {
               ))}
             </div>
 
-            {/* Render Active Step Component */}
+            {/* Using Active Step Component */}
             {activeStep === 0 && (
               <Description
                 activeStep={activeStep}
@@ -155,17 +155,17 @@ const ProgressTracker = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <button
                 onClick={() => handleStepChange(activeStep - 1)}
                 disabled={activeStep === 0}
                 className={`px-3 py-2 rounded-lg transition duration-300 ${
                   activeStep === 0
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                 }`}
               >
-                Previous
+                Back
               </button>
               <button
                 onClick={() => handleStepChange(activeStep + 1)}
@@ -174,13 +174,13 @@ const ProgressTracker = () => {
                 }
                 className={`px-6 py-2 rounded-lg transition duration-300 ${
                   !formValidity[activeStep] || activeStep === steps.length - 1
-                    ? 'bg-blue-300 text-white cursor-not-allowed'
-                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                    ? "bg-blue-300 text-white cursor-not-allowed"
+                    : "bg-blue-500 text-white hover:bg-blue-600"
                 }`}
               >
-                Next
+               Next
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

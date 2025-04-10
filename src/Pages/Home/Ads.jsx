@@ -25,7 +25,7 @@ const Ads = () => {
         className="absolute right-10 top-5 transform -translate-y-1/2 text-white text-xl font-bold"
         aria-label="Close Ads"
       >
-        ×
+        {''}
       </button>
       <div className="max-w-[1280px] w-full px-4 flex items-center justify-center gap-4">
         {isAuthenticated ? (

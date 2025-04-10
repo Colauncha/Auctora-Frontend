@@ -79,7 +79,7 @@ const AddressForm = () => {
         setNextLoading(false);
         !JSON.parse(sessionStorage.getItem('newAccount'))
           ? navigate('/dashboard')
-          : navigate('/AccountForm');
+          : navigate('/bank-account');
       }, 1000);
     } else {
       setTimeout(() => {

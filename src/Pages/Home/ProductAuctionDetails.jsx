@@ -25,11 +25,12 @@ const ProductAuctionDetails = () => {
   const [loading, setLoading] = useState(false);
   const [sellerLoading, setSellerLoading] = useState(false);
   const [biddersLoading, setBiddersLoading] = useState(false);
+  // const [timeString, setTimeString] = useState('');
   const [timeLeft, setTimeLeft] = useState({
-    days: 2,
-    hours: 14,
-    minutes: 23,
-    seconds: 45,
+    days: 1,
+    hours: 1,
+    minutes: 1,
+    seconds: 1,
   });
   const id = useLocation().pathname.split('/').pop();
   const endpoint = current;
@@ -103,37 +104,44 @@ const ProductAuctionDetails = () => {
           data?.item[0]?.image_link_4?.link || null,
         ].filter((val) => val !== null),
       );
+      // setTimeString(data?.end_date);
       setLoading(false);
       await fetchBiddersData(data.id);
       await fetchSellerData(data.users_id);
     };
     fetchAuctionData();
+  }, [endpoint, id]);
 
+  useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        const totalSeconds =
-          prev.days * 86400 +
-          prev.hours * 3600 +
-          prev.minutes * 60 +
-          prev.seconds -
-          1;
+      if (!auction) return;
+      const endDate = new Date(auction?.end_date);
+      const now = new Date().getTime();
+      const distance = endDate - now;
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        if (totalSeconds <= 0) {
+      setTimeLeft(() => {
+        if (distance <= 0) {
           clearInterval(timer);
           return { days: 0, hours: 0, minutes: 0, seconds: 0 };
         }
 
         return {
-          days: Math.floor(totalSeconds / 86400),
-          hours: Math.floor((totalSeconds % 86400) / 3600),
-          minutes: Math.floor((totalSeconds % 3600) / 60),
-          seconds: totalSeconds % 60,
+          days,
+          hours,
+          minutes,
+          seconds,
         };
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [endpoint, id]);
+  }, [auction]);
 
   // Memoized star rating component
   const StarRating = useMemo(() => {
@@ -253,7 +261,7 @@ const ProductAuctionDetails = () => {
 
               {/* Price Section */}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex flex-col gap-2 justify-center items-start mb-3">
                   <div>
                     <p className="text-sm text-gray-500">Current Bid</p>
                     <p className="text-2xl font-bold text-gray-900 flex items-center">
@@ -261,9 +269,9 @@ const ProductAuctionDetails = () => {
                       {currencyFormat(auction?.current_price)}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div>
                     <p className="text-sm text-gray-500">Buy Now</p>
-                    <p className="text-2xl font-bold text-green-600 flex items-center justify-end">
+                    <p className="text-2xl font-bold text-green-600 flex items-center">
                       <FaEthereum className="text-green-500 mr-1" />
                       {currencyFormat(auction?.buy_now_price)}
                     </p>
@@ -285,7 +293,7 @@ const ProductAuctionDetails = () => {
               {/* Countdown Timer */}
               <div className="mb-6 bg-red-50 p-4 rounded-lg border border-red-100">
                 <h4 className="text-sm font-medium text-maroon mb-2">
-                  Auction Ending Soon!
+                  Auction Ending In!
                 </h4>
                 <div className="flex justify-between text-center">
                   {Object.entries(timeLeft).map(([unit, value]) => (

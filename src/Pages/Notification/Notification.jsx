@@ -1,14 +1,14 @@
-import Slider from "../../Components/Slider";
+import Slider from '../../Components/Slider';
 // import AuctionListing from "../Home/AuctionListing";
-import Breadcrumbs from "../../Components/Breadcrumbs";
-import Pagination from "../../Components/Pagination";
-import { useState } from "react";
-import useModeStore from "../../Store/Store";
+import Breadcrumbs from '../../Components/Breadcrumbs';
+import Pagination from '../../Components/Pagination';
+import { useState } from 'react';
+import useModeStore from '../../Store/Store';
 // import { FaAngleDown, FaTimes } from "react-icons/fa";
-import { FaTimes } from "react-icons/fa";
-import { filter_icom } from "../../Constants";
-import Modal from "../../Components/Modal";
-import Notify from "./Notify";
+import { FaTimes } from 'react-icons/fa';
+import { filter_icom } from '../../Constants';
+import Modal from '../../Components/Modal';
+import Notify from './Notify';
 
 const Notification = () => {
   const { isMobile } = useModeStore();
@@ -26,7 +26,7 @@ const Notification = () => {
     <div className="formatter">
       <Breadcrumbs />
       <div className="flex flex-col items-center lg:my-10">
-        <div className="w-full flex flex-col justify-center lg:flex-row  ">
+        <div className="w-full flex flex-col justify-center lg:flex-row ">
           <div className="w-full lg:w-[70%]">
             <div className="flex items-center justify-end pb-4">
               <h1 className="text-start text-[#9f3248] font-[700] text-[18px] hidden">

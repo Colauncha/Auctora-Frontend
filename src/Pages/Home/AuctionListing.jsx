@@ -4,6 +4,7 @@ import Button from '../../Components/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
 // import useModeStore from "../../Store/Store";
 import { currencyFormat } from '../../utils';
+import { current } from '../../utils';
 
 const AuctionListing = () => {
   // const { isMobile } = useModeStore();
@@ -21,17 +22,14 @@ const AuctionListing = () => {
   useEffect(() => {
     const fetchAuctions = async () => {
       try {
-        const response = await fetch(
-          'https://api-auctora.vercel.app/api/landing/trending_auctions',
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
+        const response = await fetch(`${current}landing/trending_auctions`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
 
-              // Add any required API keys or headers here
-            },
+            // Add any required API keys or headers here
           },
-        );
+        });
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.status}`);
         }
@@ -149,7 +147,7 @@ const AuctionListing = () => {
         <div
           className={`grid gap-10 ${
             isHomePath
-              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
               : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
           } `}
         >
@@ -163,13 +161,13 @@ const AuctionListing = () => {
 
                 image
                 itemName={item.name}
-                bid={item.currentBid}
-                bidTimes={item.bidCount}
+                price={item.currentBid}
                 sellerName={item.seller}
-                price={item.price}
+                bid={item.bidCount}
+                bidTimes={item.bidCount}
                 countDown={item.timeLeft}
                 to={`/product-details/${item.slug}`}
-                className="w-full max-w-[400px] min-h-[500px]"
+                className="w-[600px] max-w-[600px] min-h-[500px]"
               />{' '}
             </div>
           ))}{' '}

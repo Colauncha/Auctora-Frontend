@@ -41,9 +41,9 @@ const Footer = () => {
   }, [location.pathname]);
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-gray-100 w-full pt-32 pb-8 relative">
+    <div className="bg-gradient-to-b from-gray-50 to-gray-100 w-full pt-32 pb-8 relative mt-16">
       {/* CTA Section */}
-      <div className="absolute top-[-80px] left-0 w-full flex justify-center px-6 z-10">
+      <div className="absolute top-[-80px] left-0 w-full flex justify-center px-6 z-10 ">
         <div className="container mx-auto">
           <Cta className="shadow-xl rounded-xl" />
         </div>
@@ -54,26 +54,35 @@ const Footer = () => {
         <div className="flex flex-col lg:flex-row justify-between gap-16 w-full">
           {/* Left Section - Logo and Info */}
           <div className="flex flex-col gap-6 max-w-md">
-            <img 
-              src={logo} 
-              alt="Biddius Logo" 
-              className="w-48 h-auto" 
-            />
+            <img src={logo} alt="Biddius Logo" className="w-48 h-auto" />
             <p className="text-gray-600 text-sm leading-relaxed">
-              Join online auctions and find unique items to buy and sell with excitement! 
-              Discover amazing deals and rare collectibles in our vibrant marketplace.
+              Join online auctions and find unique items to buy and sell with
+              excitement! Discover amazing deals and rare collectibles in our
+              vibrant marketplace.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+              <a
+                href="#"
+                className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors"
+              >
                 <img src={facebook} alt="Facebook" className="w-5 h-5" />
               </a>
-              <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+              <a
+                href="#"
+                className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors"
+              >
                 <img src={twitter} alt="Twitter" className="w-5 h-5" />
               </a>
-              <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+              <a
+                href="#"
+                className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors"
+              >
                 <img src={instaggram} alt="Instagram" className="w-5 h-5" />
               </a>
-              <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+              <a
+                href="#"
+                className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors"
+              >
                 <img src={github} alt="GitHub" className="w-5 h-5" />
               </a>
             </div>
@@ -108,16 +117,26 @@ const Footer = () => {
         <div className="mt-16 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
-              © {new Date().getFullYear()} Biddius (A Part of Colauncha). All rights reserved.
+              © {new Date().getFullYear()} Biddius (A Part of Colauncha). All
+              rights reserved.
             </p>
             <div className="flex gap-6">
-              <Link to="/terms" className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors">
+              <Link
+                to="/terms"
+                className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors"
+              >
                 Terms of Service
               </Link>
-              <Link to="/privacy" className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors">
+              <Link
+                to="/privacy"
+                className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors"
+              >
                 Privacy Policy
               </Link>
-              <Link to="/cookies" className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors">
+              <Link
+                to="/cookies"
+                className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors"
+              >
                 Cookie Policy
               </Link>
             </div>
