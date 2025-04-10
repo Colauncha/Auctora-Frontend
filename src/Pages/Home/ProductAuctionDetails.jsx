@@ -380,8 +380,8 @@ const ProductAuctionDetails = () => {
                     {currencyFormat(auction?.start_price)}
                   </span>
                   <span>
-                    <BsLightningCharge className="inline mr-1" />{' '}
-                    {auction?.watchers_count} bids
+                    <BsLightningCharge className="inline mr-1" /> {bids?.length}{' '}
+                    bids
                   </span>
                 </div>
               </div>
