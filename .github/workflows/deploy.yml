@@ -20,18 +20,15 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_KEY }}
         script: |
-          
-          cd /var/www/biddius/Auctora-Frontend || exit 1
-          git pull origin main
 
-          ls -la
-          
+          cd /var/www/biddius/Auctora-Frontend || exit 1
+          git reset --hard HEAD
+          git clean -fd
+          git pull --ff-only origin main
           npm install --legacy-peer-deps
           npm run build
-
-          # Replace the content served by Nginx
           sudo rm -rf /var/www/biddius/html/*
           sudo cp -r dist/* /var/www/biddius/html/
-
           sudo systemctl restart biddiusApi.service
+          
         shell: bash -l {0}
