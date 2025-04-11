@@ -41,14 +41,21 @@ import ProductAuctionDetails from "./Pages/Home/ProductAuctionDetails";
 import YourProduct from "./Pages/Sell/AddProduct/YourProduct";
 import AuctionDetails from "./Pages/Sell/AddProduct/AuctionDetails";
 import NotFound from "./Components/NotFound";
-import ProductSuccess from './Pages/Sell/AddProduct/ProductSuccess'; 
+import ProductSuccess from "./Pages/Sell/AddProduct/ProductSuccess";
 // import AppTest from "./Pages/Payment/AppTest";
 // import ProgressTracker from "./Pages/Sell/ProgressTracker";
 
+//privacy policy and terms and conditions
+import PrivacyPolicy from "./Pages/Terms & Privacy Policy/PrivacyPolicy";
+import TermsCondition from "./Pages/Terms & Privacy Policy/TermsCondition";
+
+// For all pages to start from top
+import ScrollToTop from "./Components/ScrollToTop";
 
 const App = () => {
   return (
     <div>
+      <ScrollToTop />
       <Ads />
       <Nav />
       <Routes>
@@ -87,6 +94,12 @@ const App = () => {
         <Route path="/getstarted" element={<GetStarted />} />
         <Route path="*" element={<NotFound />} />
 
+        {/* Privacy Policy */}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
+        {/* Terms and Conditions */}
+        <Route path="/terms-conditions" element={<TermsCondition />} />
+
         {/* Progress Tracker Routes */}
         <Route
           path="/Add-Product"
@@ -100,8 +113,8 @@ const App = () => {
           path="/product-details/:id"
           element={
             <ProtectedRoute>
-              {' '}
-              <ProductAuctionDetails />{' '}
+              {" "}
+              <ProductAuctionDetails />{" "}
             </ProtectedRoute>
           }
         />
@@ -109,8 +122,8 @@ const App = () => {
           path="/products"
           element={
             <ProtectedRoute>
-              {' '}
-              <YourProduct />{' '}
+              {" "}
+              <YourProduct />{" "}
             </ProtectedRoute>
           }
         />
