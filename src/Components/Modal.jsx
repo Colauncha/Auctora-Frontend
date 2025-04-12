@@ -18,10 +18,10 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
-// Modal.PropTypes = {
-//   isOpen: PropTypes.Boolean,
-//   onClose: PropTypes.Fuctions,
-//   children: PropTypes.children,
-// };
+Modal.propTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func,
+  children: PropTypes.node,
+};
 
 export default Modal;
