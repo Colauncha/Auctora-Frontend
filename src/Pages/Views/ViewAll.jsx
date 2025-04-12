@@ -1,5 +1,6 @@
 import Slider from "../../Components/Slider";
-import AuctionListing from "../Home/AuctionListing";
+// import AuctionListing from "../Home/AuctionListing";
+import Preloader from "../../Components/Preloader";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import Pagination from "../../Components/Pagination";
 import { useState } from "react";
@@ -12,10 +13,12 @@ import Modal from "../../Components/Modal";
 
 
 const ViewAll = () => {
-  const {isMobile} = useModeStore()
+  const { isMobile } = useModeStore();
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10; // Set the total number of pages
@@ -26,7 +29,7 @@ const ViewAll = () => {
   return (
     <div className="formatter">
       <Breadcrumbs />
-      <div className="flex flex-col items-center lg:my-10">
+      <div className="flex flex-col items-center lg:my-10 lg:mb-2 0">
         <div className="w-full flex flex-col justify-between lg:flex-row  ">
           <div className="w-full lg:w-[15%] hidden lg:block p-2">
             <Slider />
@@ -51,7 +54,7 @@ const ViewAll = () => {
                 </div>
               )}
             </div>
-            <AuctionListing />
+            {loading && <Preloader />}
             <Modal isOpen={modalOpen} onClose={closeModal}>
               <Slider />
             </Modal>
