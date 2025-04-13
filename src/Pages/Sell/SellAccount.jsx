@@ -80,7 +80,7 @@ const SellAccount = () => {
       <div className="formatter">
         <div className="py-6">
           <Breadcrumbs />
-          <div className="min-h-screen flex items-center justify-center bg-[#F0F0F0] mt-4">
+          <div className="min-h-screen flex items-center justify-center bg-[#F0F0F0]">
             <div className="flex flex-col lg:flex-row w-full max-w-[1430px] rounded-lg overflow-hidden mb-28">
               <div className="flex-1 p-8 lg:p-16 bg-white">
                 <h1 className="text-3xl lg:text-4xl mb-4 font-bold text-maroon">
@@ -161,6 +161,52 @@ const SellAccount = () => {
                     </button>
                     {loading && <Loader />}
                   </div>
+                  
+                  <p className="text-gray-500 mt-4">
+  Didn’t receive the code?{' '}
+  <button
+    onClick={async () => {
+      const email = sessionStorage.getItem('email-otp'); 
+      
+      if (!email) {
+        alert("Email not found. Please log in again.");
+        return;
+      }
+
+      try {
+        const endpoint = `${current}users/resend_otp`; 
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }), 
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('OTP Resent Successfully:', data);
+          alert("OTP has been resent to your email.");
+        } else {
+          const errorData = await response.json();
+          console.error('Failed to Resend OTP:', errorData);
+          alert(`${errorData.message || "Error"}: ${
+            errorData.detail || "Could not resend OTP."
+          }`);
+        }
+      } catch (error) {
+        console.error("Unexpected Error:", error);
+        alert("An unexpected error occurred while resending OTP.");
+      }
+    }}
+    className="text-red-600 hover:underline"
+  >
+    Resend OTP
+  </button>
+</p>
+
+                
+
                 </div>
               </div>
 

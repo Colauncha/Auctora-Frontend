@@ -6,6 +6,7 @@ const links = {
 
 const current = links.host;
 
+
 const capitalize = (s) => {
   if (typeof s !== 'string') return ''
   let newString = s.charAt(0).toUpperCase() + s.slice(1)
