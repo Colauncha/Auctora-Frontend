@@ -95,7 +95,7 @@ const AuctionDetails = () => {
                           {/* {auction?.watchers_count.match(
                             /\((\d+) bids\)/,
                           )?.[1] || '0'} */}
-                          {auction?.watchers_count || '0'}
+                          {auction?.bids.length || '0'}
                         </p>
                       </div>
                       {auction?.buy_now_price && (

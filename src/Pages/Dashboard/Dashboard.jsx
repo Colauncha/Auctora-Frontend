@@ -233,10 +233,10 @@ const Dashboard = () => {
               <h1>Wallet Balance</h1>
               <div className={style.walletBalance}>
                 <p className="relative group" id={style.total}>
-                  <strong>Total:</strong>
+                  <strong>Available:</strong>
                   <div>
                     {user.wallet
-                      ? currencyFormat(user.wallet)
+                      ? currencyFormat(user.available_balance)
                       : currencyFormat('0.00')}
                   </div>
                   <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
@@ -244,10 +244,10 @@ const Dashboard = () => {
                   </span>
                 </p>
                 <p className="relative group" id={style.available}>
-                  <span>Available:</span>
+                  <span>Total:</span>
                   <span>
                     {user.wallet
-                      ? currencyFormat(user.available_balance)
+                      ? currencyFormat(user.wallet)
                       : currencyFormat('0.00')}
                   </span>
                   <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
