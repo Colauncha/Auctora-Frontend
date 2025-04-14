@@ -92,6 +92,8 @@ const App = () => {
         <Route path="/bank-account" element={<AccountForm />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/getstarted" element={<GetStarted />} />
+
+        {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
 
         {/* Privacy Policy */}
@@ -109,6 +111,13 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* <Route
+          path="/product-details"
+          element={
+            
+              <ProductAuctionDetails />
+          }
+        /> */}
         <Route
           path="/product-details/:id"
           element={

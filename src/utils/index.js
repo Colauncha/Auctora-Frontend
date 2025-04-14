@@ -4,7 +4,9 @@ const links = {
   host: 'https://api.biddius.com/api/',
 };
 
-const current = links.host;
+const current = links.live;
+// const current = links.host;
+
 
 const capitalize = (s) => {
   if (typeof s !== 'string') return ''

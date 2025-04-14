@@ -299,14 +299,7 @@ const ProductAuctionDetails = () => {
             </div>
 
             {/* Product Description */}
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <h3 className="text-lg font-bold mb-4 text-maroon">
-                {auction?.item[0]?.name} - Product Description
-              </h3>
-              <p className="text-gray-700">{auction?.item[0]?.description}</p>
-            </div>
-
-            {/* Seller Information */}
+            
             <div className="mt-6 pt-6 border-t border-gray-200">
               <h2 className="text-xl font-bold mb-4 text-maroon">
                 Sellers Information
@@ -327,127 +320,62 @@ const ProductAuctionDetails = () => {
               </div>
             </div>
 
-            {/* Trust Badges */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="flex flex-col space-y-3 text-sm text-gray-600">
-                <div className="flex items-center">
-                  <FiShield className="text-green-500 mr-2" />
-                  <span>Authenticity Guaranteed</span>
-                </div>
-                <div className="flex items-center">
-                  <FiTruck className="text-blue-500 mr-2" />
-                  <span>Free Shipping</span>
-                </div>
-              </div>
-            </div>
+            
           </div>
 
           {/* Product Info */}
           <div className="lg:w-1/3">
-            <div className="bg-white rounded-xl shadow-md p-6 sticky top-24">
-              <h1 className="text-2xl font-bold text-maroon mb-2">
-                {auction?.item[0]?.name}
-              </h1>
+            <div className="bg-white rounded-xl shadow-md p-6 sticky">
 
-              <div className="flex items-center mb-6">
-                <span className="bg-green-100 text-white-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                  {capitalize(auction?.status)}
-                </span>
-              </div>
 
-              {/* Price Section */}
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex flex-col gap-2 justify-center items-start mb-3">
-                  <div>
-                    <p className="text-sm text-gray-500">Current Bid</p>
-                    <p className="text-2xl font-bold text-gray-900 flex items-center">
-                      <FaEthereum className="text-blue-500 mr-1" />
-                      {currencyFormat(auction?.current_price)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Buy Now</p>
-                    <p className="text-2xl font-bold text-green-600 flex items-center">
-                      <FaEthereum className="text-green-500 mr-1" />
-                      {currencyFormat(auction?.buy_now_price)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex justify-between text-sm text-gray-500 mt-2">
-                  <span>
-                    <FiDollarSign className="inline mr-1" /> Start:{' '}
-                    {currencyFormat(auction?.start_price)}
-                  </span>
-                  <span>
-                    <BsLightningCharge className="inline mr-1" /> {bids?.length}{' '}
-                    bids
-                  </span>
-                </div>
-              </div>
-
-              {/* Countdown Timer */}
-              <div className="mb-6 bg-red-50 p-4 rounded-lg border border-red-100">
-                <h4 className="text-sm font-medium text-maroon mb-2">
-                  Auction Ending In!
-                </h4>
-                <div className="flex justify-between text-center">
-                  {Object.entries(timeLeft).map(([unit, value]) => (
-                    <div key={unit} className="flex-1">
-                      <div className="text-xl font-bold text-red-600">
-                        {value}
-                      </div>
-                      <div className="text-xs text-black-500 capitalize">
-                        {unit}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+  
               {/* Active Bids */}
-              <div
-                className={`${style.container} mt-6 mb-6 pt-6 border-t border-gray-200`}
-              >
-                <h2 className="text-xl font-bold mb-4 text-maroon">
-                  Active Bids
-                </h2>
-                {bids?.length <= 0 ? (
-                  <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
-                    <div>No active Bidders</div>
-                  </div>
-                ) : biddersLoading ? (
-                  <div className="flex items-center justify-center h-24">
-                    <Loading />
-                  </div>
-                ) : (
-                  bids?.map((bid_) => (
-                    <div
-                      key={bid_.id}
-                      className={`${style.activeBids} bg-black bg-opacity-5 p-4 rounded-lg`}
-                    >
-                      <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
-                        <FiUser className="text-gray-500" size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">{bid_?.username}</h4>
-                        <div className="flex items-center">
-                          <span className="text-gray-500 text-sm ml-2">
-                            {currencyFormat(bid_?.amount)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+<div className={`${style.container} mb-6 pt-6 border-gray-200`}>
+  <h2 className="text-xl font-bold mb-4 text-maroon">Active Bids</h2>
+  {!bids || bids.length <= 0 ? (  // Check if `bids` is undefined or empty
+    <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
+      <div>No active Bidders</div>
+    </div>
+  ) : biddersLoading ? (
+    <div className="flex items-center justify-center h-24">
+      <Loading />
+    </div>
+  ) : (
+    [...(bids || [])]  // Fallback to empty array if `bids` is undefined
+      .sort((a, b) => {
+        // Handle null or invalid dates
+        const dateA = a.amount ? new Date(a.amount) : 0;
+        const dateB = b.amount ? new Date(b.amount) : 0;
+        return dateB - dateA;  // Newest first
+      })
+      .map((bid_) => (
+        <div
+          key={bid_?.id || Math.random()}  // Fallback key if `id` is missing
+          className={`${style.activeBids} bg-black bg-opacity-5 p-4 rounded-lg`}
+        >
+          <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
+            <FiUser className="text-gray-500" size={20} />
+          </div>
+          <div>
+            <h4 className="font-medium">{bid_?.username || "Unknown Bidder"}</h4>
+            <div className="flex items-center">
+              <span className="text-gray-500 text-sm ml-2">
+                {bid_?.amount ? currencyFormat(bid_.amount) : "N/A"}
+              </span>
+            </div>
+          </div>
+        </div>
+      ))
+  )}
+  
+</div>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
+              {/* place bid btn */}
+              <div className="space-y-3 mb-5">
                 <input
                   type="text"
                   placeholder="Enter your bid amount"
-                  className="w-full border border-gray-300 rounded-lg py-3 px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg py-3 px-4 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   aria-label="Bid amount"
                   onChange={(e) => setBiddersPrice(e.target.value)}
                 />
@@ -476,7 +404,7 @@ const ProductAuctionDetails = () => {
                       onClick={() => handleBuyNow(auction?.id)} // To be updated
                     >
                       <FiCheck className="mr-2" />
-                      Buy Now
+                      Buy Now 
                     </button>
                     {buyNowLoading && (
                       <div className="ml-2 transition-opacity duration-300 ease-in-out opacity-100">
@@ -486,6 +414,60 @@ const ProductAuctionDetails = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Price Section */}
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex flex-col gap-2 justify-center items-start mb-3">
+                  <div>
+                    <p className="text-sm text-gray-500">Current Bid</p>
+                    <p className="text-2xl font-bold text-gray-900 flex items-center">
+                      <FaEthereum className="text-blue-500 mr-1" />
+                      {currencyFormat(auction?.current_price)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Buy Now Price</p>
+                    <p className="text-2xl font-bold text-green-600 flex items-center">
+                      <FaEthereum className="text-green-500 mr-1" />
+                      {currencyFormat(auction?.buy_now_price)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between text-sm text-gray-500 mt-2">
+                  <span>
+                    <FiDollarSign className="inline mr-1" /> Start:{' '}
+                    {currencyFormat(auction?.start_price)}
+                  </span>
+                  <span>
+                    <BsLightningCharge className="inline mr-1" /> {bids?.length}{' '}
+                    bids
+                  </span>
+                </div>
+              </div>
+              
+
+              {/* Countdown Timer */}
+              <div className="mb-6 bg-red-50 p-4 rounded-lg border border-red-100">
+                <h4 className="text-sm font-medium text-maroon mb-2">
+                  Auction Ending In!
+                </h4>
+                <div className="flex justify-between text-center">
+                  {Object.entries(timeLeft).map(([unit, value]) => (
+                    <div key={unit} className="flex-1">
+                      <div className="text-xl font-bold text-red-600">
+                        {value}
+                      </div>
+                      <div className="text-xs text-black-500 capitalize">
+                        {unit}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+
+              
             </div>
           </div>
         </div>
