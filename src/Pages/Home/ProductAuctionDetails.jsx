@@ -328,12 +328,11 @@ const ProductAuctionDetails = () => {
             <div className="bg-white rounded-xl shadow-md p-6 sticky">
 
 
-              
-
+  
               {/* Active Bids */}
-              <div className={`${style.container} mb-6 pt-6 border-gray-200`}>
+<div className={`${style.container} mb-6 pt-6 border-gray-200`}>
   <h2 className="text-xl font-bold mb-4 text-maroon">Active Bids</h2>
-  {bids?.length <= 0 ? (
+  {!bids || bids.length <= 0 ? (  // Check if `bids` is undefined or empty
     <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
       <div>No active Bidders</div>
     </div>
@@ -342,21 +341,26 @@ const ProductAuctionDetails = () => {
       <Loading />
     </div>
   ) : (
-    [...bids]
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by newest first
+    [...(bids || [])]  // Fallback to empty array if `bids` is undefined
+      .sort((a, b) => {
+        // Handle null or invalid dates
+        const dateA = a.amount ? new Date(a.amount) : 0;
+        const dateB = b.amount ? new Date(b.amount) : 0;
+        return dateB - dateA;  // Newest first
+      })
       .map((bid_) => (
         <div
-          key={bid_.id}
+          key={bid_?.id || Math.random()}  // Fallback key if `id` is missing
           className={`${style.activeBids} bg-black bg-opacity-5 p-4 rounded-lg`}
         >
           <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
             <FiUser className="text-gray-500" size={20} />
           </div>
           <div>
-            <h4 className="font-medium">{bid_?.username}</h4>
+            <h4 className="font-medium">{bid_?.username || "Unknown Bidder"}</h4>
             <div className="flex items-center">
               <span className="text-gray-500 text-sm ml-2">
-                {currencyFormat(bid_?.amount)}
+                {bid_?.amount ? currencyFormat(bid_.amount) : "N/A"}
               </span>
             </div>
           </div>
@@ -400,7 +404,7 @@ const ProductAuctionDetails = () => {
                       onClick={() => handleBuyNow(auction?.id)} // To be updated
                     >
                       <FiCheck className="mr-2" />
-                      Buy Now
+                      Buy Now 
                     </button>
                     {buyNowLoading && (
                       <div className="ml-2 transition-opacity duration-300 ease-in-out opacity-100">
@@ -422,7 +426,7 @@ const ProductAuctionDetails = () => {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Buy Now</p>
+                    <p className="text-sm text-gray-500">Buy Now Price</p>
                     <p className="text-2xl font-bold text-green-600 flex items-center">
                       <FaEthereum className="text-green-500 mr-1" />
                       {currencyFormat(auction?.buy_now_price)}
@@ -462,7 +466,7 @@ const ProductAuctionDetails = () => {
                 </div>
               </div>
 
-              {/* Active Bids */}
+
               
             </div>
           </div>

@@ -61,6 +61,47 @@ const SellAccount = () => {
     }
   };
 
+  const [resending, setResending] = useState(false);
+
+const resendOtp = async () => {
+  if (resending) return;
+
+  const email = sessionStorage.getItem('email-otp');
+  if (!email) {
+    alert("Email not found. Please log in again.");
+    return;
+  }
+
+  setResending(true);
+  try {
+    const endpoint = `${current}users/reset_otp?email=${encodeURIComponent(email)}`;
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('OTP Resent Successfully:', data);
+      alert("OTP has been resent to your email.");
+    } else {
+      const errorData = await response.json();
+      console.error('Failed to Resend OTP:', errorData);
+      alert(`${errorData.message || "Error"}: ${
+        errorData.detail || "Could not resend OTP."
+      }`);
+    }
+  } catch (error) {
+    console.error("Unexpected Error:", error);
+    alert("An unexpected error occurred while resending OTP.");
+  } finally {
+    setResending(false);
+  }
+};
+
+
   const moveFocus = (event, nextRef) => {
     if (event.key >= '0' && event.key <= '9') {
       setOtp((prev) => [...prev, event.target.value]);
@@ -164,7 +205,7 @@ const SellAccount = () => {
                   
                   <p className="text-gray-500 mt-4">
   Didn’t receive the code?{' '}
-  <button
+  {/* <button
     onClick={async () => {
       const email = sessionStorage.getItem('email-otp'); 
       
@@ -202,7 +243,16 @@ const SellAccount = () => {
     className="text-red-600 hover:underline"
   >
     Resend OTP
-  </button>
+  </button> */}
+
+<button
+  onClick={resendOtp}
+  className="text-red-600 hover:underline"
+  disabled={resending}
+>
+  {resending ? "Resending..." : "Resend OTP"}
+</button>
+
 </p>
 
                 
