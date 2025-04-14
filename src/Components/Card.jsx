@@ -45,14 +45,6 @@ const Card = ({ imgUrl, itemName, price, sellerName, bid, countDown, to }) => {
               {bid} bid(s)
             </p>
           </div>
-          {
-            console.log(sellerName) /* <div className="flex gap-2 items-center">
-            <p className="flex gap-1 text-[10px] text-slate-400">
-              <span>Seller:</span> {/* Fixed here */
-          }
-          {/*{sellerName}
-            </p>
-          </div> */}
         </div>
         <div className="flex items-center justify-center cursor-pointer hover:bg-[#9f3248] text-[10px] text-[#fff] bg-[#9f324864] px-1 py-2 rounded-md font-bold absolute top-[55%] left-3 lg:top-[70%]">
           <p>Time Left:</p> <span className="ml-1">{timeLeft}</span>

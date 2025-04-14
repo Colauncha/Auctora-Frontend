@@ -47,7 +47,7 @@ const AuctionListing = () => {
             startingPrice: currencyFormat(auction.start_price) || 0,
             buyNowPrice: currencyFormat(auction.buy_now_price) || 0,
             bidCount: auction.watchers_count || 0,
-            seller: auction.seller_name || 'Unknown Seller',
+            seller: auction.seller_name || 'Anonymous',
             description: auction.description || 'No description available',
             timeLeft: auction.end_date || 'N/A',
             slug: auction.id || 'no-id',

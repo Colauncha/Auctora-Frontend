@@ -25,7 +25,7 @@ const Notification = () => {
   return (
     <div className="formatter">
       <Breadcrumbs />
-      <div className="flex flex-col items-center lg:my-10">
+      <div className="flex flex-col items-center lg:my-10 lg:mb-20">
         <div className="w-full flex flex-col justify-center lg:flex-row ">
           <div className="w-full lg:w-[70%]">
             <div className="flex items-center justify-end pb-4">
