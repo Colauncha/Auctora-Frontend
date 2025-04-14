@@ -30,7 +30,7 @@ const Card = ({ imgUrl, itemName, price, sellerName, bid, countDown, to }) => {
       <img
         src={imgUrl}
         alt=""
-        className="w-[200px] h-[161px] rounded-md bg-slate-300 md:w-[240px] md:h-[268px]"
+        className="w-[200px] h-[161px] rounded-md bg-slate-300 md:w-[210px] md:h-[249px]"
       />
       <div className="w-[171px] h-[65px] flex flex-col md:w-[285px]">
         <h3 className="text-[#9F3247] text-[12px] font-[700] md:text-[15px]">

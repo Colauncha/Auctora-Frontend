@@ -1,10 +1,11 @@
 import { filter_icom } from "../Constants";
 import Button from "./Button";
 import PriceRange from "./PriceRange";
+import { PropTypes } from 'prop-types';
 
 const Slider = ({ className }) => {
   const filter = () => {
-    console.log("filter");
+    console.log('filter');
   };
   return (
     <div
@@ -23,6 +24,10 @@ const Slider = ({ className }) => {
       <Button label="Apply Filter" className="w-full" />
     </div>
   );
+};
+
+Slider.propTypes = {
+  className: PropTypes.string,
 };
 
 export default Slider;
