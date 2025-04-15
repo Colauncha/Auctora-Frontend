@@ -60,8 +60,9 @@ const Nav = () => {
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    console.log("searching...");
+  const handleSearch = (query) => {
+    if (!query) console.log(navHeight);
+    console.log(`searching...${query}`);
   };
 
   const handleNotification = () => {

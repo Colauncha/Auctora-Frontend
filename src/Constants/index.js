@@ -51,6 +51,7 @@ import ActivityIcon from "../assets/svg/ActivityIcon.svg";
 import Avatar from "../assets/svg/ProfileIcon.svg";
 import Edit from "../assets/svg/Edit.svg";
 import Money from "../assets/svg/Money.svg";
+import PlaceHolderImage from '../assets/icons/PlaceHolderImage.png';
 
 export {
   logo,
@@ -98,6 +99,7 @@ export {
   Avatar,
   Edit,
   Money,
+  PlaceHolderImage,
 };
 
 // const buildArr = {
