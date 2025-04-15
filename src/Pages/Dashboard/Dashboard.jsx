@@ -19,99 +19,109 @@ import useAuthStore from "../../Store/AuthStore";
 import { ctaContext } from "../../Store/ContextStore";
 import { capitalize, currencyFormat, charLimit, current } from "../../utils";
 import Avatar  from "./Avatar";
-
+import { BsStarFill } from 'react-icons/bs';
+import { PropTypes } from 'prop-types';
+import { useMemo } from 'react';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   const [auctions, setAuctions] = useState([]);
+  const [bids, setBids] = useState([]);
+  const [rating, setRating] = useState(0);
   const navigate = useNavigate();
   const logoutUser = useAuthStore((state) => state.logout);
-  const offCta = ctaContext((state) => state.turnOff)
-
+  const offCta = ctaContext((state) => state.turnOff);
 
   useEffect(() => {
-    setLoading(true)
-    offCta()
-    sessionStorage.removeItem('newAccount')
-    sessionStorage.removeItem('_user')
+    setLoading(true);
+    offCta();
+    sessionStorage.removeItem('newAccount');
+    sessionStorage.removeItem('_user');
 
-    const getUser = async () => { 
+    const getUser = async () => {
       let endpoint = `${current}users/profile`;
       try {
         const response = await fetch(endpoint, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
           },
-          credentials: "include",
-        })
+          credentials: 'include',
+        });
         if (response.ok) {
-          let data = await response.json()
+          let data = await response.json();
           setTimeout(() => {
-            setUser(data.data)
-            setDisplayName(data.data.username ? `@${capitalize(data.data.username)}` : data.data.email)
-            setAuctions(data.data.auctions)
-            setLoading(false)
-            sessionStorage.setItem('_user', JSON.stringify(data.data))
-            console.log(data.data)
-          }, 1000)
+            setUser(data.data);
+            setDisplayName(
+              data.data.username
+                ? `@${capitalize(data.data.username)}`
+                : data.data.email,
+            );
+            setAuctions(data.data.auctions);
+            setBids(data.data.bids);
+            setRating(data.data.rating);
+            setLoading(false);
+            sessionStorage.setItem('_user', JSON.stringify(data.data));
+            console.log(data.data);
+          }, 1000);
         } else {
-          let data = await response.json()
-          console.error(data)
-          navigate("/sign-in")
+          let data = await response.json();
+          console.error(data);
+          navigate('/sign-in');
         }
       } catch (error) {
-        console.log(error)
-        navigate("/sign-in")
+        console.log(error);
+        navigate('/sign-in');
       }
-    }
-    let userId = localStorage.getItem('userId')
-    let data = JSON.parse(sessionStorage.getItem('_user'))
-    if (!data || !userId ) {
+    };
+    let userId = localStorage.getItem('userId');
+    let data = JSON.parse(sessionStorage.getItem('_user'));
+    if (!data || !userId) {
       getUser();
-      return
+      return;
     } else {
       setUser(data);
-      setDisplayName(data.username ? `@${capitalize(data.username)}` : data.email);
+      setDisplayName(
+        data.username ? `@${capitalize(data.username)}` : data.email,
+      );
       setAuctions(data.auctions);
       setLoading(false);
       return;
     }
-  }, [navigate, offCta])
+  }, [navigate, offCta]);
 
   const logout = async () => {
-    setLoading(true)
+    setLoading(true);
     let endpoint = `${current}users/logout`;
 
     try {
       const response = await fetch(endpoint, {
-        method: "POST",
-        credentials: "include",
-      })
+        method: 'POST',
+        credentials: 'include',
+      });
       if (response.ok) {
-        let data = await response.json()
-        console.log(data)
+        let data = await response.json();
+        console.log(data);
         setTimeout(() => {
-          setLoading(false)
-          logoutUser()
-          localStorage.removeItem("token")
-          localStorage.removeItem("userId")
-          sessionStorage.removeItem('_user')
-          navigate("/")
-        }, 500)
-
+          setLoading(false);
+          logoutUser();
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          sessionStorage.removeItem('_user');
+          navigate('/');
+        }, 500);
       } else {
-        let data = await response.json()
-        setLoading(false)
-        console.error(data)
+        let data = await response.json();
+        setLoading(false);
+        console.error(data);
       }
     } catch (error) {
-      setLoading(false)
-      console.log(error)
+      setLoading(false);
+      console.log(error);
     }
-  }
+  };
 
   const viewAuction = async (id) => {
     navigate(`/auctiondetails/${id}`);
@@ -136,6 +146,33 @@ const Dashboard = () => {
   const viewAuctions = () => {
     navigate('/products');
   };
+
+  const productDetails = (id) => {
+    navigate(`/product-details/:${id}`);
+  };
+
+  const StarRating = useMemo(() => {
+    const Component = ({ rating }) => (
+      <>
+        {Array(5)
+          .fill(0)
+          .map((_, i) => (
+            <BsStarFill
+              key={i}
+              className={`${
+                i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'
+              } w-5 h-5`}
+            />
+          ))}
+      </>
+    );
+
+    Component.propTypes = {
+      rating: PropTypes.number.isRequired,
+    };
+
+    return Component;
+  }, []);
 
   return (
     <>
@@ -240,7 +277,7 @@ const Dashboard = () => {
                       : currencyFormat('0.00')}
                   </div>
                   <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                    Total amount in your wallet
+                    Money spent while bidding is deducted from this balance
                   </span>
                 </p>
                 <p className="relative group" id={style.available}>
@@ -251,7 +288,7 @@ const Dashboard = () => {
                       : currencyFormat('0.00')}
                   </span>
                   <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                    Money spent while bidding is deducted from this balance
+                    Total amount in your wallet
                   </span>
                 </p>
               </div>
@@ -343,17 +380,55 @@ const Dashboard = () => {
                     className={style.panelButton}
                     iconClassName={style.buttonIcon}
                     label="Create Auction"
-                    onClick={() => {}}
+                    onClick={() => AddProduct()}
                   />
                 </>
               )}
             </div>
             <div className={style.bottomRight}>
               <div className={style.bottomRightRating}>
-                <p>Ratings</p>
+                <StarRating rating={rating} />
               </div>
               <div className={style.bottomRightBids}>
-                <p>Bids</p>
+                {bids && bids.length > 0 ? (
+                  <div className={style.bidContainer}>
+                    <h2>Bids</h2>
+                    {bids.map((bid, index) => (
+                      <div
+                        key={index}
+                        className={`${style.bidItem} relative group`}
+                        onClick={() => productDetails(bid.auction_id)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={bid.auction?.item[0]?.image_link?.link}
+                            alt="Auction Image"
+                            className={style.bidImages}
+                          />
+                          <p>{bid.auction?.item[0]?.name}</p>
+                        </div>
+                        <p>{currencyFormat(bid.amount)}</p>
+                        <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block z-10">
+                          {`Description: ${charLimit(
+                            bid.auction?.item[0]?.description,
+                            30,
+                          )}`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <h2>No Bids yet</h2>
+                    <Button
+                      icon={AddIcon}
+                      className={style.panelButton}
+                      iconClassName={style.buttonIcon}
+                      label="View Auctions"
+                      onClick={() => AddProduct()}
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -361,7 +436,7 @@ const Dashboard = () => {
       </div>
     </>
   );
-}
+};
 
 export default Dashboard;
 
