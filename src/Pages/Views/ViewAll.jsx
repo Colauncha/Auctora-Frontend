@@ -254,7 +254,7 @@ const ViewAll = () => {
                       // Display auction
                       itemName={item.item[0]?.name}
                       price={currencyFormat(item.current_price)}
-                      sellerName={item.user.username || 'Anonymous'}
+                      sellerName={item.user?.username || 'Anonymous'}
                       bid={item.bids.length}
                       countDown={item.end_date}
                       to={`/product-details/${item.id}`}
