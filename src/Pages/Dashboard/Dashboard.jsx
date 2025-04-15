@@ -148,7 +148,7 @@ const Dashboard = () => {
   };
 
   const productDetails = (id) => {
-    navigate(`/product-details/:${id}`);
+    navigate(`/product-details/${id}`);
   };
 
   const StarRating = useMemo(() => {
