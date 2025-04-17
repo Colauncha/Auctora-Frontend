@@ -59,6 +59,7 @@ const ViewAll = () => {
     if (!response.ok) {
       // setLoading(false);
       const errorData = await response.json();
+      alert(`Error ${errorData.message}`);
       throw new Error(`Error ${errorData.message}`);
     }
 
