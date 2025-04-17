@@ -19,7 +19,7 @@ const SignIn = () => {
             <div className="hidden lg:block">
               <AuthNote
                 heading={`Welcome back!`}
-                body={`Welcome back! We're thrilled to see you again. Log in to Auctora and resume your journey into the world of exclusive auctions. Your next winning bid could be just a click away. Happy bidding!`}
+                body={`Welcome back! We're thrilled to see you again. Log in to Biddius and resume your journey into the world of exclusive auctions. Your next winning bid could be just a click away. Happy bidding!`}
                 button={
                   <Button
                     label={`Don’t have an account? Signup here`}

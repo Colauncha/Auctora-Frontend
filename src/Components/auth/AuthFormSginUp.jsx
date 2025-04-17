@@ -175,15 +175,19 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Loader from "../../assets/loader";
 import style from "./css/auth.module.css";
-import { current } from "../../utils";
+import { current, charLimit } from '../../utils';
 
 const AuthFormSginUp = ({ heading }) => {
   const { isMobile } = useModeStore();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPass, setConfirmPass] = useState("");
-  const [alertT, setAlert] = useState({isAlert: false, level: 'warn', message: ""});
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: 'warn',
+    message: '',
+  });
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -192,59 +196,77 @@ const AuthFormSginUp = ({ heading }) => {
     setLoading(true);
     let endpoint = `${current}users/register`;
 
+    if (!checked) {
+      setAlert({
+        isAlert: true,
+        message: 'Privacy Policy/Terms and Conditions must be agreed!',
+      });
+      setLoading(false);
+      return;
+    }
+
     if (password !== confirmPass) {
       setTimeout(() => {
-        setAlert({ isAlert: true, message: "Passwords do not match" })
-        setLoading(false)
-      }, 500)
-      return
+        setAlert({ isAlert: true, message: 'Passwords do not match' });
+        setLoading(false);
+      }, 500);
+      return;
     }
     try {
       const response = await fetch(endpoint, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("Sign Up Successful", data);
-        setAlert({isAlert: true, level: "success", message: "Sign Up Successful"})
+        console.log('Sign Up Successful', data);
+        setAlert({
+          isAlert: true,
+          level: 'success',
+          message: 'Sign Up Successful',
+        });
         setTimeout(() => {
-          sessionStorage.setItem("email-otp", email)
-          sessionStorage.setItem("newAccount", JSON.stringify(true))
-          setLoading(false)
-          navigate("/sign-in")
-        }, 500)
+          sessionStorage.setItem('email-otp', email);
+          sessionStorage.setItem('newAccount', JSON.stringify(true));
+          setLoading(false);
+          navigate('/sign-in');
+        }, 500);
       } else {
         const errorData = await response.json();
-        console.error("sign up failed: ", errorData);
+        console.error('sign up failed: ', errorData);
         setTimeout(() => {
-          setLoading(false)
-          setAlert({isAlert: true, message: `${errorData.message}: ${errorData.detail}`})
-      }, 500)
+          setLoading(false);
+          setAlert({
+            isAlert: true,
+            message: `${errorData.message}: ${charLimit(errorData.detail, 35)}`,
+          });
+        }, 500);
       }
     } catch (error) {
-      console.error("Error during sign up", error);
+      console.error('Error during sign up', error);
       setTimeout(() => {
-        setLoading(false)
-        setAlert({isAlert: true, message: error.detail})
-      }, 500)
+        setLoading(false);
+        setAlert({ isAlert: true, message: error.detail });
+      }, 500);
     }
   };
   const SignIn = () => {
-    navigate("/sign-in");
+    navigate('/sign-in');
   };
   return (
     <div className="w-[620px] h-[500px] p-10 bg-white rounded-tl-md rounded-bl-md">
       <form action="">
         {loading && <Loader />}
-        <div className={
-          `${alertT.isAlert ? style.alertShow : style.alertNone}
+        <div
+          className={`${alertT.isAlert ? style.alertShow : style.alertNone}
            ${alertT.level === 'success' ? style.alertSuccess : ''}
-          `
-          }>{alertT.message}</div>
+          `}
+        >
+          {alertT.message}
+        </div>
         <fieldset className="flex flex-col gap-3">
           <legend className="text-[30px] font-[700] text-[#9f3247]">
             {heading}
@@ -271,8 +293,8 @@ const AuthFormSginUp = ({ heading }) => {
             className={`focus:outline-[#9f3248]`}
             value={email}
             onChange={(e) => {
-              setAlert({isAlert: false, message: ""})
-              setEmail(e.target.value)
+              setAlert({ isAlert: false, message: '' });
+              setEmail(e.target.value);
             }}
           />
           <Input
@@ -283,8 +305,8 @@ const AuthFormSginUp = ({ heading }) => {
             className={`focus:outline-[#9f3248]`}
             value={password}
             onChange={(e) => {
-              setAlert({isAlert: false, message: ""})
-              setPassword(e.target.value)
+              setAlert({ isAlert: false, message: '' });
+              setPassword(e.target.value);
             }}
           />
           <Input
@@ -295,8 +317,8 @@ const AuthFormSginUp = ({ heading }) => {
             className={`focus:outline-[#9f3248]`}
             value={confirmPass}
             onChange={(e) => {
-              setAlert({isAlert: false, message: ""})
-              setConfirmPass(e.target.value)
+              setAlert({ isAlert: false, message: '' });
+              setConfirmPass(e.target.value);
             }}
           />
           <div className="flex items-center  gap-4">
@@ -308,15 +330,27 @@ const AuthFormSginUp = ({ heading }) => {
               value={checked}
               onChange={(e) => setChecked(e.target.value)}
             />
-            <p className="text-[#848a8f]">By creating an account, you automatically accept our <a className="text-[#de506d]" href="/privacy-policy">Privacy Policy</a> and <a className="text-[#de506d]" href="/terms-conditions">Terms & Condictions,</a>  </p>
-            
+            <p className="text-[#848a8f]">
+              By creating an account, you automatically accept our{' '}
+              <a className="text-[#de506d]" href="/privacy-policy">
+                Privacy Policy
+              </a>{' '}
+              and{' '}
+              <a className="text-[#de506d]" href="/terms-conditions">
+                Terms & Condictions,
+              </a>{' '}
+            </p>
+
             {/* <p className="text-[#848a8f]">I accept terms and conditions</p> */}
           </div>
           <Button
             label={`Register`}
             onClick={submit}
+            disable={!checked}
             className={`hover:bg-[#de506d]`}
-            >{loading ? "Submitting": "Logged IN"}</Button>
+          >
+            {loading ? 'Submitting' : 'Logged IN'}
+          </Button>
         </fieldset>
       </form>
       <div className="flex flex-col gap-3 mt-2 items-center">

@@ -40,7 +40,7 @@ const ViewAll = () => {
     page = 1,
     others = null,
   }) => {
-    let endPoint = `${endpoint}?page=${page}&per_page=${per_page}`;
+    let endPoint = `${endpoint}?page=${page}&per_page=${per_page}&status=active`;
     if (others !== null) {
       let queryString = '';
       for (let k in others) {
