@@ -76,25 +76,25 @@ const ProductAuctionDetails = () => {
     setSellerLoading(true);
     setBiddersLoading(true);
 
-    const fetchSellerData = async (sellers_id) => {
-      const seller = await runFetch({
-        endpoint: `${endpoint}users/retrieve/${sellers_id}`,
-        method: 'GET',
-      });
-      setSeller(seller);
-      setSellerLoading(false);
-    };
+    // const fetchSellerData = async (sellers_id) => {
+    //   const seller = await runFetch({
+    //     endpoint: `${endpoint}users/retrieve/${sellers_id}`,
+    //     method: 'GET',
+    //   });
+    //   setSeller(seller);
+    //   setSellerLoading(false);
+    // };
 
-    const fetchBiddersData = async (auction_id) => {
-      const bids = await runFetch({
-        endpoint: `${endpoint}auctions/bids/?auction_id=${encodeURIComponent(
-          auction_id,
-        )}&per_page=5`,
-        method: 'GET',
-      });
-      setBids(bids);
-      setBiddersLoading(false);
-    };
+    // const fetchBiddersData = async (auction_id) => {
+    //   const bids = await runFetch({
+    //     endpoint: `${endpoint}auctions/bids/?auction_id=${encodeURIComponent(
+    //       auction_id,
+    //     )}&per_page=5`,
+    //     method: 'GET',
+    //   });
+    //   setBids(bids);
+    //   setBiddersLoading(false);
+    // };
 
     const fetchAuctionData = async () => {
       setLoading(true);
@@ -116,8 +116,12 @@ const ProductAuctionDetails = () => {
       );
       // setTimeString(data?.end_date);
       setLoading(false);
-      await fetchBiddersData(data.id);
-      await fetchSellerData(data.users_id);
+      setBids(data.bids);
+      setSeller(data.user);
+      setSellerLoading(false);
+      setBiddersLoading(false);
+      // await fetchBiddersData(data.id);
+      // await fetchSellerData(data.users_id);
     };
     fetchAuctionData();
   }, [endpoint, id]);
