@@ -111,28 +111,16 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/product-details"
-          element={
-            
-              <ProductAuctionDetails />
-          }
-        /> */}
         <Route
           path="/product-details/:id"
-          element={
-            <ProtectedRoute>
-              {" "}
-              <ProductAuctionDetails />{" "}
-            </ProtectedRoute>
-          }
+          element={<ProductAuctionDetails />}
         />
         <Route
           path="/products"
           element={
             <ProtectedRoute>
-              {" "}
-              <YourProduct />{" "}
+              {' '}
+              <YourProduct />{' '}
             </ProtectedRoute>
           }
         />
