@@ -24,6 +24,7 @@ const ViewAll = () => {
   const [buyNowPriceQuery, setBuyNowPriceQuery] = useState([]);
   // const [statusQuery, setStatusQuery] = useState('active');
   // const [buyNowQuery, setBuyNowQuery] = useState(false);
+  const [clearFilter, setClearFilter] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
@@ -163,6 +164,10 @@ const ViewAll = () => {
     setBuyNowPriceQuery([]);
     setCurrentPriceQuery([]);
     setStartPriceQuery([]);
+
+    setTimeout(() => {
+      setClearFilter(false);
+    }, 1000);
   };
 
   return (
@@ -177,9 +182,21 @@ const ViewAll = () => {
             <h2 className="font-[500] text-start text-[#9f3248] text-[18px]">
               Filters
             </h2>
-            <PriceRange func={setCurrentPriceQuery} label={'Current Price'} />
-            <PriceRange func={setStartPriceQuery} label={'Start Price'} />
-            <PriceRange func={setBuyNowPriceQuery} label={'Buy Now Price'} />
+            <PriceRange
+              clear={clearFilter}
+              func={setCurrentPriceQuery}
+              label={'Current Price'}
+            />
+            <PriceRange
+              clear={clearFilter}
+              func={setStartPriceQuery}
+              label={'Start Price'}
+            />
+            <PriceRange
+              clear={clearFilter}
+              func={setBuyNowPriceQuery}
+              label={'Buy Now Price'}
+            />
             {/* <div className="flex flex-col gap-2">
               <h3 className="font-[500] text-start text-[#9f3248] text-[16px]">
                 Status
@@ -217,7 +234,10 @@ const ViewAll = () => {
             <Button
               label="Clear Filters"
               className="w-full mt-4"
-              onClick={handleClearFilter}
+              onClick={() => {
+                setClearFilter(true);
+                handleClearFilter();
+              }}
             />
           </div>
           <div className="w-full lg:w-[70%]">
