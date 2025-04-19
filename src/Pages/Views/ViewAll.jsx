@@ -159,6 +159,12 @@ const ViewAll = () => {
     await fetchData();
   };
 
+  const handleClearFilter = () => {
+    setBuyNowPriceQuery([]);
+    setCurrentPriceQuery([]);
+    setStartPriceQuery([]);
+  };
+
   return (
     <div className="formatter">
       <Breadcrumbs />
@@ -207,6 +213,11 @@ const ViewAll = () => {
               label="Apply Filter"
               className="w-full mt-4"
               onClick={handleFilterChange}
+            />
+            <Button
+              label="Clear Filters"
+              className="w-full mt-4"
+              onClick={handleClearFilter}
             />
           </div>
           <div className="w-full lg:w-[70%]">

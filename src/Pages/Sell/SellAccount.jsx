@@ -202,10 +202,10 @@ const resendOtp = async () => {
                     </button>
                     {loading && <Loader />}
                   </div>
-                  
+
                   <p className="text-gray-500 mt-4">
-  Didn’t receive the code?{' '}
-  {/* <button
+                    Didn’t receive the code?{' '}
+                    {/* <button
     onClick={async () => {
       const email = sessionStorage.getItem('email-otp'); 
       
@@ -244,19 +244,14 @@ const resendOtp = async () => {
   >
     Resend OTP
   </button> */}
-
-<button
-  onClick={resendOtp}
-  className="text-red-600 hover:underline"
-  disabled={resending}
->
-  {resending ? "Resending..." : "Resend OTP"}
-</button>
-
-</p>
-
-                
-
+                    <button
+                      onClick={resendOtp}
+                      className="text-red-600 hover:underline"
+                      disabled={resending}
+                    >
+                      {resending ? 'Resending...' : 'Resend OTP'}
+                    </button>
+                  </p>
                 </div>
               </div>
 
@@ -269,11 +264,11 @@ const resendOtp = async () => {
                 }}
               >
                 <h2 className="text-3xl lg:text-4xl font-bold">
-                  AUCTION ON AUCTORA
+                  AUCTION ON BIDDIUS
                 </h2>
                 <p className="mt-4 text-lg text-center">
                   Ready to showcase your products to a global audience? Create
-                  an Auctora seller account now! Tap into the excitement of
+                  an Biddius seller account now! Tap into the excitement of
                   auctions, connect with eager buyers, and turn your items into
                   extraordinary finds. Join the auction adventure today!
                 </p>
