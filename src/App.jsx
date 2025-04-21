@@ -7,6 +7,11 @@ import AboutUs from "../src/Pages/About/About";
 import Footer from "./Pages/Home/Footer";
 import SignUp from "./Pages/Auth/SignUp";
 import SignIn from "./Pages/Auth/SignIn";
+import ForgotPassword from "./Pages/Auth/ForgotPassword";
+// import ResetPassword from "./Pages/Auth/ResetPassword";
+
+
+
 import ViewAll from "./Pages/Views/ViewAll";
 import CategoryResult from "./Pages/Category/CategoryResult";
 import DetailPage from "./Pages/Detail/Detail";
@@ -52,6 +57,7 @@ import TermsCondition from "./Pages/Terms & Privacy Policy/TermsCondition";
 // For all pages to start from top
 import ScrollToTop from "./Components/ScrollToTop";
 
+
 const App = () => {
   return (
     <div>
@@ -76,6 +82,11 @@ const App = () => {
         {/* Auth Routes */}
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
+
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
+        
+
 
         {/* Verification Routes */}
         {/* <Route path="/otp" element={<Otp />} /> */}
