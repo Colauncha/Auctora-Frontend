@@ -46,7 +46,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
             : 'hover:bg-[#7B2334] hover:text-white'
         }`}
       >
-        &larr; Previous
+        &larr;
       </button>
 
       {/* Page Numbers */}
@@ -80,7 +80,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
             : 'hover:bg-[#7B2334] hover:text-white'
         }`}
       >
-        Next &rarr;
+        &rarr;
       </button>
     </div>
   );

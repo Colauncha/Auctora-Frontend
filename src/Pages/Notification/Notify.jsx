@@ -92,36 +92,40 @@ const Notify = () => {
         <h1 className="text-[16px] lg:text-[28px] font-[700]">Notifications</h1>
         <button
           className="cursor-pointer font-[200] flex items-center gap-1"
-          onClick={e => handleNotificationSort(e)}
+          onClick={(e) => handleNotificationSort(e)}
         >
-          Sort by Time {sort === "asc" ? <FaArrowDown className="inline" /> : <FaArrowUp className="inline" />}
+          Sort by Time{' '}
+          {sort === 'asc' ? (
+            <FaArrowDown className="inline" />
+          ) : (
+            <FaArrowUp className="inline" />
+          )}
         </button>
       </div>
       {/* Tabs */}
       <div className="flex mt-3 border-b">
         <button
           className={`flex-1 py-2 font-semibold ${
-            activeTab === "notice"
-              ? "border-b-2 border-[#9f3248] text-[#9f3248]"
-              : "text-gray-500"
+            activeTab === 'notice'
+              ? 'border-b-2 border-[#9f3248] text-[#9f3248]'
+              : 'text-gray-500'
           }`}
-          onClick={() => setActiveTab("notice")}
+          onClick={() => setActiveTab('notice')}
         >
-          Inbox{" "}
+          Inbox{' '}
           <span className="bg-[#9f3248] text-white px-2 rounded-full text-sm">
             {notice.length}
-
           </span>
         </button>
         <button
           className={`flex-1 py-2 font-semibold ${
-            activeTab === "read"
-              ? "border-b-2 border-gray-500 text-gray-500"
-              : "text-gray-500"
+            activeTab === 'read'
+              ? 'border-b-2 border-gray-500 text-gray-500'
+              : 'text-gray-500'
           }`}
-          onClick={() => setActiveTab("read")}
+          onClick={() => setActiveTab('read')}
         >
-          Read{" "}
+          Read{' '}
           <span className="bg-gray-500 text-white px-2 rounded-full text-sm">
             {read.length}
           </span>
@@ -132,28 +136,32 @@ const Notify = () => {
       <div className="flex flex-col mt-3">
         {notifications[activeTab]?.length === 0 ? (
           <div className="flex items-center justify-around h-[30vh] w-[60%] ml-[20%]">
-            {loading ? <Loader /> : <p className="text-center text-gray-500">No notifications</p>}
+            {loading ? (
+              <Loader />
+            ) : (
+              <p className="text-center text-gray-500">No notifications</p>
+            )}
           </div>
-
         ) : (
           notifications[activeTab]?.map((item) => (
             <div
               key={item?.id}
               className="flex items-center p-3 bg-white rounded-lg shadow-sm mb-2"
             >
-              <div className="ml-3 flex-1" onClick={async () => await toggleRead(item?.id, item?.read)}>
+              <div className="ml-3 flex-1">
                 <p className="font-bold text-[18px]">{item?.title}</p>
-                <p className="text-red-500">
-                  {item?.message}
+                <p className="text-red-500">{item?.message}</p>
+                <p className="text-gray-400 text-sm">
+                  {formatDateTime(item?.created_at)}
                 </p>
-                <p className="text-gray-400 text-sm">{formatDateTime(item?.created_at)}</p>
-
               </div>
               <button
                 className="text-gray-600"
                 onClick={async () => await toggleRead(item?.id, item?.read)}
               >
-                {activeTab == "notice" ? "Mark as read ✉️" : "Mark as unread 📩"}
+                {activeTab == 'notice'
+                  ? 'Mark as read ✉️'
+                  : 'Mark as unread 📩'}
               </button>
             </div>
           ))
