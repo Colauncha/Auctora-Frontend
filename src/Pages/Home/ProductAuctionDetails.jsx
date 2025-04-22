@@ -91,26 +91,6 @@ const ProductAuctionDetails = () => {
     setSellerLoading(true);
     setBiddersLoading(true);
 
-    // const fetchSellerData = async (sellers_id) => {
-    //   const seller = await runFetch({
-    //     endpoint: `${endpoint}users/retrieve/${sellers_id}`,
-    //     method: 'GET',
-    //   });
-    //   setSeller(seller);
-    //   setSellerLoading(false);
-    // };
-
-    // const fetchBiddersData = async (auction_id) => {
-    //   const bids = await runFetch({
-    //     endpoint: `${endpoint}auctions/bids/?auction_id=${encodeURIComponent(
-    //       auction_id,
-    //     )}&per_page=5`,
-    //     method: 'GET',
-    //   });
-    //   setBids(bids);
-    //   setBiddersLoading(false);
-    // };
-
     const fetchAuctionData = async () => {
       setLoading(true);
       const data = await runFetch({
@@ -178,8 +158,11 @@ const ProductAuctionDetails = () => {
     let socket;
 
     if (live) {
-      // socket = new WebSocket(`wss://api.biddius.com/api/auctions/bids/ws/${id}/`);
-      socket = new WebSocket(`ws://localhost:8000/api/auctions/bids/ws/${id}/`);
+      const token = JSON.parse(localStorage.getItem('token'));
+      // socket = new WebSocket(`wss://api.biddius.com/api/auctions/bids/ws/${id}/?token=${encodeURIComponent(token)}`);
+      socket = new WebSocket(
+        `ws://localhost:8000/api/auctions/bids/ws/${id}/${token}`,
+      );
 
       socket.onopen = () => {
         console.log('WebSocket connected');

@@ -29,7 +29,10 @@ const SellAccount = () => {
         credentials: 'include',
       });
       if (!response.ok) {
-        throw new Error(response.json());
+        setLoading(false);
+        const errorData = await response.json();
+        alert(`${errorData.message}: ${errorData.detail}`);
+        throw new Error(await response.json());
       }
       const resp = await response.json();
       console.log('Success: ', resp.success);
@@ -49,6 +52,8 @@ const SellAccount = () => {
     };
     if (otp_.length < 6) {
       alert('OTP must be six characters');
+      setLoading(false);
+      return;
     } else {
       setTimeout(async () => {
         console.log(cred);
@@ -63,44 +68,47 @@ const SellAccount = () => {
 
   const [resending, setResending] = useState(false);
 
-const resendOtp = async () => {
-  if (resending) return;
+  const resendOtp = async () => {
+    if (resending) return;
 
-  const email = sessionStorage.getItem('email-otp');
-  if (!email) {
-    alert("Email not found. Please log in again.");
-    return;
-  }
-
-  setResending(true);
-  try {
-    const endpoint = `${current}users/reset_otp?email=${encodeURIComponent(email)}`;
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log('OTP Resent Successfully:', data);
-      alert("OTP has been resent to your email.");
-    } else {
-      const errorData = await response.json();
-      console.error('Failed to Resend OTP:', errorData);
-      alert(`${errorData.message || "Error"}: ${
-        errorData.detail || "Could not resend OTP."
-      }`);
+    const email = sessionStorage.getItem('email-otp');
+    if (!email) {
+      alert('Email not found. Please log in again.');
+      return;
     }
-  } catch (error) {
-    console.error("Unexpected Error:", error);
-    alert("An unexpected error occurred while resending OTP.");
-  } finally {
-    setResending(false);
-  }
-};
 
+    setResending(true);
+    try {
+      const endpoint = `${current}users/reset_otp?email=${encodeURIComponent(
+        email,
+      )}`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('OTP Resent Successfully:', data);
+        alert('OTP has been resent to your email.');
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to Resend OTP:', errorData);
+        alert(
+          `${errorData.message || 'Error'}: ${
+            errorData.detail || 'Could not resend OTP.'
+          }`,
+        );
+      }
+    } catch (error) {
+      console.error('Unexpected Error:', error);
+      alert('An unexpected error occurred while resending OTP.');
+    } finally {
+      setResending(false);
+    }
+  };
 
   const moveFocus = (event, nextRef) => {
     if (event.key >= '0' && event.key <= '9') {
@@ -272,9 +280,6 @@ const resendOtp = async () => {
                   auctions, connect with eager buyers, and turn your items into
                   extraordinary finds. Join the auction adventure today!
                 </p>
-                <button className="mt-8 bg-[#7B2334] text-[#fff] px-6 py-3 rounded-full hover:bg-red-800">
-                  Already have an account? Login here
-                </button>
               </div>
             </div>
           </div>
