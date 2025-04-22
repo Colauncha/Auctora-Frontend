@@ -7,6 +7,7 @@ import {
   FiDollarSign,
   FiUser,
   FiCheck,
+  FiEye,
 } from 'react-icons/fi';
 import { BsLightningCharge, BsStarFill } from 'react-icons/bs';
 import { FaEthereum } from 'react-icons/fa';
@@ -39,6 +40,8 @@ const ProductAuctionDetails = () => {
 
   // Websocket
   const [live, setLive] = useState(false);
+  const [watchers, setWatchers] = useState(0);
+  const [socket, setSocket] = useState(null);
 
   // misc
   const id = useLocation().pathname.split('/').pop();
@@ -155,45 +158,47 @@ const ProductAuctionDetails = () => {
 
   // websocket effects
   useEffect(() => {
-    let socket;
+    let socket_;
 
     if (live) {
       const token = JSON.parse(localStorage.getItem('token'));
-      // socket = new WebSocket(`wss://api.biddius.com/api/auctions/bids/ws/${id}/?token=${encodeURIComponent(token)}`);
-      socket = new WebSocket(
+      // socket_ = new WebSocket(`wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`);
+      socket_ = new WebSocket(
         `ws://localhost:8000/api/auctions/bids/ws/${id}/${token}`,
       );
+      setSocket(socket_);
 
-      socket.onopen = () => {
+      socket_.onopen = () => {
         console.log('WebSocket connected');
       };
 
-      socket.onmessage = (event) => {
+      socket_.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          if (data?.type === 'new_bid') {
-            setBids((prevBids) => [
-              data.payload,
-              ...(prevBids?.filter((bid) => bid.id !== data.payload.id) || []),
-            ]);
+          if (data?.type === 'bids') {
+            setBids(data?.payload.sort((a, b) => b.amount - a.amount));
+          } else if (data?.type === 'count') {
+            setWatchers(data?.Watchers);
+          } else if (data?.type === 'new_bid') {
+            setBids(data?.payload.sort((a, b) => b.amount - a.amount));
           }
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }
       };
 
-      socket.onerror = (error) => {
+      socket_.onerror = (error) => {
         console.error('WebSocket error:', error);
       };
 
-      socket.onclose = () => {
+      socket_.onclose = () => {
         console.log('WebSocket closed');
       };
     }
 
     return () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
+      if (socket_ && socket_.readyState === WebSocket.OPEN) {
+        socket_.close();
       }
     };
   }, [live, id]);
@@ -224,6 +229,35 @@ const ProductAuctionDetails = () => {
 
   const placeBid = async (auction_id, amount) => {
     setPlaceBidLoading(true);
+
+    // live
+    if (live) {
+      setPlaceBidLoading(true);
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        alert('WebSocket is not connected. Please try again later.');
+        setPlaceBidLoading(false);
+        return;
+      } else if (!amount) {
+        alert('Please enter a bid amount');
+        setPlaceBidLoading(false);
+        return;
+      } else if (amount < bids[0]?.amount) {
+        setPlaceBidLoading(false);
+        alert('Bid amount must be greater than the current price');
+        return;
+      }
+
+      const data = {
+        auction_id: id,
+        amount,
+      };
+
+      socket.send(JSON.stringify(data));
+      setPlaceBidLoading(false);
+      return;
+    }
+
+    // Static
     if (!amount) {
       alert('Please enter a bid amount');
       setPlaceBidLoading(false);
@@ -413,10 +447,20 @@ const ProductAuctionDetails = () => {
                     <span className="rounded-md mb-4 bg-blue-100 text-sm w-5 text-center text-blue-800 font-medium">
                       {bids?.length || 0}
                     </span>
+                    <span
+                      className={`flex items-center text-sm mb-4 text-gray-500 ${
+                        live ? '' : 'hidden'
+                      }`}
+                    >
+                      <FiEye className="text-gray-500" size={20} />
+                      <span className="text-sm ml-1 text-gray-500">
+                        {watchers} viewers
+                      </span>
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm mb-4 text-gray-500">
-                      {live ? 'Live' : 'Offline'}
+                      {live ? 'Live' : 'Static'}
                     </span>
                     <label className="relative mb-4 pr-2 inline-flex items-center cursor-pointer">
                       <input
