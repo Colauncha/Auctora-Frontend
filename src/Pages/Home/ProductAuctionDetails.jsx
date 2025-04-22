@@ -162,10 +162,12 @@ const ProductAuctionDetails = () => {
 
     if (live) {
       const token = JSON.parse(localStorage.getItem('token'));
-      // socket_ = new WebSocket(`wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`);
       socket_ = new WebSocket(
-        `ws://localhost:8000/api/auctions/bids/ws/${id}/${token}`,
+        `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`,
       );
+      // socket_ = new WebSocket(
+      //   `ws://localhost:8000/api/auctions/bids/ws/${id}/${token}`,
+      // );
       setSocket(socket_);
 
       socket_.onopen = () => {
