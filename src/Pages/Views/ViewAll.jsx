@@ -24,6 +24,7 @@ const ViewAll = () => {
   const [buyNowPriceQuery, setBuyNowPriceQuery] = useState([]);
   // const [statusQuery, setStatusQuery] = useState('active');
   // const [buyNowQuery, setBuyNowQuery] = useState(false);
+  const [clearFilter, setClearFilter] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
@@ -40,7 +41,7 @@ const ViewAll = () => {
     page = 1,
     others = null,
   }) => {
-    let endPoint = `${endpoint}?page=${page}&per_page=${per_page}`;
+    let endPoint = `${endpoint}?page=${page}&per_page=${per_page}&status=ACTIVE`;
     if (others !== null) {
       let queryString = '';
       for (let k in others) {
@@ -59,6 +60,7 @@ const ViewAll = () => {
     if (!response.ok) {
       // setLoading(false);
       const errorData = await response.json();
+      alert(`Error ${errorData.message}`);
       throw new Error(`Error ${errorData.message}`);
     }
 
@@ -158,6 +160,16 @@ const ViewAll = () => {
     await fetchData();
   };
 
+  const handleClearFilter = () => {
+    setBuyNowPriceQuery([]);
+    setCurrentPriceQuery([]);
+    setStartPriceQuery([]);
+
+    setTimeout(() => {
+      setClearFilter(false);
+    }, 1000);
+  };
+
   return (
     <div className="formatter">
       <Breadcrumbs />
@@ -170,9 +182,21 @@ const ViewAll = () => {
             <h2 className="font-[500] text-start text-[#9f3248] text-[18px]">
               Filters
             </h2>
-            <PriceRange func={setCurrentPriceQuery} label={'Current Price'} />
-            <PriceRange func={setStartPriceQuery} label={'Start Price'} />
-            <PriceRange func={setBuyNowPriceQuery} label={'Buy Now Price'} />
+            <PriceRange
+              clear={clearFilter}
+              func={setCurrentPriceQuery}
+              label={'Current Price'}
+            />
+            <PriceRange
+              clear={clearFilter}
+              func={setStartPriceQuery}
+              label={'Start Price'}
+            />
+            <PriceRange
+              clear={clearFilter}
+              func={setBuyNowPriceQuery}
+              label={'Buy Now Price'}
+            />
             {/* <div className="flex flex-col gap-2">
               <h3 className="font-[500] text-start text-[#9f3248] text-[16px]">
                 Status
@@ -206,6 +230,14 @@ const ViewAll = () => {
               label="Apply Filter"
               className="w-full mt-4"
               onClick={handleFilterChange}
+            />
+            <Button
+              label="Clear Filters"
+              className="w-full mt-4"
+              onClick={() => {
+                setClearFilter(true);
+                handleClearFilter();
+              }}
             />
           </div>
           <div className="w-full lg:w-[70%]">
@@ -254,7 +286,7 @@ const ViewAll = () => {
                       // Display auction
                       itemName={item.item[0]?.name}
                       price={currencyFormat(item.current_price)}
-                      sellerName={item.user.username || 'Anonymous'}
+                      sellerName={item.user?.username || 'Anonymous'}
                       bid={item.bids.length}
                       countDown={item.end_date}
                       to={`/product-details/${item.id}`}

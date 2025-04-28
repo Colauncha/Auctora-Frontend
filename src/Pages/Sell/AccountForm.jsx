@@ -63,17 +63,23 @@ const AccountForm = () => {
     };
 
     if (!newAcct) {
-      const { acct_name, acct_no, bank_code } = JSON.parse(
-        sessionStorage.getItem('_user'),
-      );
-      setTimeout(() => {
-        setAcctName(acct_name);
-        setAcctNumber(acct_no);
-        setSelectedBank(bank_code);
-        loadBanks();
-        setLoading(false);
-      }, 1000);
-      return;
+      let _user = sessionStorage.getItem('_user');
+      if (_user) {
+        const { acct_name, acct_no, bank_code } = JSON.parse(_user);
+        setTimeout(() => {
+          setAcctName(acct_name);
+          setAcctNumber(acct_no);
+          setSelectedBank(bank_code);
+          loadBanks();
+          setLoading(false);
+        }, 1000);
+        return;
+      }
+      setAcctName('');
+      setAcctNumber('');
+      setSelectedBank('');
+      loadBanks();
+      setLoading(false);
     } else {
       loadBanks();
       setLoading(false);
@@ -196,6 +202,13 @@ const AccountForm = () => {
                     className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon mb-40"
                   >
                     Confirm Details
+                  </button>
+                  <button
+                    onClick={() => navigate('/Verification')}
+                    type="button"
+                    className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon mb-40"
+                  >
+                    Skip
                   </button>
                   {loading && (
                     <div className="flex justify-center mt-4">

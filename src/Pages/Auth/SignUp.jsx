@@ -19,7 +19,7 @@ const SignUp = () => {
             <div className="hidden lg:block">
               <AuthNote
                 heading={`Create Account`}
-                body={`Create an account to dive into the world of auctions and unveil hidden treasures. As a member of Auctora, you'll gain exclusive access to bid on unique, one-of-a-kind items, from vintage gems to intriguing antiques. Don't miss out on the excitement – sign up now and embark on a journey where every bid is a step closer to uncovering extraordinary finds! Join the auction adventure today!
+                body={`Create an account to dive into the world of auctions and unveil hidden treasures. As a member of Biddius, you'll gain exclusive access to bid on unique, one-of-a-kind items, from vintage gems to intriguing antiques. Don't miss out on the excitement – sign up now and embark on a journey where every bid is a step closer to uncovering extraordinary finds! Join the auction adventure today!
 `}
                 button={
                   <Button

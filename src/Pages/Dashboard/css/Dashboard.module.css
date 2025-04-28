@@ -150,8 +150,8 @@
 }
 
 .walletBalance #total {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+        font-weight: 500;
 }
 
 .walletBalance #total > div {
@@ -258,12 +258,14 @@
 }
 
 .bottomRightRating {
+    display: flex;
+    flex-direction: row;
     height: 30%;
     background-color: #f0f0f0bb;
     border-radius: 15px;
     border-bottom: 3px solid #f0f0f080;
-    align-content: center;
-    justify-items: center;
+    align-items: center;
+    justify-content: center;
     padding: 10px;
 }
 
@@ -275,8 +277,53 @@
     align-content: center;
     justify-items: center;
     padding: 10px;
+    overflow-y: scroll;
 }
 
+.bidImages {
+    height: 20px;
+    width: 20px;
+    border-radius: 25%;
+}
+
+.bidContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: self-start;
+    width: 100%;
+    /* height: 20px; */
+    gap: 4px;
+}
+
+.bidContainer > h2 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #7d2435;
+    position: sticky;
+    top: 2px;
+    width: 100%;
+    background-color: #e8e8e8;
+    z-index: 2;
+}
+
+.bidItem {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 25px;
+    padding: 5px 5px;
+    background-color: #aeaeae2a;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.bidItem:hover {
+    background-color: #7d243533;
+}
 
 
 /* ******* */
