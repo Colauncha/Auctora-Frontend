@@ -9,8 +9,7 @@ import { useState } from "react";
 import Loader from "../../assets/loader";
 import style from "./css/auth.module.css";
 import { current, charLimit } from '../../utils';
-import { FaEyeSlash } from "react-icons/fa";
-
+import { FaEyeSlash, FaEye } from 'react-icons/fa';
 
 const AuthFormSginUp = ({ heading }) => {
   const { isMobile } = useModeStore();
@@ -44,7 +43,8 @@ const AuthFormSginUp = ({ heading }) => {
     if (!validatePassword(password)) {
       setAlert({
         isAlert: true,
-        message: 'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
+        message:
+          'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
       });
       setLoading(false);
       return;
@@ -98,9 +98,8 @@ const AuthFormSginUp = ({ heading }) => {
       }, 500);
     }
   };
-  const SignIn = () => 
-    navigate('/sign-in');
-  
+  const SignIn = () => navigate('/sign-in');
+
   const validatePassword = (pwd) => {
     const startsWithCapital = /^[A-Z]/.test(pwd);
     const hasMinLength = pwd.length >= 8;
@@ -152,43 +151,57 @@ const AuthFormSginUp = ({ heading }) => {
             }}
           />
 
-        <div className="relative w-full">
-          <Input 
-            title="Password"
-            id="password"
-            type={isHarshed ? "text" : "password"}
-            htmlFor="password"
-            className="focus:outline-[#9f3248] pr-10" // Ensure space for icon
-            value={password}
-            onChange={(e) => {
-              setAlert({ isAlert: false, message: '' });
-              setPassword(e.target.value);
-            }}
-          />
-          <FaEyeSlash
-            className="absolute right-3 top-8 text-gray-600 cursor-pointer"
-            onClick={() => setIsHarshed(!isHarshed)}
-          />
-       </div>
+          <div className="relative w-full">
+            <Input
+              title="Password"
+              id="password"
+              type={isHarshed ? 'text' : 'password'}
+              htmlFor="password"
+              className="focus:outline-[#9f3248] pr-10" // Ensure space for icon
+              value={password}
+              onChange={(e) => {
+                setAlert({ isAlert: false, message: '' });
+                setPassword(e.target.value);
+              }}
+            />
+            {isHarshed ? (
+              <FaEye
+                className="absolute right-3 top-8 text-gray-600 cursor-pointer"
+                onClick={() => setIsHarshed(!isHarshed)}
+              />
+            ) : (
+              <FaEyeSlash
+                className="absolute right-3 top-8 text-gray-600 cursor-pointer"
+                onClick={() => setIsHarshed(!isHarshed)}
+              />
+            )}
+          </div>
 
-       <div className="relative w-full">
-        <Input 
-          title="Password"
-          id="password"
-          type={isHarshed ? "text" : "password"}
-          htmlFor="password"
-          className="focus:outline-[#9f3248] pr-10" // Ensure space for icon
-          value={confirmPass}
-          onChange={(e) => {
-            setAlert({ isAlert: false, message: '' });
-            setConfirmPass(e.target.value);
-          }}
-        />
-        <FaEyeSlash
-          className="absolute right-3 top-8 text-gray-600 cursor-pointer"
-          onClick={() => setIsHarshed(!isHarshed)}
-        />
-       </div>
+          <div className="relative w-full">
+            <Input
+              title="Password"
+              id="password"
+              type={isHarshed ? 'text' : 'password'}
+              htmlFor="password"
+              className="focus:outline-[#9f3248] pr-10" // Ensure space for icon
+              value={confirmPass}
+              onChange={(e) => {
+                setAlert({ isAlert: false, message: '' });
+                setConfirmPass(e.target.value);
+              }}
+            />
+            {isHarshed ? (
+              <FaEye
+                className="absolute right-3 top-8 text-gray-600 cursor-pointer"
+                onClick={() => setIsHarshed(!isHarshed)}
+              />
+            ) : (
+              <FaEyeSlash
+                className="absolute right-3 top-8 text-gray-600 cursor-pointer"
+                onClick={() => setIsHarshed(!isHarshed)}
+              />
+            )}
+          </div>
 
           <div className="flex items-center  gap-4">
             <Input
