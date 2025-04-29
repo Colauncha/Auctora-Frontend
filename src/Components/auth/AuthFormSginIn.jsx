@@ -145,9 +145,10 @@ const AuthFormSignIn = ({ heading }) => {
                 setPassword(e.target.value);
               }}
             />
-            <FaEyeSlash 
-               className="absolute right-3 top-8 cursor-pointer w-[10%]" 
-                onClick={()=>setIsHarshed(!isHarshed)} />
+            <FaEyeSlash
+            className="absolute right-3 top-8 text-gray-600 cursor-pointer"
+            onClick={() => setIsHarshed(!isHarshed)}
+          />
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
