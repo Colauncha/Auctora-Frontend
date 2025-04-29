@@ -4,9 +4,9 @@ import Button from "../Button";
 import PropTypes from 'prop-types';
 import Input from "./Input";
 import useModeStore from "../../Store/Store";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Loader from "../../assets/loader";
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import Loader from '../../assets/loader';
 // import style from "./css/auth.module.css";
 import { current } from '../../utils';
 import { FaEyeSlash, FaEye } from 'react-icons/fa';
@@ -27,6 +27,11 @@ const AuthFormSginUp = ({ heading }) => {
   });
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [searchParams] = useSearchParams();
+  const referralParam = searchParams.get('referral_code') || '';
+
+  const [referral_code, setReferralCode] = useState(referralParam);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -65,7 +70,7 @@ const AuthFormSginUp = ({ heading }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, referral_code }),
       });
       if (response.ok) {
         const data = await response.json();
@@ -114,15 +119,13 @@ const AuthFormSginUp = ({ heading }) => {
   };
 
   return (
-    <div className="w-[620px] h-[500px] p-10 bg-white rounded-tl-md rounded-bl-md">
-      {alertT.isAlert ? (
+    <div className="w-[620px] h-[560px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
+      {alertT.isAlert && (
         <Alerts
           message={alertT.message}
           detail={alertT.detail}
           type={alertT.level}
         />
-      ) : (
-        ''
       )}
       <form action="">
         {loading && <Loader />}
@@ -145,7 +148,7 @@ const AuthFormSginUp = ({ heading }) => {
             </div>
           )}
           <Input
-            title={`Email`}
+            title={`Email *`}
             id={`email`}
             type={`email`}
             htmlFor={`email`}
@@ -159,7 +162,7 @@ const AuthFormSginUp = ({ heading }) => {
 
           <div className="relative w-full">
             <Input
-              title="Password"
+              title="Password *"
               id="password"
               type={isHarshed ? 'text' : 'password'}
               htmlFor="password"
@@ -185,7 +188,7 @@ const AuthFormSginUp = ({ heading }) => {
 
           <div className="relative w-full">
             <Input
-              title="Password"
+              title="Confirm Password *"
               id="password"
               type={isHarshed ? 'text' : 'password'}
               htmlFor="password"
@@ -207,6 +210,20 @@ const AuthFormSginUp = ({ heading }) => {
                 onClick={() => setIsHarshed(!isHarshed)}
               />
             )}
+          </div>
+          <div className="relative w-full">
+            <Input
+              title="Referral code (optional)"
+              id="referral_code"
+              type="text"
+              htmlFor="referral_code"
+              className="focus:outline-[#9f3248]" // Ensure space for icon
+              value={referral_code}
+              onChange={(e) => {
+                setAlert({ isAlert: false, message: '' });
+                setReferralCode(e.target.value);
+              }}
+            />
           </div>
 
           <div className="flex items-center  gap-4">

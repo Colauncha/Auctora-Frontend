@@ -131,7 +131,7 @@ const AuthFormSignIn = ({ heading }) => {
   };
 
   return (
-    <div className="w-[620px] h-[500px] p-10 bg-white rounded-tl-md rounded-bl-md">
+    <div className="w-[620px] h-[560px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
       <form onSubmit={submit}>
         {loading && <Loader />}
         {alertT.isAlert && (
