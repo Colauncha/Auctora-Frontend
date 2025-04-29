@@ -1,0 +1,104 @@
+@keyframes slideInBar {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  50% {
+    width: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 25dvw;
+    opacity: 1;
+  }
+}
+
+.container {
+  position: fixed;
+  bottom: 10px;
+  right: 0;
+  width: 25dvw;
+  height: fit-content;
+  z-index: 100;
+  cursor: default;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+.hide {
+  display: none;
+}
+
+.alertSuccess {
+  border: 2px solid rgb(12, 175, 105);
+  background-color: rgb(32, 222, 139);
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+.alertFail {
+  border: 2px solid rgb(226, 26, 4);
+  background-color: rgb(244, 65, 45);
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+.alertWarn {
+  background-color: rgb(232, 175, 3);
+  background-color: rgb(246, 204, 79);
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+.main {
+  padding: 10px 20px;
+  height: fit-content;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.iconTitle {
+  display: flex;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.main > p {
+  font-size: small;
+  font-weight: 300;
+}
+
+.bar {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  border-radius: 2px;
+  animation: slideInBar 10s ease-out forwards;
+}
+
+.alertSuccessBar {
+  background-color: rgb(105, 156, 135);
+}
+
+.alertFailBar {
+  background-color: rgb(244, 173, 165);
+}
+
+.alertWarnBar {
+  background-color: rgb(255, 233, 165);
+}
