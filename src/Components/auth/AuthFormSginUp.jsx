@@ -7,9 +7,10 @@ import useModeStore from "../../Store/Store";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Loader from "../../assets/loader";
-import style from "./css/auth.module.css";
-import { current, charLimit } from '../../utils';
+// import style from "./css/auth.module.css";
+import { current } from '../../utils';
 import { FaEyeSlash, FaEye } from 'react-icons/fa';
+import Alerts from '../alerts/Alerts';
 
 const AuthFormSginUp = ({ heading }) => {
   const { isMobile } = useModeStore();
@@ -22,6 +23,7 @@ const AuthFormSginUp = ({ heading }) => {
     isAlert: false,
     level: 'warn',
     message: '',
+    detail: '',
   });
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -86,7 +88,9 @@ const AuthFormSginUp = ({ heading }) => {
           setLoading(false);
           setAlert({
             isAlert: true,
-            message: `${errorData.message}: ${charLimit(errorData.detail, 35)}`,
+            message: `${errorData.message}`,
+            detail: `${errorData.detail}`,
+            level: 'fail',
           });
         }, 500);
       }
@@ -111,15 +115,17 @@ const AuthFormSginUp = ({ heading }) => {
 
   return (
     <div className="w-[620px] h-[500px] p-10 bg-white rounded-tl-md rounded-bl-md">
+      {alertT.isAlert ? (
+        <Alerts
+          message={alertT.message}
+          detail={alertT.detail}
+          type={alertT.level}
+        />
+      ) : (
+        ''
+      )}
       <form action="">
         {loading && <Loader />}
-        <div
-          className={`${alertT.isAlert ? style.alertShow : style.alertNone}
-           ${alertT.level === 'success' ? style.alertSuccess : ''}
-          `}
-        >
-          {alertT.message}
-        </div>
         <fieldset className="flex flex-col gap-3">
           <legend className="text-[30px] font-[700] text-[#9f3247]">
             {heading}
@@ -210,7 +216,7 @@ const AuthFormSginUp = ({ heading }) => {
               htmlFor={`checkbox`}
               className={`outline-none border-none`}
               value={checked}
-              onChange={(e) => setChecked(e.target.value)}
+              onChange={() => setChecked(!checked)}
             />
             <p className="text-[#848a8f]">
               By creating an account, you automatically accept our{' '}
@@ -228,7 +234,7 @@ const AuthFormSginUp = ({ heading }) => {
           <Button
             label={`Register`}
             onClick={submit}
-            disable={!checked}
+            disable={checked}
             className={`hover:bg-[#de506d]`}
           >
             {loading ? 'Submitting' : 'Logged IN'}

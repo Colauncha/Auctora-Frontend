@@ -1,64 +1,66 @@
 import { useState } from "react";
 import { FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1); // Step 1 = send email, Step 2 = reset password
-  const [email, setEmail] = useState("");
-  const [token, setToken] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [token, setToken] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isHarshed, setIsHarshed] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   const handleRequestToken = async (e) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
+    setError('');
+    setMessage('');
 
     try {
       const response = await fetch(
         `https://api.biddius.com/api/users/get_reset_token?email=${encodeURIComponent(
-          email
+          email,
         )}`,
         {
-          method: "GET",
-        }
+          method: 'GET',
+        },
       );
 
       if (response.ok) {
-        setMessage("Reset token sent to your email.");
+        setMessage('Reset token sent to your email.');
         setStep(2); // Move to step 2
       } else {
         const data = await response.json();
-        setError(data.message || "Failed to send reset token.");
+        setError(data.message || 'Failed to send reset token.');
       }
     } catch (err) {
       console.error(err);
-      setError("An error occurred while requesting reset token.");
+      setError('An error occurred while requesting reset token.');
     }
   };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
+    setError('');
+    setMessage('');
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match!");
+      setError('Passwords do not match!');
       return;
     }
 
     if (!validatePassword(password)) {
       setError(
-        "Password must start with a capital letter, be at least 8 characters, include a number and a special character."
+        'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
       );
       return;
     }
     if (!validatePassword(confirmPassword)) {
       setError(
-        "Password must start with a capital letter, be at least 8 characters, include a number and a special character."
+        'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
       );
       return;
     }
@@ -67,9 +69,9 @@ const ForgotPassword = () => {
       const response = await fetch(
         `https://api.biddius.com/api/users/reset_password`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             email,
@@ -77,24 +79,24 @@ const ForgotPassword = () => {
             password,
             confirm_password: confirmPassword,
           }),
-        }
+        },
       );
 
       if (response.ok) {
-        setMessage("Password reset successful. You can now log in.");
-        setSuccess(true)
+        setMessage('Password reset successful. You can now log in.');
+        setSuccess(true);
         setStep(1); // Reset back to step 1 if you want
-        setEmail("");
-        setToken("");
-        setPassword("");
-        setConfirmPassword("");
+        setEmail('');
+        setToken('');
+        setPassword('');
+        setConfirmPassword('');
       } else {
         const data = await response.json();
-        setError(data.message || "Failed to reset password.");
+        setError(data.message || 'Failed to reset password.');
       }
     } catch (err) {
       console.error(err);
-      setError("An error occurred while resetting password.");
+      setError('An error occurred while resetting password.');
     }
   };
 
@@ -110,11 +112,20 @@ const ForgotPassword = () => {
   return (
     <div className="m-52 flex flex-col gap-4">
       <h2 className="text-2xl font-bold mb-4">
-        {step === 1 ? "Forgot Password" : "Reset Your Password"}
+        {step === 1 ? 'Forgot Password' : 'Reset Your Password'}
       </h2>
 
       {message && <p className="text-blue-500">{message}</p>}
       {error && <p className="text-red-500">{error}</p>}
+      {success === true && (
+        <button
+          type="submit"
+          className="w-[80px] bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+          onClick={() => navigate('/sign-in')}
+        >
+          Login
+        </button>
+      )}
 
       {step === 1 ? (
         <form onSubmit={handleRequestToken} className="flex flex-col gap-4">
@@ -151,7 +162,7 @@ const ForgotPassword = () => {
             <input
               title="New Password"
               id="password"
-              type={isHarshed ? "text" : "password"}
+              type={isHarshed ? 'text' : 'password'}
               // htmlFor="password"
               placeholder="New Password"
               value={password}
@@ -168,7 +179,7 @@ const ForgotPassword = () => {
             <input
               title="Confirm Password"
               id="confirmPassword"
-              type={isHarshed ? "text" : "password"}
+              type={isHarshed ? 'text' : 'password'}
               // htmlFor="confirmPassword"
               placeholder="Confirm Password"
               value={confirmPassword}
