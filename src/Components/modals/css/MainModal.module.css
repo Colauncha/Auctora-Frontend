@@ -1,0 +1,39 @@
+.bg {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.393);
+  height: 100dvh;
+  width: 100dvw;
+  z-index: 80;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  width: 40dvw;
+  height: 60dvh;
+  position: fixed;
+  top: 20dvh;
+  left: 30dvw;
+  z-index: 90;
+  border-radius: 20px;
+  background: #e5e5e5;
+  box-shadow: 5px 5px 25px #acacacab, -5px -5px 25px #565656a5;
+
+  gap: 5px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #a7a7a76c;
+}
+
+.header > h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #7d2435;
+}

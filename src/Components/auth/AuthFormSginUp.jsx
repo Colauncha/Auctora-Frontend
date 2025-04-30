@@ -1,13 +1,11 @@
-
-import { google_auth } from "../../Constants";
-import Button from "../Button";
+import { google_auth } from '../../Constants';
+import Button from '../Button';
 import PropTypes from 'prop-types';
-import Input from "./Input";
-import useModeStore from "../../Store/Store";
+import Input from './Input';
+import useModeStore from '../../Store/Store';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 import Loader from '../../assets/loader';
-// import style from "./css/auth.module.css";
 import { current } from '../../utils';
 import { FaEyeSlash, FaEye } from 'react-icons/fa';
 import Alerts from '../alerts/Alerts';
@@ -21,7 +19,7 @@ const AuthFormSginUp = ({ heading }) => {
   const [isHarshed, setIsHarshed] = useState(false);
   const [alertT, setAlert] = useState({
     isAlert: false,
-    level: 'warn',
+    level: '',
     message: '',
     detail: '',
   });
@@ -30,8 +28,14 @@ const AuthFormSginUp = ({ heading }) => {
 
   const [searchParams] = useSearchParams();
   const referralParam = searchParams.get('referral_code') || '';
-
   const [referral_code, setReferralCode] = useState(referralParam);
+
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 5000);
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -39,47 +43,37 @@ const AuthFormSginUp = ({ heading }) => {
     let endpoint = `${current}users/register`;
 
     if (!checked) {
-      setAlert({
-        isAlert: true,
-        message: 'Privacy Policy/Terms and Conditions must be agreed!',
-      });
+      showAlert('warn', 'Privacy Policy/Terms and Conditions must be agreed!');
       setLoading(false);
       return;
     }
 
     if (!validatePassword(password)) {
-      setAlert({
-        isAlert: true,
-        message:
-          'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
-      });
+      showAlert(
+        'warn',
+        'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
+      );
       setLoading(false);
       return;
     }
 
     if (password !== confirmPass) {
-      setTimeout(() => {
-        setAlert({ isAlert: true, message: 'Passwords do not match' });
-        setLoading(false);
-      }, 500);
+      showAlert('fail', 'Passwords do not match');
+      setLoading(false);
       return;
     }
+
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, referral_code }),
       });
-      if (response.ok) {
+
+      if (response.status === 200 || response.status === 201) {
         const data = await response.json();
         console.log('Sign Up Successful', data);
-        setAlert({
-          isAlert: true,
-          level: 'success',
-          message: 'Sign Up Successful',
-        });
+        showAlert('success', 'Sign Up Successful');
         setTimeout(() => {
           sessionStorage.setItem('email-otp', email);
           sessionStorage.setItem('newAccount', JSON.stringify(true));
@@ -89,24 +83,16 @@ const AuthFormSginUp = ({ heading }) => {
       } else {
         const errorData = await response.json();
         console.error('sign up failed: ', errorData);
-        setTimeout(() => {
-          setLoading(false);
-          setAlert({
-            isAlert: true,
-            message: `${errorData.message}`,
-            detail: `${errorData.detail}`,
-            level: 'fail',
-          });
-        }, 500);
+        showAlert('fail', `${errorData.message}`, `${errorData.detail}`);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error during sign up', error);
-      setTimeout(() => {
-        setLoading(false);
-        setAlert({ isAlert: true, message: error.detail });
-      }, 500);
+      showAlert('fail', 'An unexpected error occurred.');
+      setLoading(false);
     }
   };
+
   const SignIn = () => navigate('/sign-in');
 
   const validatePassword = (pwd) => {
@@ -122,6 +108,7 @@ const AuthFormSginUp = ({ heading }) => {
     <div className="w-[620px] h-[560px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
       {alertT.isAlert && (
         <Alerts
+          key={`${alertT.level}-${alertT.message}`}
           message={alertT.message}
           detail={alertT.detail}
           type={alertT.level}
@@ -133,7 +120,7 @@ const AuthFormSginUp = ({ heading }) => {
           <legend className="text-[30px] font-[700] text-[#9f3247]">
             {heading}
           </legend>
-          {/* Only on Mobile */}
+
           {isMobile && (
             <div className="flex items-center gap-1">
               <p className="text-[#848a8f] text-[12px]">
@@ -147,6 +134,7 @@ const AuthFormSginUp = ({ heading }) => {
               </span>
             </div>
           )}
+
           <Input
             title={`Email *`}
             id={`email`}
@@ -154,10 +142,7 @@ const AuthFormSginUp = ({ heading }) => {
             htmlFor={`email`}
             className={`focus:outline-[#9f3248]`}
             value={email}
-            onChange={(e) => {
-              setAlert({ isAlert: false, message: '' });
-              setEmail(e.target.value);
-            }}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <div className="relative w-full">
@@ -166,12 +151,9 @@ const AuthFormSginUp = ({ heading }) => {
               id="password"
               type={isHarshed ? 'text' : 'password'}
               htmlFor="password"
-              className="focus:outline-[#9f3248] pr-10" // Ensure space for icon
+              className="focus:outline-[#9f3248] pr-10"
               value={password}
-              onChange={(e) => {
-                setAlert({ isAlert: false, message: '' });
-                setPassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
             />
             {isHarshed ? (
               <FaEye
@@ -189,15 +171,12 @@ const AuthFormSginUp = ({ heading }) => {
           <div className="relative w-full">
             <Input
               title="Confirm Password *"
-              id="password"
+              id="confirm-password"
               type={isHarshed ? 'text' : 'password'}
-              htmlFor="password"
-              className="focus:outline-[#9f3248] pr-10" // Ensure space for icon
+              htmlFor="confirm-password"
+              className="focus:outline-[#9f3248] pr-10"
               value={confirmPass}
-              onChange={(e) => {
-                setAlert({ isAlert: false, message: '' });
-                setConfirmPass(e.target.value);
-              }}
+              onChange={(e) => setConfirmPass(e.target.value)}
             />
             {isHarshed ? (
               <FaEye
@@ -211,22 +190,20 @@ const AuthFormSginUp = ({ heading }) => {
               />
             )}
           </div>
+
           <div className="relative w-full">
             <Input
               title="Referral code (optional)"
               id="referral_code"
               type="text"
               htmlFor="referral_code"
-              className="focus:outline-[#9f3248]" // Ensure space for icon
+              className="focus:outline-[#9f3248]"
               value={referral_code}
-              onChange={(e) => {
-                setAlert({ isAlert: false, message: '' });
-                setReferralCode(e.target.value);
-              }}
+              onChange={(e) => setReferralCode(e.target.value)}
             />
           </div>
 
-          <div className="flex items-center  gap-4">
+          <div className="flex items-center gap-4">
             <Input
               id={`checkbox`}
               type={`checkbox`}
@@ -242,12 +219,12 @@ const AuthFormSginUp = ({ heading }) => {
               </a>{' '}
               and{' '}
               <a className="text-[#de506d]" href="/terms-conditions">
-                Terms & Condictions,
-              </a>{' '}
+                Terms & Condictions
+              </a>
+              ,
             </p>
-
-            {/* <p className="text-[#848a8f]">I accept terms and conditions</p> */}
           </div>
+
           <Button
             label={`Register`}
             onClick={submit}
@@ -258,10 +235,11 @@ const AuthFormSginUp = ({ heading }) => {
           </Button>
         </fieldset>
       </form>
+
       <div className="flex flex-col gap-3 mt-2 items-center">
         <p>Or sign Up With</p>
         <div className="flex items-center gap-3">
-          <img src={google_auth} alt="" className="w-10 h-10" />
+          <img src={google_auth} alt="Google Sign In" className="w-10 h-10" />
         </div>
       </div>
     </div>
@@ -273,5 +251,3 @@ AuthFormSginUp.propTypes = {
 };
 
 export default AuthFormSginUp;
-
-

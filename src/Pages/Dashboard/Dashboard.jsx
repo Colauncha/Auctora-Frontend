@@ -22,6 +22,8 @@ import Avatar  from "./Avatar";
 import { BsStarFill } from 'react-icons/bs';
 import { PropTypes } from 'prop-types';
 import { useMemo } from 'react';
+import MainModal from '../../Components/modals/MainModal';
+import ReferralView from '../../Components/modals/ReferralView';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
@@ -33,6 +35,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const logoutUser = useAuthStore((state) => state.logout);
   const offCta = ctaContext((state) => state.turnOff);
+
+  // Modals
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -174,9 +179,22 @@ const Dashboard = () => {
     return Component;
   }, []);
 
+  const handleCloseModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const showReferralModal = () => {
+    setModalIsOpen(true);
+  };
+
   return (
     <>
       <div className={style.container}>
+        {modalIsOpen && (
+          <MainModal header="Referrals" close={handleCloseModal}>
+            <ReferralView />
+          </MainModal>
+        )}
         <div className={style.sandwich}>
           <div className={style.avatar}>
             <Avatar
@@ -217,8 +235,8 @@ const Dashboard = () => {
               icon={SettingsIcon}
               className={style.button}
               iconClassName={style.buttonIcon}
-              label="Settings"
-              onClick={() => {}}
+              label="Referral"
+              onClick={() => showReferralModal()}
             />
             <Button
               icon={Logout}
