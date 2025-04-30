@@ -2,6 +2,7 @@
     border: 4px solid rgba(255, 255, 255, 0.70);
     border-left-color: transparent;
     border-radius: 50%;
+    z-index: 95;
   }
 
   .loader {
@@ -9,6 +10,7 @@
     border-left-color: transparent;
     width: 36px;
     height: 36px;
+    z-index: 95;
   }
 
   .loader {
@@ -16,6 +18,7 @@
     border-left-color: transparent;
     width: 36px;
     height: 36px;
+    z-index: 95;
     animation: spin89345 1s linear infinite;
   }
 
