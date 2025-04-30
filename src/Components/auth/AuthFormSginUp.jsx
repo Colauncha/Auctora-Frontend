@@ -63,11 +63,16 @@ const AuthFormSginUp = ({ heading }) => {
       return;
     }
 
+    let payload = { email, password };
+    if (referral_code.length > 0) {
+      payload = { ...payload, referral_code };
+    }
+
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, referral_code }),
+        body: JSON.stringify(payload),
       });
 
       if (response.status === 200 || response.status === 201) {

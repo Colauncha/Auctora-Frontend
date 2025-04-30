@@ -37,3 +37,12 @@
   font-weight: 700;
   color: #7d2435;
 }
+
+@media screen and (max-width: 1050px) {
+  .container {
+    width: 70dvw;
+    left: 15dvw;
+    height: 70dvh;
+    top: 15dvh;
+  }
+}
