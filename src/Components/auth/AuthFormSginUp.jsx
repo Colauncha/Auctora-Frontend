@@ -17,6 +17,7 @@ const AuthFormSginUp = ({ heading }) => {
   const [password, setPassword] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
   const [isHarshed, setIsHarshed] = useState(false);
+  const [isHarshedC, setIsHarshedC] = useState(false); // for confirm password
   const [alertT, setAlert] = useState({
     isAlert: false,
     level: '',
@@ -178,15 +179,15 @@ const AuthFormSginUp = ({ heading }) => {
               value={confirmPass}
               onChange={(e) => setConfirmPass(e.target.value)}
             />
-            {isHarshed ? (
+            {isHarshedC ? (
               <FaEye
                 className="absolute right-3 top-8 text-gray-600 cursor-pointer"
-                onClick={() => setIsHarshed(!isHarshed)}
+                onClick={() => setIsHarshedC(!isHarshedC)}
               />
             ) : (
               <FaEyeSlash
                 className="absolute right-3 top-8 text-gray-600 cursor-pointer"
-                onClick={() => setIsHarshed(!isHarshed)}
+                onClick={() => setIsHarshedC(!isHarshedC)}
               />
             )}
           </div>
