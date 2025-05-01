@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"; // Add useRef
+import { useState, useEffect } from "react";
 import { PropTypes } from 'prop-types';
 import arrowright from "../../../assets/svg/arrow-right.svg";
 import x from "../../../assets/svg/x.svg";
@@ -18,26 +18,11 @@ const Categories = ({
   const [loading, setLoading] = useState(false);
   const [catLoading, setcatLoading] = useState(false);
 
-  const prevValidityRef = useRef(false);
-
   // Add form validation effect
   useEffect(() => {
     const isValid = selectedCategories.length > 0;
-    if (isValid !== prevValidityRef.current) {
-      updateFormValidity(activeStep, isValid);
-      prevValidityRef.current = isValid;
-      
-      // Update form data only when validity changes
-      updateFormData({
-        ...formData,
-        item: {
-          ...formData.item,
-          category_id: isValid ? selectedCategories[0]?.category_id : '',
-          sub_category_id: isValid ? selectedCategories[0]?.id : ''
-        }
-      });
-    }
-  }, [selectedCategories, activeStep, updateFormValidity, formData, updateFormData]);
+    updateFormValidity(activeStep, isValid);
+  }, [selectedCategories, activeStep, updateFormValidity]);
 
   useEffect(() => {
     setcatLoading(true);
@@ -91,43 +76,39 @@ const Categories = ({
   };
 
   const submit = async () => {
+    const endpoint = `${current}auctions/`;
+    let data = JSON.parse(sessionStorage.getItem('product')) || formData;
+    data.item.category_id = selectedCategories[0]?.category_id;
+    data.item.sub_category_id = selectedCategories[0]?.id;
+
+    // Update form data in parent component
+    updateFormData(data);
+
     try {
-      const endpoint = `${current}auctions/`;
-      let data = JSON.parse(sessionStorage.getItem('product')) || formData;
-      data.item.category_id = selectedCategories[0]?.category_id;
-      data.item.sub_category_id = selectedCategories[0]?.id;
-  
-      // Validate selection before API call
-      if (!data.item.category_id || !data.item.sub_category_id) {
-        throw new Error('No category selected');
-      }
-  
-      updateFormData(data);
-  
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(data),
         credentials: 'include',
       });
-  
-      if (!response.ok) {
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Product submitted successfully: ', data);
+        sessionStorage.setItem('product', JSON.stringify(data));
+        return true;
+      } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit');
+        console.error('Error submitting product: ', errorData);
+        return false;
       }
-  
-      const responseData = await response.json();
-      sessionStorage.setItem('product', JSON.stringify(responseData));
-      return true;
     } catch (error) {
-      console.error('Submission error:', error);
-      alert(`Error: ${error.message}`);
-      return false;
+      console.error('Error submitting product: ', error);
     }
   };
+
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full py-8">
       <div className="formatter mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
