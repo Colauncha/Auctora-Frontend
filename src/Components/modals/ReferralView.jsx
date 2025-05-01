@@ -109,7 +109,7 @@ const ReferralView = ({ data }) => {
             value={viewBox.value}
             placeholder="Referral Code"
             readOnly
-            className="py-1 w-[30dvw] text-[#7d2435] text-xs indent-2 bg-[#fafafaaa] rounded-s-lg focus:outline-none"
+            className="py-1 lg:w-[30dvw] md:w-[55dvw] sm:w-[50dvw] text-[#7d2435] text-xs indent-2 bg-[#fafafaaa] rounded-s-lg focus:outline-none"
             name="text"
             type="text"
           />
