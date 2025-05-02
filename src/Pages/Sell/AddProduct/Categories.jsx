@@ -103,6 +103,9 @@ const Categories = ({
       }
   
       updateFormData(data);
+      let item = data.item;
+      let product = data.product;
+      data = { item, ...product };
   
       const response = await fetch(endpoint, {
         method: 'POST',
