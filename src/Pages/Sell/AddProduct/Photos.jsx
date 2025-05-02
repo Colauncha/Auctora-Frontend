@@ -3,13 +3,14 @@ import { PropTypes } from "prop-types";
 import uploadIcon from "../../../assets/icons/upload.png"; 
 import { FaTrash } from "react-icons/fa";
 import Loader from '../../../assets/loader2';
+import { current } from '../../../utils';
 
-const Photos = ({ 
-  activeStep, 
-  handleStepChange, 
+const Photos = ({
+  activeStep,
+  handleStepChange,
   formData,
   updateFormData,
-  updateFormValidity // Added this prop
+  updateFormValidity, // Added this prop
 }) => {
   const [images, setImages] = useState(formData.photos || []);
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ const Photos = ({
     if (JSON.stringify(images) !== JSON.stringify(prevImagesRef.current)) {
       updateFormData({
         ...formData,
-        photos: images
+        photos: images,
       });
       updateFormValidity(activeStep, images.length > 0);
       prevImagesRef.current = images;
@@ -35,7 +36,7 @@ const Photos = ({
   const handleFileUpload = (event) => {
     setLoading(true);
     const files = Array.from(event.target.files || []);
-    
+
     if (files.length === 0) {
       setLoading(false);
       return;
@@ -49,7 +50,7 @@ const Photos = ({
     }
 
     const newImages = [];
-    const fileReaders = files.map(file => {
+    const fileReaders = files.map((file) => {
       return new Promise((resolve) => {
         if (file.size > 5 * 1024 * 1024) {
           alert(`${file.name} exceeds 5MB limit`);
@@ -63,7 +64,7 @@ const Photos = ({
             url: e.target.result,
             name: file.name,
             size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
-            file: file
+            file: file,
           });
           resolve();
         };
@@ -72,30 +73,78 @@ const Photos = ({
     });
 
     Promise.all(fileReaders).then(() => {
-      setImages(prev => [...prev, ...newImages]);
+      setImages((prev) => [...prev, ...newImages]);
       setLoading(false);
     });
   };
 
   const handleDeleteImage = (index) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleNext = () => {
+  // const handleNext = () => {
+  //   if (images.length === 0) {
+  //     alert('Please add at least one photo');
+  //     return;
+  //   }
+  //   handleStepChange(activeStep + 1);
+  // };
+
+  const uploadImage = async () => {
+    setUploading(true);
+    const endpoint = `${current}items/upload_images`;
+    const formData = new FormData();
+    const itemId = JSON.parse(sessionStorage.getItem('product')).data?.item[0]
+      ?.id;
+
     if (images.length === 0) {
       alert('Please add at least one photo');
       return;
     }
-    handleStepChange(activeStep + 1);
+
+    images.forEach((image, index) => {
+      if (image) {
+        console.log(image);
+        formData.append(`image${index + 1}`, image.file);
+      }
+    });
+
+    try {
+      const response = await fetch(
+        `${endpoint}?item_id=${encodeURIComponent(itemId)}`,
+        {
+          method: 'PUT',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          credentials: 'include',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Upload successful:', result);
+      sessionStorage.setItem('product', JSON.stringify(result));
+      setUploading(false);
+      handleStepChange(activeStep + 1);
+      return true;
+    } catch (error) {
+      console.error('Upload failed:', error);
+      setUploading(false);
+      alert('Upload failed. Please try again.');
+      return false;
+    }
   };
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full">
       <div className="formatter">
         <div className="bg-white rounded-lg p-10 mb-4 mt-4">
-          <h2 className="text-xl font-bold mb-4">
-            Add product photos (max 5)
-          </h2>
+          <h2 className="text-xl font-bold mb-4">Add product photos (max 5)</h2>
 
           <div className="border-2 border-dotted border-gray-300 p-4 rounded-lg bg-gray-50 flex flex-wrap gap-4 min-h-[400px]">
             {/* Upload Button */}
@@ -110,7 +159,10 @@ const Photos = ({
                   className="hidden"
                   id="upload-photo"
                 />
-                <label htmlFor="upload-photo" className="text-xs text-center cursor-pointer">
+                <label
+                  htmlFor="upload-photo"
+                  className="text-xs text-center cursor-pointer"
+                >
                   Upload photo
                 </label>
               </div>
@@ -149,7 +201,7 @@ const Photos = ({
             >
               Previous
             </button>
-            
+
             <div className="flex gap-2">
               <button
                 onClick={handleReset}
@@ -158,14 +210,17 @@ const Photos = ({
                 Reset
               </button>
               <button
-                onClick={handleNext}
+                onClick={uploadImage}
                 disabled={images.length === 0}
                 className={`px-6 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full ${
-                  images.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:from-maroon hover:to-maroon'
+                  images.length === 0
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:from-maroon hover:to-maroon'
                 }`}
               >
                 Next
               </button>
+              {(uploading || loading) && <Loader />}
             </div>
           </div>
         </div>
