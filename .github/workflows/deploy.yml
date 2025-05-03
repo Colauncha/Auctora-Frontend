@@ -32,3 +32,22 @@ jobs:
           sudo systemctl restart biddiusApi.service
           
         shell: bash -l {0}
+  
+    - name: Deploy via SSH 2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.BIDDIUS_AWS_HOST }}
+        username: ${{ secrets.BIDDIUS_AWS_SERVER_USER }}
+        key: ${{ secrets.BIDDIUS_AWS_SERVER_KEY }}
+        script: |
+
+          cd /var/www/biddius/Auctora-Frontend || exit 1
+          git reset --hard HEAD
+          git clean -fd
+          git pull --ff-only origin main
+          npm install --legacy-peer-deps
+          npm run build
+          sudo rm -rf /var/www/biddius/html/*
+          sudo cp -r dist/* /var/www/biddius/html/
+          
+        shell: bash -l {0}
