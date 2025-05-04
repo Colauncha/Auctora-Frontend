@@ -14,6 +14,7 @@ import { FaEthereum } from 'react-icons/fa';
 import { capitalize, currencyFormat, current } from '../../utils';
 import style from './css/ProductAuctionDetails.module.css';
 import Loading from '../../assets/loader2';
+import Alerts from '../../Components/alerts/Alerts';
 
 const ProductAuctionDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -44,8 +45,20 @@ const ProductAuctionDetails = () => {
   const [socket, setSocket] = useState(null);
 
   // misc
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: '',
+    message: '',
+    detail: '',
+  });
   const id = useLocation().pathname.split('/').pop();
   const endpoint = current;
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 5000);
+  };
 
   // Status tag color scheme
   const statusTagColor = {
@@ -71,7 +84,12 @@ const ProductAuctionDetails = () => {
       });
       if (!response.ok) {
         let error = await response.json();
-        alert(`Error: ${error.message}`);
+        showAlert(
+          'fail',
+          error.message || 'An error occurred while fetching data.',
+          error.detail || 'Please try again later.',
+        );
+        // alert(`Error: ${error.message}`);
         setLoading(false);
         setBuyNowLoading(false);
         setPlaceBidLoading(false);
@@ -88,7 +106,7 @@ const ProductAuctionDetails = () => {
     }
   };
 
-  // Optimized countdown timer
+  // Auction effects
   useEffect(() => {
     window.scrollTo(0, 0);
     setSellerLoading(true);
@@ -124,7 +142,7 @@ const ProductAuctionDetails = () => {
     fetchAuctionData();
   }, [endpoint, id]);
 
-  // Auction effects
+  // Optimized countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
       if (!auction) return;
@@ -185,11 +203,13 @@ const ProductAuctionDetails = () => {
             setBids(data?.payload.sort((a, b) => b.amount - a.amount));
           }
         } catch (error) {
+          showAlert('fail', 'Error parsing WebSocket message', error.message);
           console.error('Error parsing WebSocket message:', error);
         }
       };
 
       socket_.onerror = (error) => {
+        showAlert('fail', 'WebSocket error', error);
         console.error('WebSocket error:', error);
       };
 
@@ -236,16 +256,23 @@ const ProductAuctionDetails = () => {
     if (live) {
       setPlaceBidLoading(true);
       if (!socket || socket.readyState !== WebSocket.OPEN) {
-        alert('WebSocket is not connected. Please try again later.');
+        showAlert('fail', 'WebSocket Error', 'WebSocket is not connected.');
+        // alert('WebSocket is not connected. Please try again later.');
         setPlaceBidLoading(false);
         return;
       } else if (!amount) {
-        alert('Please enter a bid amount');
+        showAlert('warn', 'Invalid Bid', 'Please enter a bid amount.');
+        // alert('Please enter a bid amount');
         setPlaceBidLoading(false);
         return;
       } else if (amount < bids[0]?.amount) {
         setPlaceBidLoading(false);
-        alert('Bid amount must be greater than the current price');
+        showAlert(
+          'warn',
+          'Invalid Bid',
+          'Bid amount must be greater than the current price.',
+        );
+        // alert('Bid amount must be greater than the current price');
         return;
       }
 
@@ -261,12 +288,18 @@ const ProductAuctionDetails = () => {
 
     // Static
     if (!amount) {
-      alert('Please enter a bid amount');
+      // alert('Please enter a bid amount');
+      showAlert('warn', 'Invalid Bid', 'Please enter a bid amount.');
       setPlaceBidLoading(false);
       return;
     } else if (amount < auction?.current_price) {
       setPlaceBidLoading(false);
-      alert('Bid amount must be greater than the current price');
+      showAlert(
+        'warn',
+        'Invalid Bid',
+        'Bid amount must be greater than the current price.',
+      );
+      // alert('Bid amount must be greater than the current price');
       return;
     }
     try {
@@ -291,11 +324,12 @@ const ProductAuctionDetails = () => {
           ...prevAuction,
           current_price: resp.amount,
         }));
-        alert('Bid placed successfully');
+        showAlert('success', 'Bid Successfully Placed');
+        // alert('Bid placed successfully');
       }
     } catch (error) {
       setPlaceBidLoading(false);
-      alert('An error occurred while processing your request.');
+      // alert('An error occurred while processing your request.');
       console.error('An error occured: ', error);
       return;
     }
@@ -326,11 +360,22 @@ const ProductAuctionDetails = () => {
           current_price: resp.amount,
           status: 'Completed',
         }));
-        alert('Purchase successful');
+        showAlert(
+          'success',
+          'Bid successful',
+          'You have successfully placed your bid.',
+        );
+        // alert('Purchase successful');
       }
     } catch (error) {
       setBuyNowLoading(false);
-      alert('An error occurred while processing your request.');
+      setBiddersPrice(0);
+      showAlert(
+        'fail',
+        'Bid failed',
+        'An error occurred while processing your request.',
+      );
+      // alert('An error occurred while processing your request.');
       console.error('An error occurred: ', error);
       return;
     }
@@ -338,6 +383,14 @@ const ProductAuctionDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 mb-40" id="Top">
+      {alertT.isAlert && (
+        <Alerts
+          key={`${alertT.level}-${alertT.message}`}
+          message={alertT.message}
+          detail={alertT.detail}
+          type={alertT.level}
+        />
+      )}
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
