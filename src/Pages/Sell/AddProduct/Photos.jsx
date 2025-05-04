@@ -4,6 +4,7 @@ import uploadIcon from "../../../assets/icons/upload.png";
 import { FaTrash } from "react-icons/fa";
 import Loader from '../../../assets/loader2';
 import { current } from '../../../utils';
+import Alerts from '../../../Components/alerts/Alerts';
 
 const Photos = ({
   activeStep,
@@ -16,6 +17,19 @@ const Photos = ({
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const prevImagesRef = useRef(images);
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: '',
+    message: '',
+    detail: '',
+  });
+
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 5000);
+  };
 
   // Update form data and validate when images change
   useEffect(() => {
@@ -44,7 +58,8 @@ const Photos = ({
 
     // Check maximum 5 images total
     if (files.length + images.length > 5) {
-      alert('Maximum 5 photos allowed');
+      showAlert('warn', 'Maximum 5 photos allowed');
+      // alert('Maximum 5 photos allowed');
       setLoading(false);
       return;
     }
@@ -53,7 +68,8 @@ const Photos = ({
     const fileReaders = files.map((file) => {
       return new Promise((resolve) => {
         if (file.size > 5 * 1024 * 1024) {
-          alert(`${file.name} exceeds 5MB limit`);
+          showAlert('warn', `${file.name} exceeds 5MB limit`);
+          // alert(`${file.name} exceeds 5MB limit`);
           resolve();
           return;
         }
@@ -98,7 +114,9 @@ const Photos = ({
       ?.id;
 
     if (images.length === 0) {
-      alert('Please add at least one photo');
+      setUploading(false);
+      showAlert('warn', 'Please add at least one photo');
+      // alert('Please add at least one photo');
       return;
     }
 
@@ -123,25 +141,43 @@ const Photos = ({
       );
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        const error = await response.json();
+        showAlert(
+          'fail',
+          error.message || 'Upload failed',
+          error.detail || 'Please try again',
+        );
+        throw new Error(`Error: ${error}`);
       }
 
       const result = await response.json();
       console.log('Upload successful:', result);
-      sessionStorage.setItem('product', JSON.stringify(result));
-      setUploading(false);
-      handleStepChange(activeStep + 1);
+      showAlert('success', result.message, 'Upload successful');
+      setTimeout(() => {
+        sessionStorage.setItem('product', JSON.stringify(result));
+        setUploading(false);
+        handleStepChange(activeStep + 1);
+      }, 1000);
       return true;
     } catch (error) {
       console.error('Upload failed:', error);
       setUploading(false);
-      alert('Upload failed. Please try again.');
+      // showAlert('fail', 'Upload failed', 'Please try again');
+      // alert('Upload failed. Please try again.');
       return false;
     }
   };
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full">
+      {alertT.isAlert && (
+        <Alerts
+          key={`${alertT.level}-${alertT.message}`}
+          message={alertT.message}
+          detail={alertT.detail}
+          type={alertT.level}
+        />
+      )}
       <div className="formatter">
         <div className="bg-white rounded-lg p-10 mb-4 mt-4">
           <h2 className="text-xl font-bold mb-4">Add product photos (max 5)</h2>

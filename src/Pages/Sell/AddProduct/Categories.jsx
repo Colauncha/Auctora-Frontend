@@ -4,21 +4,35 @@ import arrowright from "../../../assets/svg/arrow-right.svg";
 import x from "../../../assets/svg/x.svg";
 import { current } from "../../../utils";
 import Loader from '../../../assets/loader2';
+import Alerts from '../../../Components/alerts/Alerts';
 
-const Categories = ({ 
-  handleStepChange, 
+const Categories = ({
+  handleStepChange,
   activeStep,
   updateFormValidity,
   formData,
-  updateFormData
+  updateFormData,
 }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [catLoading, setcatLoading] = useState(false);
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: '',
+    message: '',
+    detail: '',
+  });
 
   const prevValidityRef = useRef(false);
+
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 5000);
+  };
 
   // Add form validation effect
   useEffect(() => {
@@ -26,18 +40,24 @@ const Categories = ({
     if (isValid !== prevValidityRef.current) {
       updateFormValidity(activeStep, isValid);
       prevValidityRef.current = isValid;
-      
+
       // Update form data only when validity changes
       updateFormData({
         ...formData,
         item: {
           ...formData.item,
           category_id: isValid ? selectedCategories[0]?.category_id : '',
-          sub_category_id: isValid ? selectedCategories[0]?.id : ''
-        }
+          sub_category_id: isValid ? selectedCategories[0]?.id : '',
+        },
       });
     }
-  }, [selectedCategories, activeStep, updateFormValidity, formData, updateFormData]);
+  }, [
+    selectedCategories,
+    activeStep,
+    updateFormValidity,
+    formData,
+    updateFormData,
+  ]);
 
   useEffect(() => {
     setcatLoading(true);
@@ -60,7 +80,12 @@ const Categories = ({
         return prevSelected.filter((category) => category.name !== item.name);
       } else {
         if (prevSelected.length >= 1) {
-          alert('You can only select up to 1 categories.');
+          showAlert(
+            'warn',
+            'Maximum 1 category allowed',
+            'You can only select up to 1 categories.',
+          );
+          // alert('You can only select up to 1 categories.');
           return prevSelected;
         }
         setCheckedItems((prev) => ({ ...prev, [item.name]: true }));
@@ -85,8 +110,8 @@ const Categories = ({
       item: {
         ...formData.item,
         category_id: '',
-        sub_category_id: ''
-      }
+        sub_category_id: '',
+      },
     });
   };
 
@@ -96,46 +121,70 @@ const Categories = ({
       let data = JSON.parse(sessionStorage.getItem('product')) || formData;
       data.item.category_id = selectedCategories[0]?.category_id;
       data.item.sub_category_id = selectedCategories[0]?.id;
-  
+
       // Validate selection before API call
       if (!data.item.category_id || !data.item.sub_category_id) {
+        showAlert(
+          'warn',
+          'No category selected',
+          'Please select a category before proceeding.',
+        );
         throw new Error('No category selected');
       }
-  
+
       updateFormData(data);
       let item = data.item;
       let product = data.product;
       data = { item, ...product };
-  
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(data),
         credentials: 'include',
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
+        showAlert(
+          'fail',
+          errorData.message || 'Failed to submit',
+          errorData.detail || 'Please try again',
+        );
         throw new Error(errorData.message || 'Failed to submit');
       }
-  
+
       const responseData = await response.json();
+      showAlert(
+        'success',
+        responseData.message || 'Submission successful',
+        'Your auction has been submitted successfully',
+      );
       sessionStorage.setItem('product', JSON.stringify(responseData));
       return true;
     } catch (error) {
       console.error('Submission error:', error);
-      alert(`Error: ${error.message}`);
+      showAlert('fail', 'Submissison error', error || 'Please try again');
+      // alert(`Error: ${error.message}`);
       return false;
     }
   };
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full py-8">
+      {alertT.isAlert && (
+        <Alerts
+          key={`${alertT.level}-${alertT.message}`}
+          message={alertT.message}
+          detail={alertT.detail}
+          type={alertT.level}
+        />
+      )}
       <div className="formatter mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="md:grid md:grid-cols-3 md:gap-6 p-6">
+          <div className="md:grid md:grid-cols-3 md:gap-6 p-6">
             {/* First Column (Main Categories - visible on larger screens) */}
             <div className="hidden md:block bg-white p-6 border-r border-gray-200">
               <h2 className="text-lg font-semibold mb-6 text-gray-800">
@@ -231,7 +280,9 @@ const Categories = ({
               ))}
             </p>
 
-            <div className="flex items-center justify-between"> {/* Changed to space-between */}
+            <div className="flex items-center justify-between">
+              {' '}
+              {/* Changed to space-between */}
               <div className="flex space-x-4">
                 <button
                   onClick={() => handleStepChange(activeStep - 1)}
@@ -246,16 +297,18 @@ const Categories = ({
                   Reset
                 </button>
               </div>
-              
               <button
                 onClick={async () => {
                   setLoading(true);
-                  (await submit()) && handleStepChange(activeStep + 1);
+                  (await submit()) &&
+                    setTimeout(() => handleStepChange(activeStep + 1), 1000);
                   setLoading(false);
                 }}
                 type="button"
                 className={`inline-flex items-center px-4 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon ${
-                  selectedCategories.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                  selectedCategories.length === 0
+                    ? 'opacity-50 cursor-not-allowed'
+                    : ''
                 }`}
                 disabled={selectedCategories.length === 0 || loading}
               >
