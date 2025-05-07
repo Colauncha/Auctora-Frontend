@@ -242,12 +242,12 @@ const AuthFormSginUp = ({ heading }) => {
         </fieldset>
       </form>
 
-      <div className="flex flex-col gap-3 mt-2 items-center">
+      {/* <div className="flex flex-col gap-3 mt-2 items-center">
         <p>Or sign Up With</p>
         <div className="flex items-center gap-3">
           <img src={google_auth} alt="Google Sign In" className="w-10 h-10" />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

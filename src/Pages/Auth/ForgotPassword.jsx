@@ -117,7 +117,7 @@ const ForgotPassword = () => {
   return (
 
 
-    <div className="min-h-[60vh] flex items-center justify-center p-2 bg-gray-50">
+    <div className="min-h-[60vh] flex items-center justify-center p-2 mb-40 bg-gray-50">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6"> 
         <h2 className="text-xl sm:text-2xl font-bold mb-3 text-center">
           {step === 1 ? "Forgot Password" : "Reset Your Password"}
