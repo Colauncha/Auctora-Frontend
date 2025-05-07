@@ -196,7 +196,7 @@ const Footer = () => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 w-full pt-32 pb-8 relative">
       {/* CTA Section */}
-      <div className="absolute top-[-80px] left-0 w-full flex justify-center px-6 z-10">
+      <div className="absolute top-[-80px] left-0 w-full flex justify-center px-6 z-100">
         <div className="container mx-auto">
           <Cta className="shadow-xl rounded-xl" />
         </div>
