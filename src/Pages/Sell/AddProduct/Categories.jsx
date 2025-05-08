@@ -163,7 +163,7 @@ const Categories = ({
         responseData.message || 'Submission successful',
         'Your auction has been submitted successfully',
       );
-      sessionStorage.setItem('product', JSON.stringify(responseData));
+      sessionStorage.setItem('product', JSON.stringify(responseData.data));
       return true;
     } catch (error) {
       console.error('Submission error:', error);

@@ -26,7 +26,7 @@ const ProgressTracker = () => {
         name: '',
         description: '',
         category_id: '',
-        sub_category_id: '' 
+        sub_category_id: '',
       },
       product: {
         start_price: 0,
@@ -35,18 +35,18 @@ const ProgressTracker = () => {
         buy_now_price: 0,
         start_date: new Date().toISOString(),
         end_date: '',
-        users_id: sessionStorage.getItem('_user') 
+        users_id: sessionStorage.getItem('_user')
           ? JSON.parse(sessionStorage.getItem('_user')).id
           : '',
         private: false,
         participants: [],
-        status: 'pending'
+        status: 'pending',
       },
       photos: [],
       delivery: {
         options: [],
-        date: ''
-      }
+        address: '',
+      },
     });
   
 
