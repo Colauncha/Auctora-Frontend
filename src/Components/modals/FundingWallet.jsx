@@ -33,13 +33,13 @@ const FundingWallet = () => {
       return;
     }
 
-    if (amount < 1000) {
-      setTimeout(() => {
-        showAlert('warn', 'Minimum funding amount is ₦1000', '');
-        setLoading(false);
-      }, 1000);
-      return;
-    }
+    // if (amount < 1000) {
+    //   setTimeout(() => {
+    //     showAlert('warn', 'Minimum funding amount is ₦1000', '');
+    //     setLoading(false);
+    //   }, 1000);
+    //   return;
+    // }
 
     const endpoint = `${current}users/transactions/init?amount=${amount}`;
 
