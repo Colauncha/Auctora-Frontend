@@ -3,7 +3,7 @@ import style from './css/FundingWallet.module.css';
 import Alerts from '../alerts/Alerts';
 import Loader from '../../assets/loader2';
 import { current } from '../../utils';
-// import { PayStacklogo } from '../../Constants';
+import { PayStacklogo } from '../../Constants';
 
 const FundingWallet = () => {
   const [amount, setAmount] = useState('');
@@ -87,10 +87,10 @@ const FundingWallet = () => {
           type={alertT.level}
         />
       )}
-      {/* <div className={style.header}>
+      <div className={style.header}>
         <h2>Powered by</h2>
         <img src={PayStacklogo} alt="Paystack Logo" />
-      </div> */}
+      </div>
       <div className={style.input}>
         <input
           type="number"
