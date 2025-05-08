@@ -52,6 +52,7 @@ import Avatar from "../assets/svg/ProfileIcon.svg";
 import Edit from "../assets/svg/Edit.svg";
 import Money from "../assets/svg/Money.svg";
 import PlaceHolderImage from '../assets/icons/PlaceHolderImage.png';
+import PayStacklogo from '../assets/svg/paystack-seeklogo.svg';
 
 export {
   logo,
@@ -100,6 +101,7 @@ export {
   Edit,
   Money,
   PlaceHolderImage,
+  PayStacklogo,
 };
 
 // const buildArr = {

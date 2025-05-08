@@ -110,8 +110,7 @@ const Photos = ({
     setUploading(true);
     const endpoint = `${current}items/upload_images`;
     const formData = new FormData();
-    const itemId = JSON.parse(sessionStorage.getItem('product')).data?.item[0]
-      ?.id;
+    const itemId = JSON.parse(sessionStorage.getItem('product')).item[0]?.id;
 
     if (images.length === 0) {
       setUploading(false);
@@ -154,7 +153,6 @@ const Photos = ({
       console.log('Upload successful:', result);
       showAlert('success', result.message, 'Upload successful');
       setTimeout(() => {
-        sessionStorage.setItem('product', JSON.stringify(result));
         setUploading(false);
         handleStepChange(activeStep + 1);
       }, 1000);

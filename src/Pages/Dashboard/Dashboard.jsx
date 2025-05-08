@@ -24,6 +24,8 @@ import { PropTypes } from 'prop-types';
 import { useMemo } from 'react';
 import MainModal from '../../Components/modals/MainModal';
 import ReferralView from '../../Components/modals/ReferralView';
+import FundingWallet from '../../Components/modals/FundingWallet';
+import Withdrawal from '../../Components/modals/Withdrawal';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
@@ -37,7 +39,7 @@ const Dashboard = () => {
   const offCta = ctaContext((state) => state.turnOff);
 
   // Modals
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState({ state: false, type: '' });
 
   useEffect(() => {
     setLoading(true);
@@ -180,19 +182,29 @@ const Dashboard = () => {
   }, []);
 
   const handleCloseModal = () => {
-    setModalIsOpen(false);
+    setModalIsOpen({ state: false, type: '' });
   };
 
-  const showReferralModal = () => {
-    setModalIsOpen(true);
+  const showModal = (type) => {
+    setModalIsOpen({ state: true, type: type });
   };
 
   return (
     <>
       <div className={style.container}>
-        {modalIsOpen && (
+        {modalIsOpen.state && modalIsOpen.type === 'referral' && (
           <MainModal header="Referrals" close={handleCloseModal}>
             <ReferralView />
+          </MainModal>
+        )}
+        {modalIsOpen.state && modalIsOpen.type === 'funding' && (
+          <MainModal header="Fund Wallet" close={handleCloseModal}>
+            <FundingWallet />
+          </MainModal>
+        )}
+        {modalIsOpen.state && modalIsOpen.type === 'withdraw' && (
+          <MainModal header="Withdraw" close={handleCloseModal}>
+            <Withdrawal />
           </MainModal>
         )}
         <div className={style.sandwich}>
@@ -236,7 +248,7 @@ const Dashboard = () => {
               className={style.button}
               iconClassName={style.buttonIcon}
               label="Referral"
-              onClick={() => showReferralModal()}
+              onClick={() => showModal('referral')}
             />
             <Button
               icon={Logout}
@@ -316,14 +328,14 @@ const Dashboard = () => {
                   className={style.panelButton}
                   iconClassName={style.buttonIcon}
                   label="Fund Wallet"
-                  onClick={() => {}}
+                  onClick={() => showModal('funding')}
                 />
                 <Button
                   icon={Withdraw}
                   className={style.panelButton}
                   iconClassName={style.buttonIcon}
                   label="Withdraw"
-                  onClick={() => {}}
+                  onClick={() => showModal('withdraw')}
                 />
               </div>
             </div>
