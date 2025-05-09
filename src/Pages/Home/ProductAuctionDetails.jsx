@@ -15,6 +15,7 @@ import { capitalize, currencyFormat, current } from '../../utils';
 import style from './css/ProductAuctionDetails.module.css';
 import Loading from '../../assets/loader2';
 import Alerts from '../../Components/alerts/Alerts';
+import { shipping, delivery } from '../../Constants';
 
 const ProductAuctionDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -473,6 +474,44 @@ const ProductAuctionDetails = () => {
                     'No description available for this auction.'}
                 </p>
               </div>
+              {auction?.logistic_type.length > 0 && (
+                <div className="mb-6 pb-6 bg-gray-50 rounded-sm border-b border-gray-200">
+                  <h3 className="text-xl mb-3 text-maroon">
+                    Pickup and Logistics
+                  </h3>
+                  <div className="flex flex-col text-black-700 text-sm">
+                    {auction?.logistic_type.map((logistic, ind) => (
+                      <span
+                        key={ind}
+                        className="flex justify-between bg-gray-200 w-[30%] rounded-full px-3 py-1 mr-2 mb-2 text-sm font-medium text-gray-700"
+                      >
+                        {capitalize(logistic)}
+                        {logistic === 'Self pickup' ? (
+                          <img
+                            className="w-[25px] h-[25px]"
+                            src={delivery}
+                            alt="Pickup icon"
+                          />
+                        ) : (
+                          <img
+                            className="w-[25px] h-[25px]"
+                            src={shipping}
+                            alt="Delivery Icon"
+                          />
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                  {auction?.logistic_type.includes('Self pickup') && (
+                    <p className="text-black-700 text-sm mt-2">
+                      <span className="text-maroon font-medium">
+                        Pickup Address:{' '}
+                      </span>
+                      {auction?.pickup_address}
+                    </p>
+                  )}
+                </div>
+              )}
               <h2 className="text-xl mb-4 text-maroon">Sellers Information</h2>
               <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
                 <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
