@@ -52,9 +52,6 @@ const Dashboard = () => {
   //     try {
   //       const response = await fetch(endpoint, {
   //         method: 'GET',
-  //         headers: {
-  //           Authorization: 'Bearer ' + localStorage.getItem('token'),
-  //         },
   //         credentials: 'include',
   //       });
   //       if (response.ok) {
@@ -83,12 +80,15 @@ const Dashboard = () => {
   //       navigate('/sign-in');
   //     }
   //   };
+
   //   let userId = localStorage.getItem('userId');
   //   let data = JSON.parse(sessionStorage.getItem('_user'));
   //   if (!data || !userId) {
+  //     console.log('running fetch...');
   //     getUser();
   //     return;
   //   } else {
+  //     console.log(data);
   //     setUser(data);
   //     setDisplayName(
   //       data.username ? `@${capitalize(data.username)}` : data.email,
@@ -116,7 +116,11 @@ const Dashboard = () => {
         if (response.ok) {
           const result = await response.json();
           const data = result.data;
-
+          if (data === null) {
+            setLoading(false);
+            navigate('/sign-in');
+            return;
+          }
           setTimeout(() => {
             setUser(data);
             setDisplayName(
@@ -127,7 +131,6 @@ const Dashboard = () => {
             setRating(data.rating);
             setLoading(false);
             sessionStorage.setItem('_user', JSON.stringify(data)); // optional cache
-            console.log(data);
           }, 1000);
         } else {
           const error = await response.json();

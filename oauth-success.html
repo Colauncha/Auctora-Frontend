@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Successful</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+    .message {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="message">
+    <h2>Logging you in...</h2>
+    <p>You can close this window if it doesn't close automatically.</p>
+  </div>
+
+  <script>
+    // Notify the main SPA window
+    window.opener?.postMessage({ type: "GOOGLE_AUTH_SUCCESS" }, "*");
+
+    // Close the popup/tab after a brief delay
+    setTimeout(() => {
+      window.close();
+    }, 1000);
+  </script>
+</body>
+</html>

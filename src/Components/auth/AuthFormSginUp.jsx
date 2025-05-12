@@ -104,6 +104,7 @@ const AuthFormSginUp = ({ heading }) => {
   const googleSignUp = async () => {
     const response = await fetch(`${current}users/google/auth`, {
       method: 'GET',
+      credentials: 'include',
     });
 
     if (response.ok) {
