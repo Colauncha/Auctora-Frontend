@@ -158,30 +158,30 @@ import { useEffect } from "react";
 
 const footerArr = [
   {
-    heading: "Company",
+    heading: 'Company',
     links: [
-      { name: "About", url: "/about" },
-      { name: "Features", url: "/features" },
-      { name: "Works", url: "/works" },
-      { name: "Career", url: "/career" },
+      { name: 'About', url: '/about-us' },
+      { name: 'Features', url: '/features' },
+      { name: 'Works', url: '/works' },
+      { name: 'Career', url: '/career' },
     ],
   },
   {
-    heading: "Help",
+    heading: 'Help',
     links: [
-      { name: "Customer Support", url: "/customer-support" },
-      { name: "Delivery Details", url: "/delivery-details" },
-      { name: "Terms & Conditions", url: "/terms-conditions" },
-      { name: "Privacy Policy", url: "/privacy-policy" },
+      { name: 'Customer Support', url: '/customer-support' },
+      { name: 'Delivery Details', url: '/delivery-details' },
+      { name: 'Terms & Conditions', url: '/terms-conditions' },
+      { name: 'Privacy Policy', url: '/privacy-policy' },
     ],
   },
   {
-    heading: "Contact",
+    heading: 'Contact',
     links: [
-      { name: "Account", url: "/account" },
-      { name: "Manage Deliveries", url: "/delivery" },
-      { name: "Orders", url: "/orders" },
-      { name: "Payments", url: "/payments" },
+      { name: 'Account', url: '/account' },
+      { name: 'Manage Deliveries', url: '/delivery' },
+      { name: 'Orders', url: '/orders' },
+      { name: 'Payments', url: '/payments' },
     ],
   },
 ];

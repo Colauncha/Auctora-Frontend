@@ -38,6 +38,21 @@ const AuthFormSignIn = ({ heading }) => {
   const signUp = () => navigate('/sign-up');
   const forgotPassword = () => navigate('/forgot-password');
 
+  const googleSignIn = async () => {
+    const response = await fetch(`${current}users/google/auth`, {
+      method: 'GET',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+      window.open(data.data.url, '_blank');
+    } else {
+      const errorData = await response.json();
+      showAlert('fail', errorData.message, errorData.detail);
+    }
+  };
+
   const validatePassword = (pwd) => {
     const startsWithCapital = /^[A-Z]/.test(pwd);
     const hasMinLength = pwd.length >= 8;
@@ -200,16 +215,19 @@ const AuthFormSignIn = ({ heading }) => {
         </fieldset>
       </form>
 
-      {/* <div className="flex flex-col gap-3 mt-2 items-center">
+      <div className="flex flex-col gap-3 mt-2 items-center">
         <p>Or Login with</p>
-        <div className="flex items-center gap-3">
+        <div
+          onClick={googleSignIn}
+          className="bg-[#f5f5f5] p-3 rounded-full cursor-pointer hover:bg-[#de506d] hover:scale-105 transition-transform duration-300"
+        >
           <img
             src={google_auth}
             alt="Google Auth"
             className="w-10 h-10 cursor-pointer"
           />
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };
