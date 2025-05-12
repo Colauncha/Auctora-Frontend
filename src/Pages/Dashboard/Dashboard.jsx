@@ -41,6 +41,64 @@ const Dashboard = () => {
   // Modals
   const [modalIsOpen, setModalIsOpen] = useState({ state: false, type: '' });
 
+  // useEffect(() => {
+  //   setLoading(true);
+  //   offCta();
+  //   sessionStorage.removeItem('newAccount');
+  //   sessionStorage.removeItem('_user');
+
+  //   const getUser = async () => {
+  //     let endpoint = `${current}users/profile`;
+  //     try {
+  //       const response = await fetch(endpoint, {
+  //         method: 'GET',
+  //         headers: {
+  //           Authorization: 'Bearer ' + localStorage.getItem('token'),
+  //         },
+  //         credentials: 'include',
+  //       });
+  //       if (response.ok) {
+  //         let data = await response.json();
+  //         setTimeout(() => {
+  //           setUser(data.data);
+  //           setDisplayName(
+  //             data.data.username
+  //               ? `@${capitalize(data.data.username)}`
+  //               : data.data.email,
+  //           );
+  //           setAuctions(data.data.auctions);
+  //           setBids(data.data.bids);
+  //           setRating(data.data.rating);
+  //           setLoading(false);
+  //           sessionStorage.setItem('_user', JSON.stringify(data.data));
+  //           console.log(data.data);
+  //         }, 1000);
+  //       } else {
+  //         let data = await response.json();
+  //         console.error(data);
+  //         navigate('/sign-in');
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //       navigate('/sign-in');
+  //     }
+  //   };
+  //   let userId = localStorage.getItem('userId');
+  //   let data = JSON.parse(sessionStorage.getItem('_user'));
+  //   if (!data || !userId) {
+  //     getUser();
+  //     return;
+  //   } else {
+  //     setUser(data);
+  //     setDisplayName(
+  //       data.username ? `@${capitalize(data.username)}` : data.email,
+  //     );
+  //     setAuctions(data.auctions);
+  //     setLoading(false);
+  //     return;
+  //   }
+  // }, [navigate, offCta]);
+
   useEffect(() => {
     setLoading(true);
     offCta();
@@ -48,54 +106,53 @@ const Dashboard = () => {
     sessionStorage.removeItem('_user');
 
     const getUser = async () => {
-      let endpoint = `${current}users/profile`;
+      const endpoint = `${current}users/profile`;
       try {
         const response = await fetch(endpoint, {
           method: 'GET',
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
-          },
-          credentials: 'include',
+          credentials: 'include', // important for sending cookies
         });
+
         if (response.ok) {
-          let data = await response.json();
+          const result = await response.json();
+          const data = result.data;
+
           setTimeout(() => {
-            setUser(data.data);
+            setUser(data);
             setDisplayName(
-              data.data.username
-                ? `@${capitalize(data.data.username)}`
-                : data.data.email,
+              data.username ? `@${capitalize(data.username)}` : data.email,
             );
-            setAuctions(data.data.auctions);
-            setBids(data.data.bids);
-            setRating(data.data.rating);
+            setAuctions(data.auctions);
+            setBids(data.bids);
+            setRating(data.rating);
             setLoading(false);
-            sessionStorage.setItem('_user', JSON.stringify(data.data));
-            console.log(data.data);
+            sessionStorage.setItem('_user', JSON.stringify(data)); // optional cache
+            console.log(data);
           }, 1000);
         } else {
-          let data = await response.json();
-          console.error(data);
+          const error = await response.json();
+          console.error(error);
           navigate('/sign-in');
         }
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        console.error(err);
         navigate('/sign-in');
       }
     };
-    let userId = localStorage.getItem('userId');
-    let data = JSON.parse(sessionStorage.getItem('_user'));
-    if (!data || !userId) {
+
+    const cachedData = sessionStorage.getItem('_user');
+    if (!cachedData) {
       getUser();
-      return;
     } else {
+      const data = JSON.parse(cachedData);
       setUser(data);
       setDisplayName(
         data.username ? `@${capitalize(data.username)}` : data.email,
       );
       setAuctions(data.auctions);
+      setBids(data.bids);
+      setRating(data.rating);
       setLoading(false);
-      return;
     }
   }, [navigate, offCta]);
 
