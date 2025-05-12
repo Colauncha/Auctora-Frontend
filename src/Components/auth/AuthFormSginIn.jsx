@@ -41,6 +41,7 @@ const AuthFormSignIn = ({ heading }) => {
   const googleSignIn = async () => {
     const response = await fetch(`${current}users/google/auth`, {
       method: 'GET',
+      credentials: 'include',
     });
 
     if (response.ok) {
@@ -89,11 +90,10 @@ const AuthFormSignIn = ({ heading }) => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('token', JSON.stringify(data.data.token));
-        showAlert('success', 'Log In Successful');
+        showAlert(data.message, 'Log In Successful');
 
         setTimeout(() => {
-          login(data.data.token.split('.')[0]);
+          login(true);
           setLoading(false);
 
           if (

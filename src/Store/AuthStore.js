@@ -2,13 +2,13 @@
 import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
-  isAuthenticated: !!localStorage.getItem('userId'),
-  login: (id) => {
-    localStorage.setItem('userId', id);
+  isAuthenticated: !!localStorage.getItem('loggedIn'),
+  login: (bool) => {
+    localStorage.setItem('loggedIn', bool);
     set({ isAuthenticated: true });
   },
   logout: () => {
-    localStorage.removeItem('userId');
+    localStorage.removeItem('loggedIn');
     set({ isAuthenticated: false });
   },
 }));
