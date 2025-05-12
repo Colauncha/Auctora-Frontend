@@ -5,16 +5,24 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import TeamCard from "../../Components/TeamCard"; 
 import Uthman from "../../assets/images/AkinTiti.png"
+import placeholder from '../../assets/icons/PlaceHolderImage.png';
 
 const About = () => {
-
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const teamMembers = [
-    { name: "Sola Akano", role: "CEO", image: "/team/sola.jpg" },
-    { name: "Akintola Oluwaseun", role: "Product Manager", image: "/team/akintola.jpg" },
-    { name: "Iyanu Ajimobi", role: "Backend Developer / Technical Lead", image: "/team/iyanu.jpg" },
-    { name: "Adebari Uthman Titilope", role: "Frontend Developer", image: Uthman },
+    { name: 'Sola Akano', role: 'CEO', image: placeholder },
+    { name: 'Akintola Oluwaseun', role: 'Product Manager', image: placeholder },
+    {
+      name: 'Iyanu Ajimobi',
+      role: 'Backend Developer / Technical Lead',
+      image: placeholder,
+    },
+    {
+      name: 'Adebari Uthman Titilope',
+      role: 'Frontend Developer',
+      image: Uthman,
+    },
   ];
 
   const signUp = () => navigate('/sign-up');
@@ -24,16 +32,17 @@ const About = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-6">
           <Breadcrumbs />
-          
+
           {/* Hero Section */}
           <div className="bg-white rounded-lg shadow-sm p-6 md:p-10 mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-[#9F3247] mb-4">
               About <span className="text-[#7B2334]">Biddius</span>
             </h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Your gateway to thrilling online auctions. Whether you're hunting rare collectibles,
-              one-of-a-kind experiences, or everyday bargains, we bring buyers and sellers together
-              in a fun, transparent bidding environment.
+              Your gateway to thrilling online auctions. Whether you&apos;re
+              hunting rare collectibles, one-of-a-kind experiences, or everyday
+              bargains, we bring buyers and sellers together in a fun,
+              transparent bidding environment.
             </p>
           </div>
 
@@ -43,20 +52,21 @@ const About = () => {
               Our Mission
             </h2>
             <p className="text-gray-700 mb-6">
-              To make auctions accessible, exciting, and trustworthy for everyone.
+              To make auctions accessible, exciting, and trustworthy for
+              everyone.
             </p>
             <div className="grid md:grid-cols-3 gap-6">
-              <MissionCard 
+              <MissionCard
                 icon={<FaShieldAlt className="text-2xl" />}
                 title="Transparency"
                 description="Real-time bidding, no hidden fees"
               />
-              <MissionCard 
+              <MissionCard
                 icon={<FaUsers className="text-2xl" />}
                 title="Community"
                 description="Connecting passionate buyers and sellers"
               />
-              <MissionCard 
+              <MissionCard
                 icon={<FaLightbulb className="text-2xl" />}
                 title="Innovation"
                 description="Continuously improving our platform for a seamless experience"
@@ -66,32 +76,36 @@ const About = () => {
 
           {/* Story Section */}
           <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
-            <h2 className="text-2xl font-bold text-[#9F3247] mb-6">Our Story</h2>
+            <h2 className="text-2xl font-bold text-[#9F3247] mb-6">
+              Our Story
+            </h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <p className="text-gray-700 mb-4">
-                  Biddius was founded in 2024 when our CEO Sola Akano noticed a gap in the online auction market.
-                  Frustrated by opaque bidding processes and lack of buyer protection, we set out to create a platform
-                  that prioritizes fairness and excitement in equal measure.
+                  Biddius was founded in 2024 when our CEO Sola Akano noticed a
+                  gap in the online auction market. Frustrated by opaque bidding
+                  processes and lack of buyer protection, we set out to create a
+                  platform that prioritizes fairness and excitement in equal
+                  measure.
                 </p>
                 <p className="text-gray-700">
-                  What started as a small team of four passionate individuals has grown into a thriving marketplace
-                  trusted by thousands of bidders nationwide.
+                  What started as a small team of four passionate individuals
+                  has grown into a thriving marketplace trusted by thousands of
+                  bidders nationwide.
                 </p>
               </div>
               <div className="bg-[#F9F9F9] rounded-lg p-6 border border-[#EEE]">
-                <h3 className="font-semibold text-[#7B2334] mb-3">Milestones & Achievements</h3>
+                <h3 className="font-semibold text-[#7B2334] mb-3">
+                  Milestones & Achievements
+                </h3>
                 <ul className="space-y-2">
                   <li className="flex items-start">
-
                     <span>25,000+ registered bidders</span>
                   </li>
                   <li className="flex items-start">
-
                     <span>10,000+ items sold</span>
                   </li>
                   <li className="flex items-start">
-
                     <span>5 strategic partnerships with top-rated sellers</span>
                   </li>
                 </ul>
@@ -106,7 +120,7 @@ const About = () => {
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {teamMembers.map((member) => (
-                <TeamCard 
+                <TeamCard
                   key={member.name}
                   name={member.name}
                   role={member.role}
@@ -118,21 +132,23 @@ const About = () => {
 
           {/* How It Works */}
           <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
-            <h2 className="text-2xl font-bold text-[#9F3247] mb-6">How It Works</h2>
+            <h2 className="text-2xl font-bold text-[#9F3247] mb-6">
+              How It Works
+            </h2>
             <div className="grid md:grid-cols-3 gap-6">
-              <StepCard 
+              <StepCard
                 icon={<FaSearch className="text-2xl" />}
                 step="1"
                 title="Browse"
                 description="Search or filter by category"
               />
-              <StepCard 
+              <StepCard
                 icon={<FaGavel className="text-2xl" />}
                 step="2"
                 title="Bid"
                 description="Our system auto-bids up to your limit"
               />
-              <StepCard 
+              <StepCard
                 icon={<FaTruck className="text-2xl" />}
                 step="3"
                 title="Win"
@@ -143,19 +159,21 @@ const About = () => {
 
           {/* Why Choose Us */}
           <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
-            <h2 className="text-2xl font-bold text-[#9F3247] mb-6">Why Choose Biddius?</h2>
+            <h2 className="text-2xl font-bold text-[#9F3247] mb-6">
+              Why Choose Biddius?
+            </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <FeatureCard 
+              <FeatureCard
                 icon={<div className="text-[#9F3247]">UI</div>}
                 title="User-First Design"
                 description="Mobile-friendly, intuitive bidding flow"
               />
-              <FeatureCard 
+              <FeatureCard
                 icon={<FaShieldAlt className="text-[#9F3247]" />}
                 title="Safe & Secure"
                 description="SSL-encrypted payments and verified sellers"
               />
-              <FeatureCard 
+              <FeatureCard
                 icon={<MdSupportAgent className="text-[#9F3247]" />}
                 title="24/7 Support"
                 description="Real people, real help—day or night"
@@ -165,12 +183,17 @@ const About = () => {
 
           {/* CTA Section */}
           <div className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] rounded-lg shadow-lg p-8 mb-40 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">Join the Excitement</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">
+              Join the Excitement
+            </h2>
             <p className="text-white mb-6 max-w-2xl mx-auto">
-              Ready to start bidding? Sign up now and place your first bid in under a minute.
+              Ready to start bidding? Sign up now and place your first bid in
+              under a minute.
             </p>
             <button
-             onClick={signUp} className="bg-white text-[#9F3247] px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition shadow-lg">
+              onClick={signUp}
+              className="bg-white text-[#9F3247] px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition shadow-lg"
+            >
               Get Started
             </button>
           </div>
