@@ -1,7 +1,4 @@
 
-
-
-
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { LuAlignJustify } from "react-icons/lu";
