@@ -270,7 +270,7 @@ const Dashboard = () => {
         <div className={style.sandwich}>
           <div className={style.avatar}>
             <Avatar
-              imageUrl={user?.image ? user.image.public_url : null}
+              imageUrl={user?.image_link ? user?.image_link?.link : null}
               username={user.username ? user.username : user.email}
             />
             <div className={style.avatarAfter}></div>

@@ -41,6 +41,7 @@ import YourProduct from './Pages/Sell/AddProduct/YourProduct';
 import AuctionDetails from './Pages/Sell/AddProduct/AuctionDetails';
 import NotFound from './Components/NotFound';
 import ProductSuccess from './Pages/Sell/AddProduct/ProductSuccess';
+import ReviewPage from './Pages/Sell/ReviewPage';
 
 //privacy policy and terms and conditions
 import PrivacyPolicy from './Pages/Terms & Privacy Policy/PrivacyPolicy';
@@ -123,6 +124,7 @@ const App = () => {
           path="/product-details/:id"
           element={<ProductAuctionDetails />}
         />
+        <Route path="/product/finalize/:id" element={<ReviewPage />} />
         <Route
           path="/products"
           element={
@@ -132,7 +134,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/auctiondetails" element={<AuctionDetails />} />
+        <Route path="/auctiondetails/:id" element={<AuctionDetails />} />
 
         <Route
           path="/product-success"
