@@ -4,8 +4,8 @@ const links = {
   host: 'https://api.biddius.com/api/',
 };
 
-const current = links.local;
-// const current = links.host;
+// const current = links.local;
+const current = links.host;
 
 
 const capitalize = (s) => {
