@@ -3,7 +3,7 @@ import { FaLinkedin, FaTwitter } from "react-icons/fa";
 const TeamCard = ({ name, role, image, linkedin, twitter }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[#EEE]">
-
+      {/* Image Container */}
       <div className="relative pt-[100%] bg-gray-100">
         <img 
   src={image}

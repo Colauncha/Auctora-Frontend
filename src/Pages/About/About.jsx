@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import TeamCard from "../../Components/TeamCard"; 
 import Uthman from "../../assets/images/uthman.jpg"
 import david from "../../assets/images/david.jpg"
-import iyanu from "../../assets/images/iaynu.jpg"
+import iyanu from "../../assets/images/iyanu.jpg"
 import ify from "../../assets/images/ify.jpg"
 import theo from "../../assets/images/theo.jpg"
 import placeholder from '../../assets/icons/PlaceHolderImage.png';
