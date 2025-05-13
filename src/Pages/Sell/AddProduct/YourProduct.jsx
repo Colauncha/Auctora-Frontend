@@ -43,7 +43,7 @@ const YourProduct = () => {
                 {auctions.map((item) => (
                   <div
                     key={item.id}
-                    className="relative group cursor-pointer"
+                    className="relative w-[100px] h-[100px] group cursor-pointer"
                     onClick={() => handleProductClick(item, item.id)}
                   >
                     <div className="w-[100px] h-[100px] rounded-lg overflow-hidden">
