@@ -4,25 +4,46 @@ import { MdSupportAgent } from 'react-icons/md';
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import TeamCard from "../../Components/TeamCard"; 
-import Uthman from "../../assets/images/AkinTiti.png"
+import Uthman from "../../assets/images/uthman.jpg"
+import david from "../../assets/images/david.jpg"
+import iyanu from "../../assets/images/iaynu.jpg"
+import ify from "../../assets/images/ify.jpg"
+import theo from "../../assets/images/theo.jpg"
 import placeholder from '../../assets/icons/PlaceHolderImage.png';
 
 const About = () => {
   const navigate = useNavigate();
 
   const teamMembers = [
-    { name: 'Sola Akano', role: 'CEO', image: placeholder },
-    { name: 'Akintola Oluwaseun', role: 'Product Manager', image: placeholder },
+    { name: 'Sola Akano', role: 'CEO', image: placeholder,
+    linkedin: "https://linkedin.com/in/sola-akano"  },
+    { name: 'Akintola Oluwaseun', role: 'Product Manager', image: david,
+    linkedin: "https://www.linkedin.com/in/oluwaseunakintola?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"  },
     {
       name: 'Iyanu Ajimobi',
       role: 'Backend Developer / Technical Lead',
-      image: placeholder,
+      image: iyanu,
+    linkedin: "https://www.linkedin.com/in/i-yan-u?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" 
     },
     {
       name: 'Adebari Uthman Titilope',
       role: 'Frontend Developer',
       image: Uthman,
+    linkedin: "www.linkedin.com/in/adebari-uthman-titilope-57160a227" 
     },
+    {
+      name: 'Ifynaya Okeke',
+      role: 'Frontend Developer',
+      image: ify,
+    linkedin: "https://www.linkedin.com/in/ifunanya-chidimma-2702911b1" 
+    },
+    {
+      name: 'David',
+      role: 'Product Designer',
+      image: theo,
+    linkedin: "https://linkedin.com/in/sola-akano" 
+    },
+
   ];
 
   const signUp = () => navigate('/sign-up');
@@ -34,7 +55,7 @@ const About = () => {
           <Breadcrumbs />
 
           {/* Hero Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6 md:p-10 mb-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm p-6 md:p-10 mb-8 mt-6 text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-[#9F3247] mb-4">
               About <span className="text-[#7B2334]">Biddius</span>
             </h1>
@@ -95,6 +116,24 @@ const About = () => {
                 </p>
               </div>
               <div className="bg-[#F9F9F9] rounded-lg p-6 border border-[#EEE]">
+  <h3 className="font-semibold text-[#7B2334] mb-3">Milestones & Achievements</h3>
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <AchievementItem 
+      number="25,000+" 
+      text="registered bidders" 
+    />
+    <AchievementItem 
+      number="10,000+" 
+      text="items sold" 
+    />
+    <AchievementItem 
+      number="5" 
+      text="strategic partnerships" 
+    />
+  </div>
+</div>
+
+
                 <h3 className="font-semibold text-[#7B2334] mb-3">
                   Milestones & Achievements
                 </h3>
@@ -114,21 +153,22 @@ const About = () => {
           </div>
 
           {/* Team Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-20 md:p-8 ">
             <h2 className="text-2xl font-bold text-[#9F3247] mb-8 text-center">
               Meet the Team
             </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-24">
               {teamMembers.map((member) => (
-                <TeamCard
-                  key={member.name}
-                  name={member.name}
-                  role={member.role}
-                  image={member.image}
-                />
-              ))}
+  <TeamCard
+    key={member.name}
+    name={member.name}
+    role={member.role}
+    image={member.image}
+    linkedin={member.linkedin} // Add this line
+  />
+))}
             </div>
-          </div>
+       
 
           {/* How It Works */}
           <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
@@ -232,6 +272,18 @@ const FeatureCard = ({ icon, title, description }) => (
       <h3 className="font-semibold">{title}</h3>
       <p className="text-gray-600 text-sm">{description}</p>
     </div>
+  </div>
+);
+
+
+const AchievementItem = ({ number, text }) => (
+  <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+    <p className="text-4xl md:text-5xl font-bold text-[#9F3247] mb-2">
+      {number}
+    </p>
+    <p className="text-sm md:text-base text-gray-600">
+      {text}
+    </p>
   </div>
 );
 
