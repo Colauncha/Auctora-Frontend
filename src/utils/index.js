@@ -1,31 +1,26 @@
-const links = {
-  live: 'https://api-auctora.vercel.app/api/',
-  local: 'http://localhost:8000/api/',
-  host: 'https://api.biddius.com/api/',
-};
-
-// const current = links.local;
-const current = links.host;
-
+import { current, links } from './links';
 
 const capitalize = (s) => {
-  if (typeof s !== 'string') return ''
-  let newString = s.charAt(0).toUpperCase() + s.slice(1)
-  return newString
+  if (typeof s !== 'string') return '';
+  let newString = s.charAt(0).toUpperCase() + s.slice(1);
+  return newString;
 };
 
 const charLimit = (s, limit) => {
-  if (typeof s !== 'string') return ''
+  if (typeof s !== 'string') return '';
   if (s.length > limit) {
-    return s.slice(0, limit) + '...'
-  } return s
+    return s.slice(0, limit) + '...';
+  }
+  return s;
 };
 
 const currencyFormat = (num) => {
   const kobo = (num % 1).toFixed(2).substring(2);
-  const naira = Math.floor(num).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  const naira = Math.floor(num)
+    .toString()
+    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
   return `₦${naira}.${kobo}`;
-}
+};
 
 const formatDateTime = (dateString) => {
   const date = new Date(dateString);
@@ -38,12 +33,11 @@ const formatDateTime = (dateString) => {
   return `${day}-${month}-${year} -- ${hours}:${minutes}`;
 };
 
-
 export {
   capitalize,
   currencyFormat,
   charLimit,
   links,
   current,
-  formatDateTime
-}
+  formatDateTime,
+};
