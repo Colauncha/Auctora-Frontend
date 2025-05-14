@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
-import Loader from '../../../assets/loader2';
+import LoaderW from '../../../assets/loaderWhite';
 import { current } from '../../../utils';
 import Alerts from '../../../Components/alerts/Alerts';
 
@@ -19,6 +19,14 @@ const Delivery = ({
     formData.delivery?.address || '',
   );
   const [useHomeAddress, setUseHomeAddress] = useState(false);
+
+  const [currentLocation, setCurrentLocation] = useState(false);
+  const [pickupLongitude, setPickupLongitude] = useState(
+    formData.delivery?.pickup_longitude || null,
+  );
+  const [pickupLatitude, setPickupLatitude] = useState(
+    formData.delivery?.pickup_latitude || null,
+  );
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [alertT, setAlert] = useState({
@@ -35,6 +43,69 @@ const Delivery = ({
     }, 10000);
   };
 
+  const reverseGeocode = async (lat, lon) => {
+    setLoading(true);
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+      {
+        headers: {
+          'User-Agent': 'Biddius/1.0 (https://biddius.com)',
+        },
+      },
+    );
+    const data = await response.json();
+    setLoading(false);
+    if (data && data.display_name) {
+      return data.display_name;
+    } else {
+      throw new Error('No address found');
+    }
+  };
+
+  const toggleCurrentLocation = async () => {
+    const enable = !currentLocation;
+
+    console.log(enable);
+    if (!enable) {
+      setPickupLatitude(null);
+      setPickupLongitude(null);
+      setCurrentLocation(false);
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      showAlert(
+        'fail',
+        'Geolocation not supported',
+        'Please enable location services in your browser settings',
+      );
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        setPickupLatitude(latitude);
+        setPickupLongitude(longitude);
+        setCurrentLocation(true);
+        if (enable) {
+          try {
+            const address = await reverseGeocode(latitude, longitude);
+            setPickupAddress(address);
+          } catch (err) {
+            showAlert('warn', 'Could not get address', err.message);
+          }
+        }
+      },
+      (error) => {
+        showAlert(
+          'fail',
+          'Error',
+          error.message || 'Unable to retrieve your location',
+        );
+      },
+    );
+  };
+
   // Update form validity and sync with ProgressTracker
   useEffect(() => {
     const isValid = selectedOptions.length > 0;
@@ -46,13 +117,19 @@ const Delivery = ({
       delivery: {
         options: selectedOptions,
         address: pickupAddress,
+        pickup_longitude: pickupLongitude,
+        pickup_latitude: pickupLatitude,
       },
     });
-  }, [selectedOptions, pickupAddress]);
+  }, [selectedOptions, pickupAddress, pickupLatitude, pickupLongitude]);
 
   const handleReset = () => {
     setSelectedOptions([]);
     setPickupAddress('');
+    setUseHomeAddress(false);
+    setCurrentLocation(false);
+    setPickupLongitude(null);
+    setPickupLatitude(null);
   };
 
   const handleOptionChange = (option) => {
@@ -73,49 +150,87 @@ const Delivery = ({
       return;
     }
 
-    const id =
-      formData?.id || JSON.parse(sessionStorage.getItem('product'))?.id;
-    const endpoint = `${current}auctions/${id}/`;
-    const data = {
-      logistic_type: selectedOptions,
-      pickup_address: pickupAddress,
-    };
     setLoading(true);
 
-    try {
+    const { item, product, delivery, photos: photoEntries } = formData;
+    const photos = photoEntries.map((photo) => photo.file);
+
+    const payload = JSON.stringify({
+      item,
+      ...product,
+      ...delivery,
+    });
+
+    console.log('Submitting data:', payload, photos);
+
+    const runFetch = async ({ endpoint, method, data, isFormData = false }) => {
+      const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
+
       const response = await fetch(endpoint, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        method,
+        headers,
+        body: data,
         credentials: 'include',
       });
-      if (response.ok) {
-        let data = await response.json();
-        console.log(data);
-        showAlert(
-          'success',
-          'Product updated successfully',
-          'You can now proceed to the next step',
-        );
-        setTimeout(() => {
-          setLoading(false);
-          navigate('/product-success');
-        }, 1500);
-      } else {
-        let data = await response.json();
-        setLoading(false);
-        console.error(data);
-        showAlert(
-          'error',
-          'Error updating product',
-          data?.message || 'An error occurred while updating the product',
-        );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || 'An error occurred during request');
       }
-    } catch (error) {
+
+      return result;
+    };
+
+    try {
+      const postEndpoint = `${current}auctions/`;
+      const created = await runFetch({
+        endpoint: postEndpoint,
+        method: 'POST',
+        data: payload,
+      });
+
+      showAlert(
+        'success',
+        'Product Submitted successfully',
+        'Uploading product images',
+      );
+      console.log('Product created:', created);
+
+      const itemId = created?.data.item?.[0]?.id;
+      if (!itemId) throw new Error('Missing item ID from response');
+
+      const imgEndpoint = `${current}items/upload_images?item_id=${itemId}`;
+      const formData_ = new FormData();
+      photos.forEach((image, index) => {
+        if (image) formData_.append(`image${index + 1}`, image);
+      });
+
+      const uploadResp = await runFetch({
+        endpoint: imgEndpoint,
+        method: 'PUT',
+        data: formData_,
+        isFormData: true,
+      });
+
+      console.log('Image upload response:', uploadResp);
+
+      showAlert(
+        'success',
+        'Product images uploaded successfully',
+        'Your product images have been uploaded successfully',
+      );
+
       setLoading(false);
-      console.log(error);
+      navigate('/product-success');
+    } catch (error) {
+      console.error(error);
+      showAlert(
+        'fail',
+        'Submission Failed',
+        error.message || 'An error occurred during submission',
+      );
+      setLoading(false);
     }
   };
 
@@ -158,7 +273,7 @@ const Delivery = ({
                   type="checkbox"
                   checked={selectedOptions.includes(option)}
                   onChange={() => handleOptionChange(option)}
-                  disabled={false}
+                  disabled={option === 'Courier delivery' ? true : false}
                   className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800"
                 />
                 <span className="text-gray-700">{option}</span>
@@ -168,6 +283,19 @@ const Delivery = ({
 
           <div className="mt-4 md:mt-6">
             <h3 className="text-sm md:text-base font-medium">Pickup Address</h3>
+            <label className="flex items-center space-x-2 cursor-pointer w-[30%] md:w-1/2 lg:w-1/3 mt-1 p-2 md:p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+              <input
+                type="checkbox"
+                checked={currentLocation}
+                onChange={toggleCurrentLocation}
+                disabled={false}
+                className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800"
+              />
+              <span className="text-gray-700">
+                Use current location{' '}
+                {currentLocation && `[${pickupLatitude} - ${pickupLongitude}]`}
+              </span>
+            </label>
             <label className="flex items-center space-x-2 cursor-pointer w-[30%] md:w-1/2 lg:w-1/3 mt-1 p-2 md:p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
               <input
                 type="checkbox"
@@ -217,8 +345,11 @@ const Delivery = ({
                     : 'hover:from-maroon hover:to-maroon'
                 }`}
               >
-                Submit
-                {loading && <Loader className="ml-2" />}
+                {loading ? (
+                  <LoaderW otherStyles="w-[25px] h-[25px] border-2 mx-2" />
+                ) : (
+                  'Submit'
+                )}
               </button>
             </div>
           </div>

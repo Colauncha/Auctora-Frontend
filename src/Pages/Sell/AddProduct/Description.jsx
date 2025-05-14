@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react'; // Added useRef
 import { PropTypes } from 'prop-types';
-import Loader from '../../../assets/loader2';
+import Loader from '../../../assets/loaderWhite';
 
-const Description = ({ 
-  handleStepChange, 
-  activeStep, 
+const Description = ({
+  handleStepChange,
+  activeStep,
   updateFormValidity,
   formData = {
     item: {
       name: '',
       description: '',
       category_id: '',
-      sub_category_id: ''
+      sub_category_id: '',
     },
     product: {
       start_price: 0,
@@ -20,15 +20,16 @@ const Description = ({
       buy_now_price: 0,
       start_date: new Date().toISOString(),
       end_date: '',
-      users_id: sessionStorage.getItem('_user') 
+      users_id: sessionStorage.getItem('_user')
         ? JSON.parse(sessionStorage.getItem('_user')).id
         : '',
+      refundable: false,
       private: false,
       participants: [],
-      status: 'pending'
-    }
-  },          
-  updateFormData 
+      status: 'pending',
+    },
+  },
+  updateFormData,
 }) => {
   const [loading, setLoading] = useState(false);
   const prevValidityRef = useRef();
@@ -47,9 +48,10 @@ const Description = ({
 
   const safeFormData = JSON.parse(JSON.stringify(formData));
 
-
   const validateForm = useCallback(() => {
-    const isEndDateValid = new Date(safeFormData.product.end_date) > new Date(safeFormData.product.start_date);
+    const isEndDateValid =
+      new Date(safeFormData.product.end_date) >
+      new Date(safeFormData.product.start_date);
     return (
       safeFormData.item.name.trim() !== '' &&
       safeFormData.item.description.trim() !== '' &&
@@ -115,6 +117,7 @@ const Description = ({
         users_id: sessionStorage.getItem('_user')
           ? JSON.parse(sessionStorage.getItem('_user')).id
           : '',
+        refundable: false,
         private: false,
         participants: [],
         status: 'pending',
@@ -139,12 +142,12 @@ const Description = ({
   // };
 
   const handleNext = () => {
-    if (loading) return; 
+    if (loading) return;
     setLoading(true);
     sessionStorage.setItem('product', JSON.stringify(formData));
     setTimeout(() => {
       setLoading(false);
-      handleStepChange(activeStep + 1);  // ProgressTracker will handle validation
+      handleStepChange(activeStep + 1); // ProgressTracker will handle validation
     }, 1000);
   };
 
@@ -205,6 +208,24 @@ const Description = ({
 
             {/* Right Side */}
             <div className="flex flex-col space-y-4">
+              <div className="group relative">
+                <label className="block text-black font-semibold">
+                  <input
+                    type="checkbox"
+                    name="refundable"
+                    checked={formData.product.refundable}
+                    onChange={handleProductChange}
+                    className="mr-2"
+                  />
+                  Allow Refund
+                </label>
+                <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
+                  If selected the buyer can choose to request a{' '}
+                  <strong>refund </strong> if they are not satistfied with the
+                  product.
+                </span>
+              </div>
+
               <div>
                 <label className="block text-black font-semibold">
                   <input
@@ -234,7 +255,8 @@ const Description = ({
                   </div>
                 )}
                 <p className="text-sm text-maroon mt-1">
-                  Make sure the <strong>Buy Now Price</strong> is higher than the <strong>Initial Price</strong>
+                  Make sure the <strong>Buy Now Price</strong> is higher than
+                  the <strong>Initial Price</strong>
                 </p>
               </div>
 
@@ -280,11 +302,13 @@ const Description = ({
                   className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
                   required
                 />
-                {formData.product.end_date && new Date(formData.product.end_date) <= new Date(formData.product.start_date) && (
-                  <p className="text-red-500 text-sm mt-1">
-                    End date must be after start date.
-                  </p>
-                )}
+                {formData.product.end_date &&
+                  new Date(formData.product.end_date) <=
+                    new Date(formData.product.start_date) && (
+                    <p className="text-red-500 text-sm mt-1">
+                      End date must be after start date.
+                    </p>
+                  )}
               </div>
             </div>
 
@@ -304,8 +328,11 @@ const Description = ({
                   !validateForm() ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                Next
-                {loading && <Loader className="ml-2 w-5 h-5" />}
+                {loading ? (
+                  <Loader otherStyles="h-[25px] w-[25px] border-2 bg-[rgba(230, 84, 113, 0.59)]" />
+                ) : (
+                  'Next'
+                )}
               </button>
             </div>
           </form>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Alerts from '../../Components/alerts/Alerts';
 import Loader from '../../assets/loader2';
+import LoaderW from '../../assets/loaderWhite';
 import { current, currencyFormat, capitalize } from '../../utils';
 import { CiWarning } from 'react-icons/ci';
 
@@ -182,9 +183,27 @@ const ReviewPage = () => {
                     </span>{' '}
                     {auctions.pickup_address || 'null'}
                   </p>
+                  {auctions.pickup_latitude && auctions.pickup_latitude ? (
+                    <p className="text-md text-gray-500 font-light">
+                      <span className="text-gray-600 font-bold">
+                        Pickup Location:
+                      </span>{' '}
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${auctions?.pickup_latitude},${auctions?.pickup_longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        View on Google Maps
+                      </a>
+                    </p>
+                  ) : (
+                    ''
+                  )}
                 </div>
               </div>
             </div>
+
             <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
               <h2 className="text-2xl font-bold text-[#9F3247] mb-6 border-b pb-2">
                 Seller&apos;s Details
@@ -198,6 +217,7 @@ const ReviewPage = () => {
                 {auctions?.user.phone_number || 'null'}
               </p>
             </div>
+
             <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
               <h2 className="text-2xl font-bold text-[#9F3247] mb-6 border-b pb-2">
                 Finalize Auction
@@ -242,21 +262,23 @@ const ReviewPage = () => {
                     className="bg-[#9F3247] text-white font-bold py-2 px-4 rounded"
                     onClick={() => handleInspecting()}
                   >
-                    {iLoading ? <Loader /> : 'Inspecting'}
+                    {iLoading ? <LoaderW /> : 'Inspecting'}
                   </button>
                   <button
                     className="bg-[#9F3247] text-white font-bold py-2 px-4 rounded"
                     onClick={() => handleFinalize()}
                   >
-                    {fLoading ? <Loader /> : 'Finalize'}
+                    {fLoading ? <LoaderW /> : 'Finalize'}
                   </button>
                 </div>
-                <button
-                  className="bg-[#9F3247] text-white font-bold py-2 px-4 rounded"
-                  onClick={() => handleRequestRefund()}
-                >
-                  Request Refund
-                </button>
+                {auctions?.refundable && (
+                  <button
+                    className="bg-[#9F3247] text-white font-bold py-2 px-4 rounded"
+                    onClick={() => handleRequestRefund()}
+                  >
+                    Request Refund
+                  </button>
+                )}
               </div>
             </div>
           </>

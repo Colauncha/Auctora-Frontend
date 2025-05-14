@@ -3,7 +3,8 @@ import { PropTypes } from "prop-types";
 import uploadIcon from "../../../assets/icons/upload.png"; 
 import { FaTrash } from "react-icons/fa";
 import Loader from '../../../assets/loader2';
-import { current } from '../../../utils';
+import LoaderW from '../../../assets/loaderWhite';
+// import { current } from '../../../utils';
 import Alerts from '../../../Components/alerts/Alerts';
 
 const Photos = ({
@@ -98,72 +99,73 @@ const Photos = ({
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // const handleNext = () => {
-  //   if (images.length === 0) {
-  //     alert('Please add at least one photo');
-  //     return;
-  //   }
-  //   handleStepChange(activeStep + 1);
-  // };
-
   const uploadImage = async () => {
     setUploading(true);
-    const endpoint = `${current}items/upload_images`;
-    const formData = new FormData();
-    const itemId = JSON.parse(sessionStorage.getItem('product')).item[0]?.id;
+    // const endpoint = `${current}items/upload_images`;
+    // const itemId = JSON.parse(sessionStorage.getItem('product')).item[0]?.id;
+    const formData_ = new FormData();
 
     if (images.length === 0) {
       setUploading(false);
       showAlert('warn', 'Please add at least one photo');
-      // alert('Please add at least one photo');
       return;
     }
 
     images.forEach((image, index) => {
       if (image) {
-        console.log(image);
-        formData.append(`image${index + 1}`, image.file);
+        formData_.append(`image${index + 1}`, image.file);
       }
     });
 
-    try {
-      const response = await fetch(
-        `${endpoint}?item_id=${encodeURIComponent(itemId)}`,
-        {
-          method: 'PUT',
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          credentials: 'include',
-        },
-      );
+    console.log('Images:', formData_);
+    updateFormData({
+      ...formData,
+      photos: images,
+    });
 
-      if (!response.ok) {
-        const error = await response.json();
-        showAlert(
-          'fail',
-          error.message || 'Upload failed',
-          error.detail || 'Please try again',
-        );
-        throw new Error(`Error: ${error}`);
-      }
-
-      const result = await response.json();
-      console.log('Upload successful:', result);
-      showAlert('success', result.message, 'Upload successful');
-      setTimeout(() => {
-        setUploading(false);
-        handleStepChange(activeStep + 1);
-      }, 1000);
-      return true;
-    } catch (error) {
-      console.error('Upload failed:', error);
+    setTimeout(() => {
       setUploading(false);
-      // showAlert('fail', 'Upload failed', 'Please try again');
-      // alert('Upload failed. Please try again.');
-      return false;
-    }
+      handleStepChange(activeStep + 1);
+    }, 1000);
+    return true;
+    // try {
+    //   const response = await fetch(
+    //     `${endpoint}?item_id=${encodeURIComponent(itemId)}`,
+    //     {
+    //       method: 'PUT',
+    //       body: formData_,
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem('token')}`,
+    //       },
+    //       credentials: 'include',
+    //     },
+    //   );
+
+    //   if (!response.ok) {
+    //     const error = await response.json();
+    //     showAlert(
+    //       'fail',
+    //       error.message || 'Upload failed',
+    //       error.detail || 'Please try again',
+    //     );
+    //     throw new Error(`Error: ${error}`);
+    //   }
+
+    //   const result = await response.json();
+    //   console.log('Upload successful:', result);
+    //   showAlert('success', result.message, 'Upload successful');
+    //   setTimeout(() => {
+    //     setUploading(false);
+    //     handleStepChange(activeStep + 1);
+    //   }, 1000);
+    //   return true;
+    // } catch (error) {
+    //   console.error('Upload failed:', error);
+    //   setUploading(false);
+    //   // showAlert('fail', 'Upload failed', 'Please try again');
+    //   // alert('Upload failed. Please try again.');
+    //   return false;
+    // }
   };
 
   return (
@@ -252,9 +254,13 @@ const Photos = ({
                     : 'hover:from-maroon hover:to-maroon'
                 }`}
               >
-                Next
+                {uploading ? (
+                  <LoaderW otherStyles="h-[25px] w-[25px] border-2 bg-[rgba(230, 84, 113, 0.59)]" />
+                ) : (
+                  'Next'
+                )}
               </button>
-              {(uploading || loading) && <Loader />}
+              {loading && <Loader />}
             </div>
           </div>
         </div>

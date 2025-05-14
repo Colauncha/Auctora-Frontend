@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fi';
 import { BsLightningCharge, BsStarFill } from 'react-icons/bs';
 import { FaEthereum } from 'react-icons/fa';
+import { RiRefund2Line } from 'react-icons/ri';
 import { capitalize, currencyFormat, current } from '../../utils';
 import style from './css/ProductAuctionDetails.module.css';
 import Loading from '../../assets/loader2';
@@ -442,28 +443,38 @@ const ProductAuctionDetails = () => {
             {/* Product Description */}
             <div className="mt-6 p-6 rounded-md border border-gray-200">
               {auction && (
-                <div className="flex gap-4 mb-6 pb-6 items-center border-b border-gray-200 justify-start">
+                <div className="flex gap-4 mb-6 pb-6 items-center border-b border-gray-200 justify-between">
                   <h1 className="text-2xl font-bold text-maroon">
                     {capitalize(auction?.item[0]?.name)}
                   </h1>
-                  <div
-                    className={`flex items-center rounded-full px-3 py-1
+                  <div className="flex gap-2">
+                    <div
+                      className={`flex items-center rounded-full px-3 py-1 justify-center
                     ${statusTagColor[auction?.status.toLowerCase()]}`}
-                  >
-                    {capitalize(auction?.status)}
-                    <span
-                      className={`ml-2 text-sm ${
-                        statusTagColor[auction?.status.toLowerCase()]
-                      }`}
                     >
-                      {auction?.status === 'completed' ||
-                      auction?.status === 'active' ? (
-                        <FiCheck className="inline" />
-                      ) : (
-                        auction?.status ===
-                        'pending'(<FiClock className="inline" />)
-                      )}
-                    </span>
+                      <span
+                        className={`text-sm ${
+                          statusTagColor[auction?.status.toLowerCase()]
+                        }`}
+                      >
+                        {capitalize(auction?.status)}
+                        {auction?.status === 'completed' ||
+                        auction?.status === 'active' ? (
+                          <FiCheck className="inline ml-1" />
+                        ) : (
+                          auction?.status ===
+                          'pending'(<FiClock className="inline ml-1" />)
+                        )}
+                      </span>
+                    </div>
+                    {!auction?.refundable && (
+                      <div className="flex items-center justify-center bg-gray-200 rounded-full px-3 py-1">
+                        <span className="text-sm text-gray-500">
+                          Refundable
+                          <RiRefund2Line className="inline ml-1 text-green-500" />
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
