@@ -4,6 +4,7 @@ import arrowright from "../../../assets/svg/arrow-right.svg";
 import x from "../../../assets/svg/x.svg";
 import { current } from "../../../utils";
 import Loader from '../../../assets/loader2';
+import LoaderW from '../../../assets/loaderWhite';
 import Alerts from '../../../Components/alerts/Alerts';
 
 const Categories = ({
@@ -115,63 +116,80 @@ const Categories = ({
     });
   };
 
-  const submit = async () => {
-    try {
-      const endpoint = `${current}auctions/`;
-      let data = JSON.parse(sessionStorage.getItem('product')) || formData;
-      data.item.category_id = selectedCategories[0]?.category_id;
-      data.item.sub_category_id = selectedCategories[0]?.id;
+  const submit = () => {
+    setLoading(true);
+    // try {
+    //   const endpoint = `${current}auctions/`;
+    //   let data = JSON.parse(sessionStorage.getItem('product')) || formData;
+    //   data.item.category_id = selectedCategories[0]?.category_id;
+    //   data.item.sub_category_id = selectedCategories[0]?.id;
 
-      // Validate selection before API call
-      if (!data.item.category_id || !data.item.sub_category_id) {
-        showAlert(
-          'warn',
-          'No category selected',
-          'Please select a category before proceeding.',
-        );
-        throw new Error('No category selected');
-      }
+    //   // Validate selection before API call
+    //   if (!data.item.category_id || !data.item.sub_category_id) {
+    //     showAlert(
+    //       'warn',
+    //       'No category selected',
+    //       'Please select a category before proceeding.',
+    //     );
+    //     throw new Error('No category selected');
+    //   }
 
-      updateFormData(data);
-      let item = data.item;
-      let product = data.product;
-      data = { item, ...product };
+    //   updateFormData(data);
+    //   let item = data.item;
+    //   let product = data.product;
+    //   data = { item, ...product };
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(data),
-        credentials: 'include',
-      });
+    //   const response = await fetch(endpoint, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${localStorage.getItem('token')}`,
+    //     },
+    //     body: JSON.stringify(data),
+    //     credentials: 'include',
+    //   });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        showAlert(
-          'fail',
-          errorData.message || 'Failed to submit',
-          errorData.detail || 'Please try again',
-        );
-        throw new Error(errorData.message || 'Failed to submit');
-      }
+    //   if (!response.ok) {
+    //     const errorData = await response.json();
+    //     showAlert(
+    //       'fail',
+    //       errorData.message || 'Failed to submit',
+    //       errorData.detail || 'Please try again',
+    //     );
+    //     throw new Error(errorData.message || 'Failed to submit');
+    //   }
 
-      const responseData = await response.json();
-      showAlert(
-        'success',
-        responseData.message || 'Submission successful',
-        'Your auction has been submitted successfully',
-      );
-      sessionStorage.setItem('product', JSON.stringify(responseData.data));
-      return true;
-    } catch (error) {
-      console.error('Submission error:', error);
-      showAlert('fail', 'Submissison error', error || 'Please try again');
-      // alert(`Error: ${error.message}`);
-      return false;
-    }
+    //   const responseData = await response.json();
+    //   showAlert(
+    //     'success',
+    //     responseData.message || 'Submission successful',
+    //     'Your auction has been submitted successfully',
+    //   );
+    //   sessionStorage.setItem('product', JSON.stringify(responseData.data));
+    //   return true;
+    // } catch (error) {
+    //   console.error('Submission error:', error);
+    //   showAlert('fail', 'Submissison error', error || 'Please try again');
+    //   // alert(`Error: ${error.message}`);
+    //   return false;
+    // }
+    updateFormData({
+      ...formData,
+      item: {
+        ...formData.item,
+        category_id: selectedCategories[0]?.category_id,
+        sub_category_id: selectedCategories[0]?.id,
+      },
+    });
+    let data = formData;
+    sessionStorage.setItem('product', JSON.stringify(data));
+    setTimeout(() => {
+      setLoading(false);
+      handleStepChange(activeStep + 1);
+    }, 1000);
+    return true;
   };
+
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full py-8">
       {alertT.isAlert && (
@@ -298,22 +316,20 @@ const Categories = ({
                 </button>
               </div>
               <button
-                onClick={async () => {
-                  setLoading(true);
-                  (await submit()) &&
-                    setTimeout(() => handleStepChange(activeStep + 1), 1000);
-                  setLoading(false);
-                }}
+                onClick={() => submit()}
                 type="button"
-                className={`inline-flex items-center px-4 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon ${
+                className={`inline-flex items-center px-5 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon ${
                   selectedCategories.length === 0
                     ? 'opacity-50 cursor-not-allowed'
                     : ''
                 }`}
                 disabled={selectedCategories.length === 0 || loading}
               >
-                Next
-                {loading && <Loader className="ml-2 w-5 h-5" />}
+                {loading ? (
+                  <LoaderW otherStyles="h-[20px] w-[20px] border-2" />
+                ) : (
+                  'Next'
+                )}
               </button>
             </div>
           </div>

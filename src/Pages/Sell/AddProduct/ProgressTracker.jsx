@@ -38,6 +38,7 @@ const ProgressTracker = () => {
         users_id: sessionStorage.getItem('_user')
           ? JSON.parse(sessionStorage.getItem('_user')).id
           : '',
+        refundable: false,
         private: false,
         participants: [],
         status: 'pending',
@@ -46,6 +47,8 @@ const ProgressTracker = () => {
       delivery: {
         options: [],
         address: '',
+        pickup_longitude: null,
+        pickup_latitude: null,
       },
     });
   

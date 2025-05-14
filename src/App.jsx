@@ -124,7 +124,14 @@ const App = () => {
           path="/product-details/:id"
           element={<ProductAuctionDetails />}
         />
-        <Route path="/product/finalize/:id" element={<ReviewPage />} />
+        <Route
+          path="/product/finalize/:id"
+          element={
+            <ProtectedRoute>
+              <ReviewPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/products"
           element={
