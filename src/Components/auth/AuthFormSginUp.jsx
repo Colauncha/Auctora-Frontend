@@ -127,7 +127,7 @@ const AuthFormSginUp = ({ heading }) => {
   };
 
   return (
-    <div className="w-[620px] h-[560px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
+    <div className="w-[900px] h-[590px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
       {alertT.isAlert && (
         <Alerts
           key={`${alertT.level}-${alertT.message}`}

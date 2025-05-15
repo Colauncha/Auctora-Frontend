@@ -203,7 +203,7 @@ const Footer = () => {
       </div>
 
       {/* Footer code */}
-      <footer className="container mx-auto px-6 sm:px-8 lg:px-12 mt-40 sm:mt-40 lg:mt-10">
+      <footer className="container mx-auto px-6 sm:px-8 lg:px-12 mt-40 sm:mt-48 lg:mt-10">
         <div className="flex flex-col lg:flex-row justify-between gap-16 w-full">
 
           {/* Left Section  */}

@@ -9,15 +9,17 @@ import david from "../../assets/images/david.jpg"
 import iyanu from "../../assets/images/iyanu.jpg"
 import ify from "../../assets/images/ify.jpg"
 import theo from "../../assets/images/theo.jpg"
+import mrsola from "../../assets/images/MrSola.jpg"
 import placeholder from '../../assets/icons/PlaceHolderImage.png';
 
 const About = () => {
   const navigate = useNavigate();
 
   const teamMembers = [
-    { name: 'Sola Akano', role: 'CEO', image: placeholder,
-    linkedin: "https://linkedin.com/in/sola-akano"  },
-    { name: 'Akintola Oluwaseun', role: 'Product Manager', image: david,
+    { name: 'Sola Akano', role: 'CEO', image: mrsola,
+    linkedin: "www.linkedin.com/in/akano-oluwasola"  },
+
+    { name: 'Akintola Oluwaseun', role: 'Product Manager', image: theo,
     linkedin: "https://www.linkedin.com/in/oluwaseunakintola?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"  },
     {
       name: 'Iyanu Ajimobi',
@@ -32,7 +34,7 @@ const About = () => {
     linkedin: "www.linkedin.com/in/adebari-uthman-titilope-57160a227" 
     },
     {
-      name: 'Ifynaya Okeke',
+      name: 'Ifunanya Ugwoke',
       role: 'Frontend Developer',
       image: ify,
     linkedin: "https://www.linkedin.com/in/ifunanya-chidimma-2702911b1" 
@@ -40,8 +42,8 @@ const About = () => {
     {
       name: 'David',
       role: 'Product Designer',
-      image: theo,
-    linkedin: "https://linkedin.com/in/sola-akano" 
+      image: david,
+    linkedin: "https://www.linkedin.com/in/david-adesope-237210223?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" 
     },
 
   ];
@@ -116,7 +118,7 @@ const About = () => {
                 </p>
               </div>
               <div className="bg-[#F9F9F9] rounded-lg p-6 border border-[#EEE]">
-  <h3 className="font-semibold text-[#7B2334] mb-3">Milestones & Achievements</h3>
+  <h3 className="font-semibold text-lg text-[#7B2334] mb-3">Milestones & Achievements</h3>
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <AchievementItem 
       number="25,000+" 
@@ -134,20 +136,9 @@ const About = () => {
 </div>
 
 
-                <h3 className="font-semibold text-[#7B2334] mb-3">
-                  Milestones & Achievements
-                </h3>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <span>25,000+ registered bidders</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span>10,000+ items sold</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span>5 strategic partnerships with top-rated sellers</span>
-                  </li>
-                </ul>
+
+
+               
               </div>
             </div>
           </div>
