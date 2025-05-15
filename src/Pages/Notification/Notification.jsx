@@ -1,7 +1,6 @@
 import Slider from '../../Components/Slider';
 // import AuctionListing from "../Home/AuctionListing";
 import Breadcrumbs from '../../Components/Breadcrumbs';
-import Pagination from '../../Components/Pagination';
 import { useState } from 'react';
 import useModeStore from '../../Store/Store';
 // import { FaAngleDown, FaTimes } from "react-icons/fa";
@@ -15,13 +14,7 @@ const Notification = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
-  // pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10; // Set the total number of pages
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
   return (
     <div className="formatter">
       <Breadcrumbs />
@@ -50,13 +43,6 @@ const Notification = () => {
             </Modal>
           </div>
         </div>
-        <>
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </>
       </div>
     </div>
   );
