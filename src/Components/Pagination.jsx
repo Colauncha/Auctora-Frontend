@@ -40,10 +40,10 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
       <button
         onClick={() => handlePageClick(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`flex items-center justify-center px-1 lg:px-4 lg:py-2 text-[11px] lg:text-[14px] border rounded-md text-[#7B2334] border-[#7B2334] ${
+        className={`flex items-center justify-center px-2 py-1 text-[12px] md:text-[13px] lg:px-2 lg:py-1 lg:text-[14px] border rounded-md text-[#7B2334] border-[#7B2334] transition-all duration-200 ease-in-out ${
           currentPage === 1
             ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-[#7B2334] hover:text-white'
+            : 'hover:bg-[#7B2334aa] hover:text-white'
         }`}
       >
         &larr;
@@ -55,16 +55,19 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
           <button
             key={index}
             onClick={() => handlePageClick(page)}
-            className={`lg:px-4 px-2 text-[10px] lg:text-[14px] lg:py-2 rounded-md ${
+            className={`px-3 py-1 text-[12px] md:px-4 md:py-2 md:text-[14px] rounded-md transition-all duration-200 ease-in-out ${
               page === currentPage
                 ? 'bg-[#7B2334] text-white'
-                : 'text-[#7B2334] border border-[#7B2334] hover:bg-[#7B2334] hover:text-white'
+                : 'text-[#7B2334] border border-[#7B2334] hover:bg-[#7B2334aa] hover:text-white'
             }`}
           >
             {page}
           </button>
         ) : (
-          <span key={index} className="lg:px-4 lg:py-2 text-[#7B2334]">
+          <span
+            key={index}
+            className="px-3 py-1 text-[12px] md:px-4 md:py-2 text-[#7B2334]"
+          >
             ...
           </span>
         ),
@@ -74,10 +77,10 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
       <button
         onClick={() => handlePageClick(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`flex items-center justify-center px-1 lg:px-4 lg:py-2 text-[11px] lg:text-[14px] border rounded-md text-[#7B2334] border-[#7B2334] ${
+        className={`flex items-center justify-center px-2 py-1 text-[12px] md:text-[13px] lg:px-2 lg:py-1 lg:text-[14px] border rounded-md text-[#7B2334] border-[#7B2334] transition-all duration-200 ease-in-out ${
           currentPage === totalPages
             ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-[#7B2334] hover:text-white'
+            : 'hover:bg-[#7B2334aa] hover:text-white'
         }`}
       >
         &rarr;
