@@ -9,43 +9,52 @@ import david from "../../assets/images/david.jpg"
 import iyanu from "../../assets/images/iyanu.jpg"
 import ify from "../../assets/images/ify.jpg"
 import theo from "../../assets/images/theo.jpg"
-import mrsola from "../../assets/images/MrSola.jpg"
-import placeholder from '../../assets/icons/PlaceHolderImage.png';
+import mrsola from '../../assets/images/MrSola.jpg';
 
 const About = () => {
   const navigate = useNavigate();
 
   const teamMembers = [
-    { name: 'Sola Akano', role: 'CEO', image: mrsola,
-    linkedin: "www.linkedin.com/in/akano-oluwasola"  },
+    {
+      name: 'Sola Akano',
+      role: 'CEO',
+      image: mrsola,
+      linkedin: 'www.linkedin.com/in/akano-oluwasola',
+    },
 
-    { name: 'Akintola Oluwaseun', role: 'Product Manager', image: theo,
-    linkedin: "https://www.linkedin.com/in/oluwaseunakintola?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"  },
+    {
+      name: 'Akintola Oluwaseun',
+      role: 'Product Manager',
+      image: theo,
+      linkedin:
+        'https://www.linkedin.com/in/oluwaseunakintola?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app',
+    },
     {
       name: 'Iyanu Ajimobi',
       role: 'Backend Developer / Technical Lead',
       image: iyanu,
-    linkedin: "https://www.linkedin.com/in/i-yan-u?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" 
+      linkedin:
+        'https://www.linkedin.com/in/i-yan-u?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app',
     },
     {
       name: 'Adebari Uthman Titilope',
       role: 'Frontend Developer',
       image: Uthman,
-    linkedin: "www.linkedin.com/in/adebari-uthman-titilope-57160a227" 
+      linkedin: 'www.linkedin.com/in/adebari-uthman-titilope-57160a227',
     },
     {
       name: 'Ifunanya Ugwoke',
       role: 'Frontend Developer',
       image: ify,
-    linkedin: "https://www.linkedin.com/in/ifunanya-chidimma-2702911b1" 
+      linkedin: 'https://www.linkedin.com/in/ifunanya-chidimma-2702911b1',
     },
     {
-      name: 'David',
+      name: 'David Adesope',
       role: 'Product Designer',
       image: david,
-    linkedin: "https://www.linkedin.com/in/david-adesope-237210223?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" 
+      linkedin:
+        'https://www.linkedin.com/in/david-adesope-237210223?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app',
     },
-
   ];
 
   const signUp = () => navigate('/sign-up');
