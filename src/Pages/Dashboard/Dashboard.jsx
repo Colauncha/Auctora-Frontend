@@ -191,7 +191,7 @@ const Dashboard = () => {
   };
 
   const viewAuction = async (id) => {
-    navigate(`/auctiondetails/${id}`);
+    navigate(`/products/${id}`);
   };
 
   const AddProduct = () => {
