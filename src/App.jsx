@@ -145,7 +145,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/auctiondetails/:id" element={<AuctionDetails />} />
+        <Route path="/products/:id" element={<AuctionDetails />} />
 
         <Route
           path="/product-success"
@@ -177,19 +177,19 @@ const App = () => {
         />
       </Routes>
 
-          {/* Add ToastContainer here */}
-    <ToastContainer
-      position="top-right"
-      autoClose={3000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-    />
+      {/* Add ToastContainer here */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
 
       <Footer />
     </div>

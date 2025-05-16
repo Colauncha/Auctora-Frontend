@@ -22,7 +22,7 @@ const YourProduct = () => {
   };
 
   const handleProductClick = (product, id) => {
-    navigate(`/auctiondetails/${id}`, { state: { product } });
+    navigate(`/products/${id}`, { state: { product } });
   };
 
   return (

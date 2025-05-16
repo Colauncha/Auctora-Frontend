@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import style from './css/FundingWallet.module.css';
 import Alerts from '../alerts/Alerts';
-import Loader from '../../assets/loader2';
+import Loader from '../../assets/loaderWhite';
 import { current } from '../../utils';
 import { PayStacklogo } from '../../Constants';
 
@@ -99,7 +99,11 @@ const FundingWallet = () => {
           placeholder="Enter amount in Naira"
         />
         <button onClick={() => handleSubmit()}>
-          {loading ? <Loader /> : 'Fund Wallet'}
+          {loading ? (
+            <Loader otherStyles="h-[20px] w-[20px] border-2" />
+          ) : (
+            'Fund Wallet'
+          )}
         </button>
       </div>
     </div>
