@@ -90,7 +90,7 @@ const AuthFormSignIn = ({ heading }) => {
 
       if (response.ok) {
         const data = await response.json();
-        showAlert(data.message, 'Log In Successful');
+        showAlert('success', data.message, 'Log In Successful');
 
         setTimeout(() => {
           login(true);
