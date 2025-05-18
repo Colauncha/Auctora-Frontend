@@ -37,6 +37,22 @@
   padding: 20px;
 }
 
+.input > div > input {
+  width: 80%;
+  padding: 10px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.input > div > input:focus {
+  outline: none;
+  border-color: #b06f6d;
+}
+.input > div > input::placeholder {
+  color: #999;
+}
+
 .input > input {
   width: 100%;
   padding: 10px;
@@ -50,6 +66,14 @@
 }
 .input > input::placeholder {
   color: #999;
+}
+
+.input > div > button {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+  width: 20%;
 }
 
 .input > button {
