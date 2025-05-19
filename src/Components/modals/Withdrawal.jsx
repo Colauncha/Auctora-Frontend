@@ -52,6 +52,7 @@ const Withdrawal = () => {
     // }
 
     const endpoint = `${current}users/transactions/withdraw?amount=${amount}`;
+    const identifier = JSON.parse(sessionStorage.getItem('_user')).email;
 
     try {
       const response = await fetch(endpoint, {
@@ -61,6 +62,7 @@ const Withdrawal = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          identifier,
           password,
         }),
       });
