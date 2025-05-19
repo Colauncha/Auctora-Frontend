@@ -7,6 +7,7 @@ import { current, currencyFormat } from '../../utils';
 
 const Withdrawal = () => {
   const [amount, setAmount] = useState('');
+  const [password, setPassword] = useState('');
   const [alertT, setAlert] = useState({
     isAlert: false,
     level: 'warn',
@@ -14,6 +15,7 @@ const Withdrawal = () => {
     detail: '',
   });
   const [loading, setLoading] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const showAlert = (level, message, detail = '') => {
     setAlert({ isAlert: true, level, message, detail });
@@ -33,6 +35,14 @@ const Withdrawal = () => {
       return;
     }
 
+    if (!password) {
+      setTimeout(() => {
+        showAlert('warn', 'Please enter your password', '');
+        setLoading(false);
+      }, 1000);
+      return;
+    }
+
     // if (amount < 1000) {
     //   setTimeout(() => {
     //     showAlert('warn', 'Minimum funding amount is ₦1000', '');
@@ -42,6 +52,7 @@ const Withdrawal = () => {
     // }
 
     const endpoint = `${current}users/transactions/withdraw?amount=${amount}`;
+    const identifier = JSON.parse(sessionStorage.getItem('_user')).email;
 
     try {
       const response = await fetch(endpoint, {
@@ -50,6 +61,10 @@ const Withdrawal = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          identifier,
+          password,
+        }),
       });
       if (response.ok) {
         const resp = await response.json();
@@ -90,12 +105,28 @@ const Withdrawal = () => {
         <img src={PayStacklogo} alt="Paystack Logo" />
       </div>
       <div className={style.input}>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Enter amount in Naira"
-        />
+        <div className="flex flex-row w-[100%]">
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Enter amount in Naira"
+          />
+          <button
+            onClick={() => setIsAuthenticating(!isAuthenticating)}
+            className="bg-blue-500 text-white"
+          >
+            Authenticate
+          </button>
+        </div>
+        {isAuthenticating && (
+          <input
+            type="text"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
+          />
+        )}
         <button
           className="flex justify-center items-center"
           onClick={() => handleSubmit()}
