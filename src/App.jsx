@@ -39,20 +39,21 @@ import Payment from './Pages/Payment/Payment';
 import ProductAuctionDetails from './Pages/Home/ProductAuctionDetails';
 import YourProduct from './Pages/Sell/AddProduct/YourProduct';
 import AuctionDetails from './Pages/Sell/AddProduct/AuctionDetails';
-import NotFound from './Components/NotFound';
 import ProductSuccess from './Pages/Sell/AddProduct/ProductSuccess';
 import ReviewPage from './Pages/Sell/ReviewPage';
 
 //privacy policy and terms and conditions
 import PrivacyPolicy from './Pages/Terms & Privacy Policy/PrivacyPolicy';
 import TermsCondition from './Pages/Terms & Privacy Policy/TermsCondition';
+import NotFound from './Components/NotFound';
+import Construction from './Pages/misc/Construction';
 
 // For all pages to start from top
 import ScrollToTop from './Components/ScrollToTop';
 
 import useAuthStore from './Store/AuthStore';
 
-// ToastContainer 
+// ToastContainer
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -108,6 +109,8 @@ const App = () => {
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
+
+        <Route path="/construction/*" element={<Construction />} />
 
         {/* Privacy Policy */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />

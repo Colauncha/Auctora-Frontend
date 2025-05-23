@@ -15,42 +15,44 @@ import twitter from "../assets/icons/1.png";
 import facebook from "../assets/icons/2.png";
 import instaggram from "../assets/icons/3.png";
 import github from "../assets/icons/4.png";
-import fb_auth from "../assets/icons/fb_auth.png";
-import insta_auth from "../assets/icons/insta.png";
-import google_auth from "../assets/icons/google_auth.png";
-import filter_icom from "../assets/icons/filter_icon.png";
-import upload from "../assets/icons/upload.png";
+import linkedin from '../assets/icons/5.svg';
+import Construction from '../assets/icons/construction.svg';
+import fb_auth from '../assets/icons/fb_auth.png';
+import insta_auth from '../assets/icons/insta.png';
+import google_auth from '../assets/icons/google_auth.png';
+import filter_icom from '../assets/icons/filter_icon.png';
+import upload from '../assets/icons/upload.png';
 
-import headphone from "../assets/svg/headphone.svg";
-import cellphone from "../assets/svg/phones.svg";
-import computer from "../assets/svg/computers.svg";
-import camera from "../assets/svg/Camera.svg";
-import gamepad from "../assets/svg/gaming.svg";
-import smartwatch from "../assets/svg/SmartWatch.svg";
+import headphone from '../assets/svg/headphone.svg';
+import cellphone from '../assets/svg/phones.svg';
+import computer from '../assets/svg/computers.svg';
+import camera from '../assets/svg/Camera.svg';
+import gamepad from '../assets/svg/gaming.svg';
+import smartwatch from '../assets/svg/SmartWatch.svg';
 
 // desktops
-import dheadphone from "../assets/svg/dheadphone.svg";
-import dphone from "../assets/svg/dphone.svg";
-import dcamera from "../assets/svg/dcamera.svg";
-import dgaming from "../assets/svg/dgaming.svg";
-import dsmartwatch from "../assets/svg/dsmartwatch.svg";
-import dcomputer from "../assets/svg/dcomputer.svg";
+import dheadphone from '../assets/svg/dheadphone.svg';
+import dphone from '../assets/svg/dphone.svg';
+import dcamera from '../assets/svg/dcamera.svg';
+import dgaming from '../assets/svg/dgaming.svg';
+import dsmartwatch from '../assets/svg/dsmartwatch.svg';
+import dcomputer from '../assets/svg/dcomputer.svg';
 //shipping services
-import shipping from "../assets/svg/shipping.svg";
-import delivery from "../assets/svg/delivery.svg";
-import category from "../Pages/Home/Category";
+import shipping from '../assets/svg/shipping.svg';
+import delivery from '../assets/svg/delivery.svg';
+import category from '../Pages/Home/Category';
 
 // Icons
-import WalletHistory from "../assets/svg/WalletHistory.svg";
-import FundWallet from "../assets/svg/FundWallet.svg";
-import Withdraw from "../assets/svg/Withdraw.svg";
-import Logout from "../assets/svg/Logout.svg";
-import SettingsIcon from "../assets/svg/SettingsIcon.svg";
-import AddIcon from "../assets/svg/AddIcon.svg";
-import ActivityIcon from "../assets/svg/ActivityIcon.svg";
-import Avatar from "../assets/svg/ProfileIcon.svg";
-import Edit from "../assets/svg/Edit.svg";
-import Money from "../assets/svg/Money.svg";
+import WalletHistory from '../assets/svg/WalletHistory.svg';
+import FundWallet from '../assets/svg/FundWallet.svg';
+import Withdraw from '../assets/svg/Withdraw.svg';
+import Logout from '../assets/svg/Logout.svg';
+import SettingsIcon from '../assets/svg/SettingsIcon.svg';
+import AddIcon from '../assets/svg/AddIcon.svg';
+import ActivityIcon from '../assets/svg/ActivityIcon.svg';
+import Avatar from '../assets/svg/ProfileIcon.svg';
+import Edit from '../assets/svg/Edit.svg';
+import Money from '../assets/svg/Money.svg';
 import PlaceHolderImage from '../assets/icons/PlaceHolderImage.png';
 import PayStacklogo from '../assets/svg/paystack-seeklogo.svg';
 
@@ -102,6 +104,8 @@ export {
   Money,
   PlaceHolderImage,
   PayStacklogo,
+  linkedin,
+  Construction,
 };
 
 // const buildArr = {
