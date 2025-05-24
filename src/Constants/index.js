@@ -29,6 +29,7 @@ import computer from '../assets/svg/computers.svg';
 import camera from '../assets/svg/Camera.svg';
 import gamepad from '../assets/svg/gaming.svg';
 import smartwatch from '../assets/svg/SmartWatch.svg';
+import MailLetter from '../assets/svg/MailLetter.svg';
 
 // desktops
 import dheadphone from '../assets/svg/dheadphone.svg';
@@ -106,6 +107,7 @@ export {
   PayStacklogo,
   linkedin,
   Construction,
+  MailLetter,
 };
 
 // const buildArr = {

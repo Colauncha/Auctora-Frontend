@@ -47,6 +47,7 @@ import PrivacyPolicy from './Pages/Terms & Privacy Policy/PrivacyPolicy';
 import TermsCondition from './Pages/Terms & Privacy Policy/TermsCondition';
 import NotFound from './Components/NotFound';
 import Construction from './Pages/misc/Construction';
+import ContactUs from './Pages/misc/ContactUs';
 
 // For all pages to start from top
 import ScrollToTop from './Components/ScrollToTop';
@@ -111,6 +112,7 @@ const App = () => {
         <Route path="*" element={<NotFound />} />
 
         <Route path="/construction/*" element={<Construction />} />
+        <Route path="/contact-us" element={<ContactUs />} />
 
         {/* Privacy Policy */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />

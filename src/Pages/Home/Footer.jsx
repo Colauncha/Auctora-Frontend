@@ -16,7 +16,7 @@ const footerArr = [
   {
     heading: 'Help',
     links: [
-      { name: 'Customer Support', url: '/customer-support' },
+      { name: 'Customer Support', url: '/contact-us' },
       { name: 'Delivery Details', url: '/construction/delivery-details' },
       { name: 'Terms & Conditions', url: '/terms-conditions' },
       { name: 'Privacy Policy', url: '/privacy-policy' },

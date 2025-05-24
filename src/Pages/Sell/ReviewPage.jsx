@@ -45,13 +45,16 @@ const ReviewPage = () => {
         }
         const data = await response.json();
         console.log(data);
-        if (data?.data?.status !== 'active') {
+        if (
+          data?.data?.status !== 'completed' ||
+          data?.data?.status !== 'active'
+        ) {
           // 'active' is for demonstration, change this to 'completed'
           console.log(data?.status);
           showAlert(
             'fail',
             'Auction not completed',
-            'Please check the auction status',
+            'Please check the auction status, Redirecting to auction page',
           );
           navigate(`/product-details/${id}`);
           return;
