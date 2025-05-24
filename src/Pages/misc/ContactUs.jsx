@@ -2,6 +2,9 @@ import { MailLetter } from '../../Constants';
 import Loader from '../../assets/loaderWhite';
 import { useState } from 'react';
 import style from './css/ContactUs.module.css';
+import { current } from '../../utils/links';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -19,21 +22,39 @@ const ContactUs = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate form submission
-    setTimeout(() => {
-      setLoading(false);
-      // Reset form
-      // setFormData({
-      //   from: '',
-      //   subject: '',
-      //   body: '',
-      // });
-    }, 2000);
 
-    console.log('Form submitted:', formData);
+    const endpoint = `${current}misc/contact-us`;
+    let data = {
+      name: formData.name,
+      email: formData.from,
+      subject: formData.subject,
+      message: formData.body,
+    };
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const resp = await response.json();
+
+      if (!response.ok) {
+        setLoading(false);
+        throw new Error(`Error: ${resp.message} - ${resp.detail}`);
+      }
+      setFormData({ name: '', from: '', subject: '', body: '' });
+      toast.success(resp.data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      toast.error(error.message || 'Failed to send message');
+    }
   };
 
   return (
