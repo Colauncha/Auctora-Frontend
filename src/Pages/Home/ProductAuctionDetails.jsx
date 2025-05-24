@@ -181,7 +181,7 @@ const ProductAuctionDetails = () => {
     let socket_;
 
     if (live) {
-      const token = JSON.parse(localStorage.getItem('token'));
+      const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
       socket_ = new WebSocket(
         `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`,
       );
@@ -467,7 +467,7 @@ const ProductAuctionDetails = () => {
                         )}
                       </span>
                     </div>
-                    {!auction?.refundable && (
+                    {auction?.refundable && (
                       <div className="flex items-center justify-center bg-gray-200 rounded-full px-3 py-1">
                         <span className="text-sm text-gray-500">
                           Refundable

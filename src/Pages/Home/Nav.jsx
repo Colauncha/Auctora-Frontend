@@ -92,7 +92,7 @@ const Nav = () => {
           }
 
           sessionStorage.setItem(
-            'notifications',
+            'notification',
             JSON.stringify({ data: data.data, total: data.total }),
           );
           setNotifTotal(data.total);
