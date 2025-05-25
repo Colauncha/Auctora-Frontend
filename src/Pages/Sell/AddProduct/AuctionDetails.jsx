@@ -8,6 +8,9 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { API_BASE_URL } from '../../Sell/AddProduct/config';
 import { current } from '../../../utils';
 import Loader from '../../../assets/loaderWhite';
+import LoaderM from '../../../assets/loader2';
+import { MdModeEdit } from 'react-icons/md';
+import uploadIcon from '../../../assets/icons/upload.png';
 
 const AuctionDetails = () => {
   const location = useLocation();
@@ -23,6 +26,14 @@ const AuctionDetails = () => {
     4: '',
   });
   const [imageLink, setImageLink] = useState('');
+
+  const [updateImages, setUpdateImages] = useState({
+    image1: '',
+    image2: '',
+    image3: '',
+    image4: '',
+    image5: '',
+  });
 
   const [iUpdateData, setIUpdateData] = useState({
     name: '',
@@ -47,6 +58,7 @@ const AuctionDetails = () => {
   // Loader
   const [aloading, setALoading] = useState(false);
   const [iloading, setILoading] = useState(false);
+  const [ploading, setPLoading] = useState(false);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('_user'));
@@ -260,6 +272,90 @@ const AuctionDetails = () => {
     }
   };
 
+  const handleFileUpload = (event, id) => {
+    setPLoading(true);
+    const file = event.target.files[0];
+
+    if (!file) {
+      setPLoading(false);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.warn(`${file.name} exceeds 5mb limit`);
+      setPLoading(false);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setUpdateImages((prev) => ({
+        ...prev,
+        [`image${id}`]: {
+          url: e.target.result,
+          name: file.name,
+          size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+          file: file,
+        },
+      }));
+      setPLoading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUpdateImages = async () => {
+    setPLoading(true);
+    if (auction.status !== 'active') {
+      setPLoading(false);
+      toast.warn(
+        'You cannot update the images of and Auction that is not active',
+      );
+      return;
+    }
+
+    let newImages = removeFalsyValues(updateImages);
+    console.log(newImages);
+
+    const endpoint = `${current}items/upload_images?item_id=${auction.item[0]?.id}`;
+    const formData_ = new FormData();
+
+    for (const [key, value] of Object.entries(newImages)) {
+      if (value?.file) formData_.append(key, value.file);
+    }
+
+    try {
+      const resp = await fetch(endpoint, {
+        method: 'PUT',
+        credentials: 'include',
+        body: formData_,
+      });
+
+      const response = await resp.json();
+
+      if (!resp.ok) {
+        console.error(response);
+        throw new Error(`Error: ${response.message} - ${response.detail}`);
+      }
+
+      toast.success('Image updated successfully');
+      console.log(response);
+    } catch (error) {
+      toast.error(error.message || 'An error occurred');
+    } finally {
+      setPLoading(false);
+    }
+  };
+
+  const clearUpdateImages = () => {
+    setUpdateImages({
+      image1: '',
+      image2: '',
+      image3: '',
+      image4: '',
+      image5: '',
+    });
+  };
+
   if (!auction) {
     return <div className="bg-[#F2F0F1] min-h-screen">Product not found</div>;
   }
@@ -392,255 +488,361 @@ const AuctionDetails = () => {
       {isUpdating && (
         <div className="formatter">
           <div className="flex items-center justify-center gap-[2%] mb-20 py-6">
-            <div className="flex w-full max-w-6xl gap-4 flex-col lg:flex-row">
-              {/* Items Section */}
-              <div className="flex-1 bg-white rounded-lg p-10 flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                  <h2 className="text-2xl font-extrabold text-maroon">
-                    Update Item
-                  </h2>
+            <div className="flex w-full max-w-6xl gap-4 flex-col">
+              {/* --- */}
+              <div className="flex w-full gap-2 flex-col lg:flex-row">
+                {/* Items Section */}
+                <div className="flex-1 w-[100%] bg-white rounded-lg p-10 flex flex-col lg:w-[50%]">
+                  <div className="flex justify-between items-start mb-4">
+                    <h2 className="text-2xl font-extrabold text-maroon">
+                      Update Item
+                    </h2>
+                  </div>
+                  <form className="space-y-4 w-full">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={iUpdateData.name}
+                        onChange={handleIUpdateData}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Description
+                      </label>
+                      <textarea
+                        name="description"
+                        rows="3"
+                        value={iUpdateData.description}
+                        onChange={handleIUpdateData}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                      ></textarea>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Height (cm)
+                        </label>
+                        <input
+                          type="number"
+                          name="height"
+                          value={iUpdateData.height}
+                          onChange={handleIUpdateData}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Weight (kg)
+                        </label>
+                        <input
+                          type="number"
+                          name="weight"
+                          value={iUpdateData.weight}
+                          onChange={handleIUpdateData}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Width (cm)
+                        </label>
+                        <input
+                          type="number"
+                          name="width"
+                          value={iUpdateData.width}
+                          onChange={handleIUpdateData}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Length (cm)
+                        </label>
+                        <input
+                          type="number"
+                          name="length"
+                          value={iUpdateData.length}
+                          onChange={handleIUpdateData}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={updateItem}
+                      className="flex items-center justify-center w-[100%] mt-8s bg-maroon text-white px-4 py-2 rounded-md hover:bg-red-800"
+                    >
+                      {iloading ? (
+                        <Loader otherStyles="h-[20px] w-[20px] border-2" />
+                      ) : (
+                        'Update Item'
+                      )}
+                    </button>
+                  </form>
                 </div>
-                <form className="space-y-4 w-full">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={iUpdateData.name}
-                      onChange={handleIUpdateData}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                    />
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Description
-                    </label>
-                    <textarea
-                      name="description"
-                      rows="3"
-                      value={iUpdateData.description}
-                      onChange={handleIUpdateData}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                    ></textarea>
+                {/* Auction Section */}
+                <div className="flex-1 w-[100%] bg-white rounded-lg p-10 flex flex-col lg:w-[50%]">
+                  <div className="flex justify-between items-start mb-4">
+                    <h2 className="text-2xl font-extrabold text-maroon">
+                      Update Auction
+                    </h2>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Height (cm)
-                      </label>
-                      <input
-                        type="number"
-                        name="height"
-                        value={iUpdateData.height}
-                        onChange={handleIUpdateData}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Weight (kg)
-                      </label>
-                      <input
-                        type="number"
-                        name="weight"
-                        value={iUpdateData.weight}
-                        onChange={handleIUpdateData}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Width (cm)
-                      </label>
-                      <input
-                        type="number"
-                        name="width"
-                        value={iUpdateData.width}
-                        onChange={handleIUpdateData}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Length (cm)
-                      </label>
-                      <input
-                        type="number"
-                        name="length"
-                        value={iUpdateData.length}
-                        onChange={handleIUpdateData}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={updateItem}
-                    className="flex items-center justify-center w-[100%] mt-8s bg-maroon text-white px-4 py-2 rounded-md hover:bg-red-800"
-                  >
-                    {iloading ? (
-                      <Loader otherStyles="h-[20px] w-[20px] border-2" />
+                  <form className="space-y-4 w-full">
+                    {auction.status !== 'pending' ? (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          End Date
+                        </label>
+                        <input
+                          type="datetime-local"
+                          name="endDate"
+                          value={aUpdateData.endDate}
+                          onChange={handleAUpdateData}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
                     ) : (
-                      'Update Item'
+                      <>
+                        {/* Date section */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                              Start Date
+                            </label>
+                            <input
+                              type="datetime-local"
+                              name="startDate"
+                              disabled={auction.status !== 'pending'}
+                              value={aUpdateData.startDate}
+                              onChange={handleAUpdateData}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                              End Date
+                            </label>
+                            <input
+                              type="datetime-local"
+                              name="endDate"
+                              value={aUpdateData.endDate}
+                              onChange={handleAUpdateData}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Price section */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                              Start price
+                            </label>
+                            <input
+                              type="number"
+                              name="startPrice"
+                              disabled={auction.status !== 'pending'}
+                              value={aUpdateData.startPrice}
+                              onChange={handleAUpdateData}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                              Current price
+                            </label>
+                            <input
+                              type="number"
+                              name="currentPrice"
+                              disabled={auction.status !== 'pending'}
+                              value={aUpdateData.startPrice}
+                              onChange={handleAUpdateData}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                            />
+                          </div>
+                        </div>
+                      </>
                     )}
-                  </button>
-                </form>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Pick-up Address
+                      </label>
+                      <input
+                        type="text"
+                        name="pickUpAddress"
+                        value={aUpdateData.pickUpAddress}
+                        onChange={handleAUpdateData}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Buy Now Price
+                        <span className="text-red-500 font-ligter text-xs pl-2">
+                          {!aUpdateData.buyNow &&
+                            '(Disabled if Buy now is not selected)'}
+                        </span>
+                      </label>
+                      <input
+                        type="number"
+                        name="buyNowPrice"
+                        disabled={!aUpdateData.buyNow}
+                        value={aUpdateData.buyNowPrice}
+                        onChange={handleAUpdateData}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-4">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          name="buyNow"
+                          value={aUpdateData.buyNow}
+                          className="h-4 w-4 text-maroon"
+                          onChange={handleAUpdateData}
+                        />
+                        <span className="text-sm text-gray-700">Buy Now</span>
+                      </label>
+
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          name="refundable"
+                          value={aUpdateData.refundable}
+                          className="h-4 w-4 text-maroon"
+                          onChange={handleAUpdateData}
+                        />
+                        <span className="text-sm text-gray-700">
+                          Refundable
+                        </span>
+                      </label>
+                    </div>
+
+                    <button
+                      onClick={updateAuction}
+                      className="flex items-center justify-center w-[100%] mt-10 bg-maroon text-white px-4 py-2 rounded-md hover:bg-red-800"
+                    >
+                      {aloading ? (
+                        <Loader otherStyles="h-[20px] w-[20px] border-2" />
+                      ) : (
+                        'Update Auction'
+                      )}
+                    </button>
+                  </form>
+                </div>
               </div>
+              {/* --- */}
 
-              {/* Auction Section */}
-              <div className="flex-1 bg-white rounded-lg p-10 flex flex-col">
+              {/* Image section */}
+              <div className="flex-auto flex-wrap bg-white width-[80dvw] rounded-lg p-10 order-3 lg:order-last">
                 <div className="flex justify-between items-start mb-4">
                   <h2 className="text-2xl font-extrabold text-maroon">
-                    Update Auction
+                    Update Images
                   </h2>
                 </div>
-                <form className="space-y-4 w-full">
-                  {auction.status !== 'pending' ? (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        End Date
-                      </label>
-                      <input
-                        type="datetime-local"
-                        name="endDate"
-                        value={aUpdateData.endDate}
-                        onChange={handleAUpdateData}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                      />
+                <div className="flex flex-row items-center gap-2">
+                  {Object.keys(images).map((val) => (
+                    <div key={val}>
+                      {images[val] !== '' ? (
+                        <div className="relative w-[100px] group border-2 rounded-lg">
+                          <img
+                            className="w-[100px] h-[100px] object-cover rounded-t-lg"
+                            src={
+                              updateImages[`image${Number(val) + 1}`]?.url ||
+                              images[val]
+                            }
+                            alt={`image_${Number(val) + 1}`}
+                          />
+                          <label
+                            htmlFor={`upload-photo-${Number(val) + 1}`}
+                            className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) =>
+                                handleFileUpload(e, Number(val) + 1)
+                              }
+                              className="hidden"
+                              id={`upload-photo-${Number(val) + 1}`}
+                            />
+                            <MdModeEdit className="text-white text-xs" />
+                          </label>
+                          <p className="text-xs text-center truncate mt-1">
+                            {Number(val) + 1}
+                          </p>
+                        </div>
+                      ) : (
+                        <div
+                          className={`border-2 rounded-lg w-[100px] flex flex-col items-center justify-center cursor-pointer ${
+                            !updateImages[`image${Number(val) + 1}`]?.url &&
+                            'px-4 py-9'
+                          }`}
+                        >
+                          <label htmlFor={`upload-photo-${Number(val) + 1}`}>
+                            <img
+                              src={
+                                updateImages[`image${Number(val) + 1}`]?.url ||
+                                uploadIcon
+                              }
+                              alt="Upload"
+                              className={`mb-1 ${
+                                updateImages[`image${Number(val) + 1}`]?.url
+                                  ? 'w-[100px] h-[100px]'
+                                  : 'w-6 h-6'
+                              } object-cover rounded-t-lg`}
+                            />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) =>
+                                handleFileUpload(e, Number(val) + 1)
+                              }
+                              className="hidden"
+                              id={`upload-photo-${Number(val) + 1}`}
+                            />
+                            <p className="text-xs text-center truncate mt-1">
+                              {Number(val) + 1}
+                            </p>
+                          </label>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <>
-                      {/* Date section */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Start Date
-                          </label>
-                          <input
-                            type="datetime-local"
-                            name="startDate"
-                            disabled={auction.status !== 'pending'}
-                            value={aUpdateData.startDate}
-                            onChange={handleAUpdateData}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            End Date
-                          </label>
-                          <input
-                            type="datetime-local"
-                            name="endDate"
-                            value={aUpdateData.endDate}
-                            onChange={handleAUpdateData}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Price section */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Start price
-                          </label>
-                          <input
-                            type="number"
-                            name="startPrice"
-                            disabled={auction.status !== 'pending'}
-                            value={aUpdateData.startPrice}
-                            onChange={handleAUpdateData}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Current price
-                          </label>
-                          <input
-                            type="number"
-                            name="currentPrice"
-                            disabled={auction.status !== 'pending'}
-                            value={aUpdateData.startPrice}
-                            onChange={handleAUpdateData}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Pick-up Address
-                    </label>
-                    <input
-                      type="text"
-                      name="pickUpAddress"
-                      value={aUpdateData.pickUpAddress}
-                      onChange={handleAUpdateData}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Buy Now Price
-                      <span className="text-red-500 font-ligter text-xs pl-2">
-                        {!aUpdateData.buyNow &&
-                          '(Disabled if Buy now is not selected)'}
-                      </span>
-                    </label>
-                    <input
-                      type="number"
-                      name="buyNowPrice"
-                      disabled={!aUpdateData.buyNow}
-                      value={aUpdateData.buyNowPrice}
-                      onChange={handleAUpdateData}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        name="buyNow"
-                        value={aUpdateData.buyNow}
-                        className="h-4 w-4 text-maroon"
-                        onChange={handleAUpdateData}
-                      />
-                      <span className="text-sm text-gray-700">Buy Now</span>
-                    </label>
-
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        name="refundable"
-                        value={aUpdateData.refundable}
-                        className="h-4 w-4 text-maroon"
-                        onChange={handleAUpdateData}
-                      />
-                      <span className="text-sm text-gray-700">Refundable</span>
-                    </label>
-                  </div>
-
+                  ))}
+                </div>
+                <div className="flex w-full p-2 items-center justify-center">
+                  {ploading && <LoaderM />}
+                </div>
+                <div className="w-full flex flex-row gap-[1%]">
                   <button
-                    onClick={updateAuction}
-                    className="flex items-center justify-center w-[100%] mt-10 bg-maroon text-white px-4 py-2 rounded-md hover:bg-red-800"
+                    onClick={() => handleUpdateImages()}
+                    className="flex items-center justify-center w-[78%] mt-10 bg-maroon text-white px-4 py-2 rounded-md hover:bg-red-800"
                   >
-                    {aloading ? (
+                    {ploading ? (
                       <Loader otherStyles="h-[20px] w-[20px] border-2" />
                     ) : (
-                      'Update Auction'
+                      'Update Images'
                     )}
                   </button>
-                </form>
+                  <button
+                    onClick={() => clearUpdateImages()}
+                    className="flex items-center justify-center w-[20%] mt-10 bg-maroon text-white px-4 py-2 rounded-md hover:bg-red-800"
+                  >
+                    Clear
+                  </button>
+                </div>
               </div>
             </div>
           </div>
