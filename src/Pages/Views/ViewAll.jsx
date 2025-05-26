@@ -8,11 +8,10 @@ import useModeStore from '../../Store/Store';
 // import { FaAngleDown } from 'react-icons/fa';
 import { filter_icom } from '../../Constants';
 import Modal from '../../Components/Modal';
-import { current, currencyFormat } from '../../utils';
+import { current, currencyFormat, charLimit } from '../../utils';
 import Card from '../../Components/Card';
 import PriceRange from '../../Components/PriceRange';
 import Button from '../../Components/Button';
-
 
 const ViewAll = () => {
   const { isMobile } = useModeStore();
@@ -281,10 +280,10 @@ const ViewAll = () => {
                     <Card
                       imgUrl={
                         item.item[0]?.image_link?.link ||
-                        'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743008126/ddsdomp6w9lwqb2igqx7.jpg'
+                        'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg'
                       }
                       // Display auction
-                      itemName={item.item[0]?.name}
+                      itemName={charLimit(item.item[0]?.name, 20)}
                       price={currencyFormat(item.current_price)}
                       sellerName={item.user?.username || 'Anonymous'}
                       bid={item.bids.length}

@@ -125,7 +125,7 @@ const ProductAuctionDetails = () => {
       setImages(() =>
         [
           data?.item[0]?.image_link?.link ||
-            'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743011639/qet83lshyl43jfyfugoh.jpg',
+            'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg',
           data?.item[0]?.image_link_1?.link || null,
           data?.item[0]?.image_link_2?.link || null,
           data?.item[0]?.image_link_3?.link || null,
