@@ -75,7 +75,7 @@ const AuctionDetails = () => {
         3: auction.item[0].image_link_4?.link || '',
         4: auction.item[0].image_link_5?.link || '',
       }));
-      setImageLink(auction.item[0].image_link.link);
+      setImageLink(auction.item[0].image_link?.link || '');
       setAUpdateData((prev) => ({
         ...prev,
         startDate: auction?.start_date || '',
