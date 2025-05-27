@@ -50,7 +50,7 @@ const YourProduct = () => {
                       <img
                         src={
                           item?.item[0]?.image_link?.link ||
-                          'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743008126/ddsdomp6w9lwqb2igqx7.jpg'
+                          'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg'
                         }
                         alt="Product"
                         className="w-full h-full object-cover"
