@@ -4,11 +4,11 @@ import { useLocation } from 'react-router-dom';
 import {
   // FiArrowLeft, FiHeart, FiShare2,
   FiClock,
-  FiDollarSign,
   FiUser,
   FiCheck,
   FiEye,
 } from 'react-icons/fi';
+import { FaNairaSign } from 'react-icons/fa6';
 import { BsLightningCharge, BsStarFill } from 'react-icons/bs';
 import { FaEthereum } from 'react-icons/fa';
 import { RiRefund2Line } from 'react-icons/ri';
@@ -480,7 +480,7 @@ const ProductAuctionDetails = () => {
               )}
               <div className="mb-6 pb-6 bg-gray-50 rounded-sm border-b border-gray-200">
                 <h3 className="text-xl mb-3 text-maroon">Description</h3>
-                <p className="text-black-700 text-sm">
+                <p className="text-black-700 text-sm whitespace-pre-wrap">
                   {auction?.item[0]?.description ||
                     'No description available for this auction.'}
                 </p>
@@ -683,7 +683,7 @@ const ProductAuctionDetails = () => {
 
                 <div className="flex justify-between text-sm text-gray-500 mt-2">
                   <span>
-                    <FiDollarSign className="inline mr-1" /> Start:{' '}
+                    <FaNairaSign className="inline mr-1" /> Start:{' '}
                     {currencyFormat(auction?.start_price)}
                   </span>
                   <span>
