@@ -1,16 +1,14 @@
-import Slider from '../../Components/Slider';
-// import AuctionListing from "../Home/AuctionListing";
 import Preloader from '../../Components/Preloader';
 import Breadcrumbs from '../../Components/Breadcrumbs';
 import Pagination from '../../Components/Pagination';
 import { useState, useEffect } from 'react';
 import useModeStore from '../../Store/Store';
-// import { FaAngleDown } from 'react-icons/fa';
-import { filter_icom } from '../../Constants';
+import { FaFilter } from 'react-icons/fa';
 import Modal from '../../Components/Modal';
 import { current, currencyFormat, charLimit } from '../../utils';
 import Card from '../../Components/Card';
 import PriceRange from '../../Components/PriceRange';
+import CategoryFilter from '../../Components/CaregoryFilter';
 import Button from '../../Components/Button';
 
 const ViewAll = () => {
@@ -20,6 +18,7 @@ const ViewAll = () => {
   const [auctions, setAuctions] = useState([]);
   const [currentPriceQuery, setCurrentPriceQuery] = useState([]);
   const [startPriceQuery, setStartPriceQuery] = useState([]);
+  const [category, setCategory] = useState({});
   const [buyNowPriceQuery, setBuyNowPriceQuery] = useState([]);
   // const [statusQuery, setStatusQuery] = useState('active');
   // const [buyNowQuery, setBuyNowQuery] = useState(false);
@@ -66,12 +65,6 @@ const ViewAll = () => {
     return await response.json();
   };
 
-  // useEffect utilized for debuging state change
-  useEffect(() => {
-    console.log(`From View all page ${currentPage}`);
-    console.log(auctions.current_price);
-  }, [currentPage, auctions]);
-
   // Proper useEffect
   useEffect(() => {
     setLoading(true);
@@ -93,13 +86,37 @@ const ViewAll = () => {
   }, [itemsPerPage]);
 
   const handlePageChange = (page) => {
+    let queries = {};
+    if (startPriceQuery.length > 0) {
+      queries.start_price = startPriceQuery.join('-');
+    }
+    if (currentPriceQuery.length > 0) {
+      queries.current_price = currentPriceQuery.join('-');
+    }
+    if (buyNowPriceQuery.length > 0) {
+      queries.buy_now_price = buyNowPriceQuery.join('-');
+    }
+    if (category) {
+      const catId = Object.keys(category)[0];
+      queries.category_id = catId;
+      if (category[catId].length > 0) {
+        const subCatId = category[catId][0];
+        queries.sub_category_id = subCatId;
+      }
+    }
+
     window.scrollTo(0, 0);
     setLoading(true);
     setCurrentPage(page);
     const fetchData = async () => {
       try {
         const endpoint = `${current}auctions/`;
-        const resp = await runFetch({ endpoint, page, per_page: itemsPerPage });
+        const resp = await runFetch({
+          endpoint,
+          page,
+          per_page: itemsPerPage,
+          others: queries,
+        });
         let data = resp.data;
         setAuctions(data);
         console.log(data);
@@ -137,6 +154,14 @@ const ViewAll = () => {
     if (buyNowPriceQuery.length > 0) {
       queries.buy_now_price = buyNowPriceQuery.join('-');
     }
+    if (Object.keys(category).length > 0) {
+      const catId = Object.keys(category)[0];
+      queries.category_id = catId;
+      if (category[catId].length > 0) {
+        const subCatId = category[catId][0];
+        queries.sub_category_id = subCatId;
+      }
+    }
     window.scrollTo(0, 0);
     setLoading(true);
     const fetchData = async () => {
@@ -149,6 +174,7 @@ const ViewAll = () => {
           others: queries,
         });
         let data = resp.data;
+        setTotalPages(resp.pages);
         setAuctions(data);
         console.log(data);
         setLoading(false);
@@ -177,10 +203,15 @@ const ViewAll = () => {
         style={{ marginBottom: '80px' }}
       >
         <div className="w-full flex flex-col justify-start lg:flex-row mx-auto lg:gap-12">
-          <div className="flex flex-col w-full lg:w-[25%] hidden lg:block p-2">
+          <div className="flex-col w-full lg:w-[20%] p-2 hidden lg:flex">
             <h2 className="font-[500] text-start text-[#9f3248] text-[18px]">
               Filters
             </h2>
+            <CategoryFilter
+              clear={clearFilter}
+              func={setCategory}
+              label={'Category'}
+            />
             <PriceRange
               clear={clearFilter}
               func={setCurrentPriceQuery}
@@ -239,17 +270,19 @@ const ViewAll = () => {
               }}
             />
           </div>
-          <div className="w-full lg:w-[70%]">
+          <div className="w-full lg:w-[78%]">
             <div className="flex items-center justify-between pb-4">
-              <h1 className="text-start text-[#9f3248] font-[700] text-[28px]">
+              <h1 className="text-start text-[#9f3248] font-bold text-xl sm:text-2xl md:text-3xl">
                 Ongoing Auctions
               </h1>
               {isMobile ? (
-                <img
-                  src={filter_icom}
-                  onClick={openModal}
-                  className="cursor-pointer"
-                />
+                <div className="w-32 flex justify-center items-center gap-3">
+                  <span>Filters:</span>
+                  <FaFilter
+                    onClick={openModal}
+                    className="cursor-pointer text-gray-500"
+                  />
+                </div>
               ) : (
                 <div className="flex place-items-center gap-2">
                   <div className="text-slate-400 text-sm">Sorted by: </div>
@@ -257,14 +290,26 @@ const ViewAll = () => {
                     onChange={(e) => {
                       handleSortChange(e.target.value);
                     }}
-                    className="font pl-2 text-sm text-[#a5a5a5] rounded-md flex gap-1 place-items-center cursor-pointer"
+                    className="px-3 py-1 text-sm rounded-md border border-gray-300 focus:outline-none"
                   >
-                    <option value="popular">Most Popular</option>
-                    <option value="created_at">Most Recent</option>
-                    <option value="bids">Most Bids</option>
-                    <option value="price">Current Price</option>
-                    <option value="bid_now">Bid Now Price</option>
-                    <option value="ending_date">Ending Date</option>
+                    <option className="py-2" value="popular">
+                      Most Popular
+                    </option>
+                    <option className="py-2" value="created_at">
+                      Most Recent
+                    </option>
+                    <option className="py-2" value="bids">
+                      Most Bids
+                    </option>
+                    <option className="py-2" value="price">
+                      Current Price
+                    </option>
+                    <option className="py-2" value="bid_now">
+                      Bid Now Price
+                    </option>
+                    <option className="py-2" value="ending_date">
+                      Ending Date
+                    </option>
                   </select>
                 </div>
               )}
@@ -272,11 +317,9 @@ const ViewAll = () => {
             {loading ? (
               <Preloader />
             ) : (
-              <div
-                className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`}
-              >
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {auctions.map((item) => (
-                  <div key={item.id} className="w-full flex">
+                  <div key={item.id} className="w-full flex mb-4">
                     <Card
                       imgUrl={
                         item.item[0]?.image_link?.link ||
@@ -289,20 +332,50 @@ const ViewAll = () => {
                       bid={item.bids.length}
                       countDown={item.end_date}
                       to={`/product-details/${item.id}`}
-                      className="w-[400px] max-w-[500px] min-h-[500px]"
+                      className="w-full max-w-xs min-h-[450px] mx-auto"
                     />
                   </div>
                 ))}
               </div>
             )}
             <Modal isOpen={modalOpen} onClose={closeModal}>
-              <Slider />
+              <h2 className="font-[500] text-start text-[#9f3248] text-[18px]">
+                Filters
+              </h2>
+              <PriceRange
+                clear={clearFilter}
+                func={setCurrentPriceQuery}
+                label={'Current Price'}
+              />
+              <PriceRange
+                clear={clearFilter}
+                func={setStartPriceQuery}
+                label={'Start Price'}
+              />
+              <PriceRange
+                clear={clearFilter}
+                func={setBuyNowPriceQuery}
+                label={'Buy Now Price'}
+              />
+              <Button
+                label="Apply Filter"
+                className="w-full mt-4"
+                onClick={handleFilterChange}
+              />
+              <Button
+                label="Clear Filters"
+                className="w-full mt-4"
+                onClick={() => {
+                  setClearFilter(true);
+                  handleClearFilter();
+                }}
+              />
             </Modal>
           </div>
         </div>
 
         {/* Pagination */}
-        <div className="w-full flex gap-10 justify-center items-center mt-10">
+        <div className="w-full flex flex-col lg:flex-row gap-4 justify-between items-center mt-10 px-4">
           <div className="lg:flex w-[50%] justify-end items-center gap-2">
             <Pagination
               totalPages={totalPages}
@@ -310,10 +383,12 @@ const ViewAll = () => {
               onPageChange={handlePageChange}
             />
           </div>
-          <div className="flex w-[30%] items-center justify-end gap-4">
-            <p className="text-[#a5a5a5] text-[14px]">Per page: </p>
+          <div className="flex w-[30%] items-center justify-end gap-3">
+            <p className="text-[#a5a5a5] text-[14px] text-center min-w-20">
+              Per page:{' '}
+            </p>
             <select
-              className="w-full h-[30px] p-1 border rounded-md bg-white border-[#a5a5a5] text-[#a5a5a5] lg:w-[15%]"
+              className="w-[100px] h-[35px] px-2 border rounded-md text-sm text-[#333] focus:outline-none"
               onChange={(e) => {
                 handlePageChange(currentPage);
                 setItemsPerPage(e.target.value);
