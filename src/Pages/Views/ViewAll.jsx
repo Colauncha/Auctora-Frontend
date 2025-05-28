@@ -96,7 +96,7 @@ const ViewAll = () => {
     if (buyNowPriceQuery.length > 0) {
       queries.buy_now_price = buyNowPriceQuery.join('-');
     }
-    if (category) {
+    if (Object.keys(category).length > 0) {
       const catId = Object.keys(category)[0];
       queries.category_id = catId;
       if (category[catId].length > 0) {
