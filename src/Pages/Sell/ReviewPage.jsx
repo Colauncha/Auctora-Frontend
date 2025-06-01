@@ -45,12 +45,9 @@ const ReviewPage = () => {
         }
         const data = await response.json();
         console.log(data);
-        if (
-          data?.data?.status !== 'completed' ||
-          data?.data?.status !== 'active'
-        ) {
+        if (data?.data?.status !== 'completed') {
           // 'active' is for demonstration, change this to 'completed'
-          console.log(data?.status);
+          console.log(data?.data?.status);
           showAlert(
             'fail',
             'Auction not completed',
@@ -96,7 +93,7 @@ const ReviewPage = () => {
     const method = 'PUT';
 
     let resp = await runFetch({ endpoint, method });
-    if (resp) {
+    if (resp.success) {
       setILoading(false);
       showAlert(
         'success',
@@ -116,7 +113,7 @@ const ReviewPage = () => {
     const method = 'GET';
 
     let resp = await runFetch({ endpoint, method });
-    if (resp) {
+    if (resp.success) {
       setFLoading(false);
       showAlert('success', 'Auction finalized', 'Auction has been finalized');
       // navigate(`/product-details/${id}`);
