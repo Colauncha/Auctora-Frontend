@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { PropTypes } from "prop-types";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   // FiArrowLeft, FiHeart, FiShare2,
   FiClock,
@@ -53,6 +53,7 @@ const ProductAuctionDetails = () => {
     message: '',
     detail: '',
   });
+  const navigate = useNavigate();
   const id = useLocation().pathname.split('/').pop();
   const endpoint = current;
   const showAlert = (level, message, detail = '') => {
@@ -367,7 +368,7 @@ const ProductAuctionDetails = () => {
           'Bid successful',
           'You have successfully placed your bid.',
         );
-        // alert('Purchase successful');
+        navigate(`/product/finalize/${auction_id}`);
       }
     } catch (error) {
       setBuyNowLoading(false);
@@ -462,8 +463,9 @@ const ProductAuctionDetails = () => {
                         auction?.status === 'active' ? (
                           <FiCheck className="inline ml-1" />
                         ) : (
-                          auction?.status ===
-                          'pending'(<FiClock className="inline ml-1" />)
+                          auction?.status === 'pending' && (
+                            <FiClock className="inline ml-1" />
+                          )
                         )}
                       </span>
                     </div>
