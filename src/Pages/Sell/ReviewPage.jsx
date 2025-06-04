@@ -14,11 +14,11 @@ const ReviewPage = () => {
   const [auctions, setAuctions] = useState([]);
   const [payment, setPayment] = useState({});
   // const [images, setImages] = useState([]);
-  const [userImages, setUserImages] = useState('');
+  const [userImage, setUserImages] = useState('');
   const [loading, setLoading] = useState(true);
   const [fLoading, setFLoading] = useState(false);
   const [iLoading, setILoading] = useState(false);
-  // const [rLoading, setRLoading] = useState(false);
+  const [rLoading, setRLoading] = useState(false);
   const [alertT, setAlert] = useState({
     isAlert: false,
     level: '',
@@ -75,23 +75,17 @@ const ReviewPage = () => {
   }, [id, navigate]);
 
   const paymentStatMap = {
-    pending: [
-      'bg-blue-100 text-blue-800',
-      <TbClockHour4 key={1} className="inline mx-1" size={20} />,
-    ],
-    completed: [
-      'bg-green-100 text-green-800',
-      <CiCircleCheck key={1} className="inline mx-1" size={20} />,
-    ],
-    inspecting: [
-      'bg-yellow-100 text-yellow-800',
-      <MdViewInAr key={1} className="inline mx-1" size={20} />,
-    ],
-    refunded: [
-      'bg-red-100 text-red-800',
-      <HiOutlineReceiptRefund key={1} className="inline mx-1" size={20} />,
-    ],
+    pending: { cls: 'bg-blue-100 text-blue-800', icon: TbClockHour4 },
+    completed: { cls: 'bg-green-100 text-green-800', icon: CiCircleCheck },
+    inspecting: { cls: 'bg-yellow-100 text-yellow-800', icon: MdViewInAr },
+    refunding: {
+      cls: 'bg-yellow-100 text-yellow-800',
+      icon: HiOutlineReceiptRefund,
+    },
+    refunded: { cls: 'bg-red-100 text-red-800', icon: HiOutlineReceiptRefund },
   };
+
+  const Icon = paymentStatMap[payment?.status]?.icon || '';
 
   const runFetch = async ({ endpoint, method }) => {
     try {
@@ -150,8 +144,20 @@ const ReviewPage = () => {
     }
   };
 
-  const handleRequestRefund = () => {
-    navigate(`/product-details/${id}`);
+  const handleRequestRefund = async () => {
+    setRLoading(true);
+    const endpoint = `${current}auctions/refund/${id}`;
+    const method = 'GET';
+
+    let resp = await runFetch({ endpoint, method });
+    if (resp.success) {
+      setRLoading(false);
+      showAlert('success', 'Refund requested', 'Refund request has been sent');
+    } else {
+      setRLoading(false);
+      showAlert('fail', 'Unable to request refund', 'Please try again');
+    }
+    // navigate(`/product-details/${id}`);
   };
 
   return (
@@ -236,10 +242,10 @@ const ReviewPage = () => {
                 Seller&apos;s Details
               </h2>
               <div className="flex flex-col items-start justify-start gap-5 mb-4 md:flex-row md:items-center">
-                <div className="w-20 h-20 rounded-full bg-purple-200 flex items-center justify-center mr-4 overflow-hidden">
-                  {userImages ? (
+                <div className="w-20 h-20 rounded-full border-2 bg-purple-200 flex items-center justify-center mr-4 overflow-hidden">
+                  {userImage ? (
                     <img
-                      src={userImages}
+                      src={userImage}
                       alt="Profile-photo"
                       className="w-full h-full object-cover rounded-full"
                     />
@@ -271,11 +277,12 @@ const ReviewPage = () => {
                 </h2>
                 <div
                   className={`rounded-md p-2 ${
-                    paymentStatMap[payment?.status][0]
+                    paymentStatMap[payment?.status].cls ||
+                    'bg-gray-100 text-gray-800'
                   }`}
                 >
-                  {paymentStatMap[payment?.status][1]}
-                  {capitalize(payment?.status)}
+                  <Icon className="inline mx-1" size={20} />
+                  {capitalize(payment?.status) || 'Unknown'}
                 </div>
               </div>
               <p className="text-gray-700 mb-6">
@@ -341,7 +348,7 @@ const ReviewPage = () => {
                     className="bg-[#9F3247] text-white font-bold py-2 px-4 rounded"
                     onClick={() => handleRequestRefund()}
                   >
-                    Request Refund
+                    {rLoading ? <LoaderW /> : 'Request Refund'}
                   </button>
                 )}
               </div>
