@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../../../Components/Breadcrumbs';
 import { capitalize, currencyFormat, formatDateTime } from '../../../utils';
@@ -15,6 +15,11 @@ import { CiCircleCheck } from 'react-icons/ci';
 import { HiOutlineReceiptRefund } from 'react-icons/hi2';
 import { TbClockHour4 } from 'react-icons/tb';
 import { MdViewInAr } from 'react-icons/md';
+import {
+  IoChevronDownCircleOutline,
+  IoChevronUpCircleOutline,
+  IoRefreshCircleOutline,
+} from 'react-icons/io5';
 
 const AuctionDetails = () => {
   const location = useLocation();
@@ -23,6 +28,7 @@ const AuctionDetails = () => {
   const [payment, setPayment] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isRestarting, setIsRestarting] = useState(false);
   const [images, setImages] = useState({
     0: '',
     1: '',
@@ -58,6 +64,13 @@ const AuctionDetails = () => {
     startPrice: auction?.start_price || '',
     currentPrice: auction?.start_price || '',
   });
+  const [restartData, setRestartData] = useState({
+    startDate: '',
+    endDate: '',
+    startPrice: '',
+    buyNowPrice: '',
+    buyNow: false,
+  });
   const id = location.pathname.split('/').pop();
 
   // Loader
@@ -65,6 +78,7 @@ const AuctionDetails = () => {
   const [iloading, setILoading] = useState(false);
   const [ploading, setPLoading] = useState(false);
   const [rloading, setRLoading] = useState(false);
+  const [isRestartingLoading, setIsRestartingLoading] = useState(false);
 
   const paymentStatMap = {
     pending: { cls: 'bg-blue-100 text-blue-800', icon: TbClockHour4 },
@@ -78,6 +92,65 @@ const AuctionDetails = () => {
   };
 
   const Icon = paymentStatMap[payment?.status]?.icon || '';
+
+  const getUpdatedAuction = useCallback(async () => {
+    setALoading(true);
+    setILoading(true);
+    setPLoading(true);
+    setRLoading(true);
+    setIsRestartingLoading(true);
+
+    try {
+      const response = await fetch(`${current}auctions/${id}`, {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const auction = await response.json();
+      const auctionData = auction.data;
+      setAuction(auctionData);
+      setPayment(auctionData.payment);
+      setImages((prev) => ({
+        ...prev,
+        0: auctionData.item[0].image_link?.link || '',
+        1: auctionData.item[0].image_link_2?.link || '',
+        2: auctionData.item[0].image_link_3?.link || '',
+        3: auctionData.item[0].image_link_4?.link || '',
+        4: auctionData.item[0].image_link_5?.link || '',
+      }));
+      setImageLink(auctionData.item[0].image_link?.link || '');
+      setAUpdateData((prev) => ({
+        ...prev,
+        startDate: auctionData?.start_date || '',
+        endDate: auctionData?.end_date || '',
+        pickUpAddress: auctionData?.pickup_address || '',
+        buyNowPrice: auctionData?.buy_now_price || '',
+        buyNow: auctionData?.buy_now || false,
+        refundable: auctionData?.refundable || false,
+        startPrice: auctionData?.start_price || '',
+        currentPrice: auctionData?.current_price || '',
+      }));
+      setIUpdateData((prev) => ({
+        ...prev,
+        name: auctionData?.item[0].name || '',
+        description: auctionData?.item[0].description || '',
+        height: auctionData?.item[0].height || '',
+        width: auctionData?.item[0].width || '',
+        length: auctionData?.item[0].length || '',
+        weight: auctionData?.item[0].weight || '',
+      }));
+    } catch (error) {
+      console.error('Fetch error:', error);
+      toast.error(error.message || 'Failed to fetch auction details');
+    } finally {
+      setALoading(false);
+      setILoading(false);
+      setPLoading(false);
+      setRLoading(false);
+      setIsRestartingLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('_user'));
@@ -117,11 +190,17 @@ const AuctionDetails = () => {
         weight: auction?.item[0].weight || '',
       }));
       if (!auction) {
-        alert('Auction not found in user data');
+        toast.info('Auction not found in user data');
         navigate('/products');
+        try {
+          getUpdatedAuction();
+        } catch (error) {
+          console.error('Error fetching auction:', error);
+          toast.error('Failed to fetch auction details');
+        }
       }
     }
-  }, [id, navigate]);
+  }, [id, getUpdatedAuction, navigate]);
 
   const nextImage = () => {
     const validImages = Object.values(images).filter(Boolean); // only non-empty images
@@ -200,6 +279,14 @@ const AuctionDetails = () => {
     }));
   };
 
+  const handleRestartData = (e) => {
+    const { name, value, type, checked } = e.target;
+    setRestartData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
   function removeFalsyValues(obj) {
     const cleanedObj = {};
     for (const [key, value] of Object.entries(obj)) {
@@ -254,6 +341,7 @@ const AuctionDetails = () => {
       toast.error(data.message || 'Failed to update item');
       setALoading(false);
     }
+    getUpdatedAuction();
   };
 
   const updateItem = async (e) => {
@@ -286,10 +374,43 @@ const AuctionDetails = () => {
     if (response.ok) {
       toast.success('Item updated successfully');
       setILoading(false);
+      await getUpdatedAuction();
     } else {
       setILoading(false);
       toast.error(data.message || 'Failed to update item');
     }
+  };
+
+  const restartAuction = async () => {
+    setIsRestartingLoading(true);
+    const endpoint = `${current}auctions/restart/${auction.id}`;
+    const cleanedRestartdata = removeFalsyValues(restartData);
+    console.log(cleanedRestartdata);
+
+    const response = await fetch(endpoint, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cleanedRestartdata),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      toast.success('Auction Restarted successfully');
+      setIsRestartingLoading(false);
+      setRestartData({
+        startDate: '',
+        endDate: '',
+        startPrice: '',
+        buyNowPrice: '',
+        buyNow: false,
+      });
+    } else {
+      toast.error(data.message || 'Failed to restart auction');
+      setIsRestartingLoading(false);
+    }
+    getUpdatedAuction();
   };
 
   const handleFileUpload = (event, id) => {
@@ -363,6 +484,7 @@ const AuctionDetails = () => {
       toast.error(error.message || 'An error occurred');
     } finally {
       setPLoading(false);
+      getUpdatedAuction();
     }
   };
 
@@ -390,6 +512,8 @@ const AuctionDetails = () => {
       console.error('Refund error:', error);
       toast.error(error.message || 'Failed to complete refund');
       setRLoading(false);
+    } finally {
+      getUpdatedAuction();
     }
   };
 
@@ -421,19 +545,39 @@ const AuctionDetails = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-1 mb-[6px] flex-col sm:flex-row sm:gap-4">
-                  <button
-                    className="bg-green-400 hover:bg-green-600 text-sm text-white px-3 py-1 rounded-md transition"
-                    onClick={() => toggleUpdate()}
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="bg-red-500 hover:bg-red-600 text-sm text-white px-3 py-1 rounded-md transition disabled:bg-red-400"
-                  >
-                    {isDeleting ? 'Deleting...' : 'Delete'}
-                  </button>
+                  <div className="relative group">
+                    <IoRefreshCircleOutline
+                      size={25}
+                      onClick={getUpdatedAuction}
+                      className="cursor-pointer text-gray-400 hover:text-gray-800 transition-colors"
+                    />
+                    <span className="absolute text-xs w-max text-white font-light bg-black rounded-md p-1 -left-1/2 transform -translate-x-5 translate-y-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Refresh Auction
+                    </span>
+                  </div>
+                  <div className="relative group">
+                    <button
+                      className="bg-green-400 hover:bg-green-600 text-sm text-white px-3 py-1 rounded-md transition"
+                      onClick={() => toggleUpdate()}
+                    >
+                      Update
+                    </button>
+                    <span className="absolute text-xs w-max text-white font-light bg-black rounded-md p-1 -left-2 top-9 transform opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Update Auction
+                    </span>
+                  </div>
+                  <div className="relative group">
+                    <button
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="bg-red-500 hover:bg-red-600 text-sm text-white px-3 py-1 rounded-md transition disabled:bg-red-400"
+                    >
+                      {isDeleting ? 'Deleting...' : 'Delete'}
+                    </button>
+                    <span className="absolute text-xs w-max text-white font-light bg-black rounded-md p-1 -left-2 top-9 transform opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Delete Auction
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -484,9 +628,12 @@ const AuctionDetails = () => {
                     </div>
                   </div>
 
-                  <p className="text-gray-700 mb-4">
-                    {auction?.item[0]?.description}
-                  </p>
+                  <div>
+                    <h3>Description:</h3>
+                    <p className="text-gray-700 text-sm font-light mb-4 whitespace-pre">
+                      {auction?.item[0]?.description}
+                    </p>
+                  </div>
 
                   <div className="bg-gray-50 p-4 rounded-lg mb-4">
                     <h3 className="font-semibold text-lg mb-2">
@@ -533,6 +680,151 @@ const AuctionDetails = () => {
             </div>
           </div>
 
+          {/* Restart */}
+          <div
+            className={`${
+              auction.status === 'completed' &&
+              (!payment || payment.status === 'refunded')
+                ? 'flex'
+                : 'hidden'
+            } flex-col items-start justify-center mb-10 max-w-full bg-white rounded-lg mx-auto p-4`}
+          >
+            {auction.status === 'completed' &&
+              (!payment || payment.status === 'refunded') && (
+                <>
+                  <div
+                    className="flex justify-between border-b border-gray-200 px-2 py-3 w-full"
+                    onClick={() => setIsRestarting(!isRestarting)}
+                  >
+                    <div className="relative group w-2/5">
+                      <p className="text-2xl text-[#9f3247] font-bold">
+                        Restart Auction
+                      </p>
+                      <span className="absolute text-xs text-white font-light bg-black rounded-md p-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        You can restart this auction by clicking here.
+                      </span>
+                    </div>
+                    {!isRestarting ? (
+                      <IoChevronDownCircleOutline
+                        size={18}
+                        onClick={() => setIsRestarting(!isRestarting)}
+                      />
+                    ) : (
+                      <IoChevronUpCircleOutline
+                        size={18}
+                        onClick={() => setIsRestarting(!isRestarting)}
+                      />
+                    )}
+                  </div>
+                  {isRestarting && (
+                    <div className="flex flex-col gap-6 w-full p-4 sm:p-6">
+                      {/* Date inputs row */}
+                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Start Date (optional)
+                          </label>
+                          <input
+                            type="datetime-local"
+                            name="startDate"
+                            onChange={handleRestartData}
+                            value={restartData.startDate}
+                            className="w-full border-2 border-gray-100 rounded-md shadow-sm p-3 focus:outline-none focus:border-[#9F3247] transition-colors"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            End Date (optional)
+                          </label>
+                          <input
+                            type="datetime-local"
+                            name="endDate"
+                            onChange={handleRestartData}
+                            value={restartData.endDate}
+                            className="w-full border-2 border-gray-100 rounded-md shadow-sm p-3 focus:outline-none focus:border-[#9f3247] transition-colors"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Price inputs row */}
+                      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Start Price (optional)
+                          </label>
+                          <input
+                            type="text"
+                            name="startPrice"
+                            onChange={handleRestartData}
+                            value={restartData.startPrice}
+                            placeholder="Enter starting price"
+                            className="w-full border-2 border-gray-100 rounded-md shadow-sm p-3 focus:outline-none focus:border-[#9F3247] transition-colors"
+                          />
+                        </div>
+
+                        {/* Buy now section */}
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Buy now Price (optional)
+                          </label>
+
+                          {/* Fused input container - minimal */}
+                          <div className="flex items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
+                            {/* Checkbox section */}
+                            <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                              <input
+                                type="checkbox"
+                                name="buyNow"
+                                checked={restartData.buyNow}
+                                onChange={handleRestartData}
+                                className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
+                              />
+                              <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                                Buy now
+                              </span>
+                            </label>
+
+                            {/* Price input section */}
+                            <input
+                              type="text"
+                              name="buyNowPrice"
+                              onChange={handleRestartData}
+                              disabled={!restartData.buyNow}
+                              value={restartData.buyNowPrice}
+                              placeholder={
+                                restartData.buyNow
+                                  ? 'Enter price'
+                                  : 'Check box to enable'
+                              }
+                              className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
+                                !restartData.buyNow
+                                  ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                                  : 'text-gray-900'
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Submit button */}
+                      <div className="flex justify-center mt-6">
+                        <button
+                          onClick={restartAuction}
+                          className="flex items-center justify-center w-full justify-self-center sm:w-auto min-w-[200px] bg-[#9F3247] text-white px-6 py-3 rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-[#9F3247] focus:ring-offset-2 transition-all duration-200 font-medium"
+                        >
+                          {isRestartingLoading ? (
+                            <Loader otherStyles="h-[20px] w-[20px] border-2" />
+                          ) : (
+                            'Restart Auction'
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+          </div>
+
           {/* Payment */}
           <div
             className={`flex flex-col items-start justify-center ${
@@ -544,12 +836,12 @@ const AuctionDetails = () => {
               <span className="text-sm font-light">
                 <div
                   className={`rounded-md p-2 text-right ${
-                    paymentStatMap[payment?.status].cls ||
+                    paymentStatMap[payment?.status || 'pending']?.cls ||
                     'bg-gray-100 text-gray-800'
                   }`}
                 >
-                  <Icon className="inline mx-1" size={20} />
-                  {capitalize(payment?.status) || 'Unknown'}
+                  {Icon && <Icon className="inline mx-1" size={20} />}
+                  {capitalize(payment?.status) || 'No payment'}
                 </div>
               </span>
             </h2>
@@ -571,13 +863,13 @@ const AuctionDetails = () => {
                   <span className="text-gray-600 mr-2 font-bold">
                     Buyer&apos;s email:
                   </span>
-                  {payment?.buyer?.email || 'null'}
+                  {payment?.buyer?.email || 'None'}
                 </p>
                 <p className="text-md text-gray-500 font-light">
                   <span className="text-gray-600 mr-2 font-bold">
                     Buyer&apos;s Phone:
                   </span>
-                  {payment?.buyer?.phone_number || 'null'}
+                  {payment?.buyer?.phone_number || 'none'}
                 </p>
               </div>
             </div>
@@ -585,11 +877,11 @@ const AuctionDetails = () => {
             <div className="px-2 py-4 w-full">
               <p className="text-md text-gray-500 font-light">
                 <span className="text-gray-600 mr-2 font-bold">Amount:</span>
-                {currencyFormat(payment?.amount) || 'null'}
+                {payment?.amount ? currencyFormat(payment?.amount) : 'None'}
               </p>
               <p className="text-md text-gray-500 font-light">
                 <span className="text-gray-600 mr-2 font-bold">Due date:</span>
-                {formatDateTime(payment?.due_data) || 'null'}
+                {payment?.due_data ? formatDateTime(payment?.due_data) : 'None'}
               </p>
               {auction?.refundable &&
                 payment?.refund_requested &&
