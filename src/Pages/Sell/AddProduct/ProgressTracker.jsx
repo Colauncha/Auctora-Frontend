@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import deliveryIcon from "../../../assets/svg/DeliverySVG.svg";
 import photosIcon from "../../../assets/svg/Photos.svg";
 import categoryIcon from "../../../assets/svg/category.svg";
@@ -20,57 +20,63 @@ const ProgressTracker = () => {
     3: false, // Delivery
   });
 
-    
-    const [formData, setFormData] = useState({
-      item: {
-        name: '',
-        description: '',
-        category_id: '',
-        sub_category_id: '',
-      },
-      product: {
-        start_price: 0,
-        current_price: 0,
-        buy_now: false,
-        buy_now_price: 0,
-        start_date: new Date().toISOString(),
-        end_date: '',
-        users_id: sessionStorage.getItem('_user')
-          ? JSON.parse(sessionStorage.getItem('_user')).id
-          : '',
-        refundable: false,
-        private: false,
-        participants: [],
-        status: 'pending',
-      },
-      photos: [],
-      delivery: {
-        options: [],
-        address: '',
-        pickup_longitude: null,
-        pickup_latitude: null,
-      },
-    });
-  
+  const [formData, setFormData] = useState({
+    item: {
+      name: '',
+      description: '',
+      category_id: '',
+      sub_category_id: '',
+    },
+    product: {
+      start_price: 0,
+      current_price: 0,
+      buy_now: false,
+      buy_now_price: 0,
+      start_date: new Date().toISOString(),
+      end_date: '',
+      users_id: sessionStorage.getItem('_user')
+        ? JSON.parse(sessionStorage.getItem('_user')).id
+        : '',
+      refundable: false,
+      private: false,
+      participants: [],
+      status: 'pending',
+    },
+    photos: [],
+    delivery: {
+      options: [],
+      address: '',
+      pickup_longitude: null,
+      pickup_latitude: null,
+    },
+  });
 
-  const steps = ["Description", "Categories", "Photos", "Delivery"];
+  const steps = ['Description', 'Categories', 'Photos', 'Delivery'];
 
-    // Add updateFormData function
-    const updateFormData = (newData) => {
-      setFormData(newData);
-    };
+  // Add updateFormData function
+  const updateFormData = (newData) => {
+    setFormData(newData);
+  };
+
+  useEffect(() => {
+    console.log(`Active step changed to: ${activeStep}`);
+    console.log('Form Data:', formData);
+    console.log('Form Validity:', formValidity);
+  }, [activeStep, formData, formValidity]);
 
   const handleStepChange = (index) => {
     // Prevent moving to any step unless all previous steps are completed
     if (index > 0) {
-      const allPreviousStepsValid = Array(index).fill().every((_, i) => formValidity[i]);
+      const allPreviousStepsValid = Array(index)
+        .fill()
+        .every((_, i) => formValidity[i]);
       if (!allPreviousStepsValid) {
         setErrorMessage(`Please complete all previous steps first`);
         setTimeout(() => setErrorMessage(''), 3000);
         return;
       }
     }
-  
+
     // Handle forward movement (only if current step is valid)
     if (index > activeStep) {
       if (!formValidity[activeStep]) {
@@ -79,12 +85,12 @@ const ProgressTracker = () => {
         return;
       }
       setCompletedSteps([...completedSteps, activeStep]);
-    } 
+    }
     // Handle backward movement
     else if (index < activeStep) {
       setCompletedSteps(completedSteps.filter((step) => step < index));
     }
-  
+
     setActiveStep(index);
     setErrorMessage(''); // Clear any existing error when navigation succeeds
   };
@@ -212,33 +218,33 @@ const ProgressTracker = () => {
             {/* Active Step Content */}
             {activeStep === 0 && (
               <Description
-              activeStep={activeStep}
-              updateFormValidity={updateFormValidity}
-              formData={formData}           // Add this prop
-              updateFormData={updateFormData} // Add this prop
-              handleStepChange={handleStepChange}
-            />
+                activeStep={activeStep}
+                updateFormValidity={updateFormValidity}
+                formData={formData} // Add this prop
+                updateFormData={updateFormData} // Add this prop
+                handleStepChange={handleStepChange}
+              />
             )}
-           {activeStep === 1 && (
+            {activeStep === 1 && (
               <Categories
-              activeStep={activeStep}
-              updateFormValidity={updateFormValidity}
-              formData={formData}
-              updateFormData={updateFormData}
-              handleStepChange={handleStepChange}
-            />
+                activeStep={activeStep}
+                updateFormValidity={updateFormValidity}
+                formData={formData}
+                updateFormData={updateFormData}
+                handleStepChange={handleStepChange}
+              />
             )}
             {activeStep === 2 && (
-  <Photos
-  activeStep={activeStep}
-  handleStepChange={handleStepChange}
-  formData={formData}           // Required
-  updateFormData={updateFormData} // Required
-  updateFormValidity={updateFormValidity} // Required for validation
-/>
+              <Photos
+                activeStep={activeStep}
+                handleStepChange={handleStepChange}
+                formData={formData} // Required
+                updateFormData={updateFormData} // Required
+                updateFormValidity={updateFormValidity} // Required for validation
+              />
             )}
             {activeStep === 3 && (
-                <Delivery
+              <Delivery
                 activeStep={activeStep}
                 handleStepChange={handleStepChange}
                 formData={formData}

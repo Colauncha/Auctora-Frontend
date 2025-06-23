@@ -385,7 +385,14 @@ const AuctionDetails = () => {
     setIsRestartingLoading(true);
     const endpoint = `${current}auctions/restart/${auction.id}`;
     const cleanedRestartdata = removeFalsyValues(restartData);
-    console.log(cleanedRestartdata);
+    const validData = {
+      start_date: cleanedRestartdata.startDate,
+      end_date: cleanedRestartdata.endDate,
+      start_price: cleanedRestartdata.startPrice || 0.0,
+      buy_now_price: cleanedRestartdata.buyNowPrice || 0.0,
+      buy_now: cleanedRestartdata.buyNow,
+    };
+    console.log(validData);
 
     const response = await fetch(endpoint, {
       method: 'PATCH',
@@ -393,7 +400,7 @@ const AuctionDetails = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(cleanedRestartdata),
+      body: JSON.stringify(validData),
     });
     const data = await response.json();
     if (response.ok) {

@@ -32,19 +32,8 @@ const Description = ({
   updateFormData,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [participants, setParticipants] = useState([]);
   const prevValidityRef = useRef();
-
-  useEffect(() => {
-    prevValidityRef.current = validateForm();
-  }, []);
-
-  useEffect(() => {
-    const isValid = validateForm();
-    if (isValid !== prevValidityRef.current) {
-      updateFormValidity(activeStep, isValid);
-      prevValidityRef.current = isValid;
-    }
-  }, [formData, activeStep, updateFormValidity]);
 
   const safeFormData = JSON.parse(JSON.stringify(formData));
 
@@ -60,7 +49,21 @@ const Description = ({
       isEndDateValid &&
       (!safeFormData.product.buy_now || safeFormData.product.buy_now_price > 0)
     );
-  }, [formData]);
+  }, [safeFormData]);
+
+  useEffect(() => {
+    const isValid = validateForm();
+    if (isValid !== prevValidityRef.current) {
+      updateFormValidity(activeStep, isValid);
+      prevValidityRef.current = isValid;
+    }
+    console.log(`Validity: ${isValid}`);
+    console.log(`Active Step: ${activeStep}`);
+  }, [formData, activeStep, updateFormValidity, validateForm]);
+
+  useEffect(() => {
+    console.log('Form Data:', formData.product);
+  }, [formData.product]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -105,6 +108,47 @@ const Description = ({
     }
   };
 
+  const handleParticipantsChange = (e) => {
+    const { value } = e.target;
+    if (
+      value.trim()[value.length - 1] === ',' ||
+      e.key === 'Enter' ||
+      e.key === ','
+    ) {
+      e.preventDefault();
+      const newParticipants = value
+        .split(',')
+        .map((email) => email.trim())
+        .filter((email) => email !== '');
+      const uniqueParticipants = Array.from(
+        new Set([...participants, ...newParticipants]),
+      );
+      setParticipants(uniqueParticipants);
+      updateFormData({
+        ...formData,
+        product: {
+          ...formData.product,
+          participants: uniqueParticipants,
+        },
+      });
+      e.target.value = ''; // Clear input after adding participants
+    }
+  };
+
+  const removeParticipant = (value) => {
+    const updatedParticipants = participants.filter(
+      (participant) => participant !== value,
+    );
+    setParticipants(updatedParticipants);
+    updateFormData({
+      ...formData,
+      product: {
+        ...formData.product,
+        participants: updatedParticipants,
+      },
+    });
+  };
+
   const handleReset = () => {
     updateFormData({
       product: {
@@ -130,16 +174,6 @@ const Description = ({
       },
     });
   };
-
-  // const handleNext = () => {
-  //   if (!validateForm()) return;
-  //   setLoading(true);
-  //   sessionStorage.setItem('product', JSON.stringify(formData));
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //     handleStepChange(activeStep + 1);
-  //   }, 1000);
-  // };
 
   const handleNext = () => {
     if (loading) return;
@@ -196,7 +230,7 @@ const Description = ({
                   placeholder="Enter product details..."
                   value={formData.item.description}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-gray-100 h-60 sm:h-60"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-gray-100 h-[400px] sm:h-[400px]"
                   maxLength={1200}
                   required
                 />
@@ -228,47 +262,12 @@ const Description = ({
 
               <div>
                 <label className="block text-black font-semibold">
-                  <input
-                    type="checkbox"
-                    name="buy_now"
-                    checked={formData.product.buy_now}
-                    onChange={handleProductChange}
-                    className="mr-2"
-                  />
-                  Buy Now
-                </label>
-                {formData.product.buy_now && (
-                  <div className="mt-2">
-                    <label className="block text-black font-semibold">
-                      Buy Now Price <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="buy_now_price"
-                      placeholder="Buy Now price"
-                      value={formData.product.buy_now_price}
-                      onChange={handleProductChange}
-                      className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
-                      min="1"
-                      required
-                    />
-                  </div>
-                )}
-                <p className="text-sm text-maroon mt-1">
-                  Make sure the <strong>Buy Now Price</strong> is higher than
-                  the <strong>Initial Price</strong>
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-black font-semibold">
                   Initial price <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
                   name="start_price"
                   placeholder="Product price"
-                  value={formData.product.start_price}
                   onChange={handleProductChange}
                   className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
                   min="1"
@@ -310,6 +309,119 @@ const Description = ({
                     </p>
                   )}
               </div>
+
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Buy Now Price{' '}
+                  {formData.product.buy_now && (
+                    <span className="text-red-500">*</span>
+                  )}
+                </label>
+
+                {/* Fused input container - minimal */}
+                <div className="flex items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
+                  {/* Checkbox section */}
+                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                    <input
+                      type="checkbox"
+                      name="buy_now"
+                      checked={formData.product.buy_now}
+                      onChange={handleProductChange}
+                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
+                    />
+                    <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                      Buy Now
+                    </span>
+                  </label>
+
+                  {/* Price input section */}
+                  <input
+                    type="number"
+                    name="buy_now_price"
+                    onChange={handleProductChange}
+                    disabled={!formData.product.buy_now}
+                    placeholder={
+                      formData.product.buy_now
+                        ? 'Enter Buy Now price'
+                        : 'Check Buy Now box to enable'
+                    }
+                    className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
+                      !formData.product.buy_now
+                        ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                        : 'text-gray-900'
+                    }`}
+                    required={formData.product.buy_now}
+                    min={1}
+                  />
+                </div>
+                <p className="text-sm text-maroon mt-1">
+                  Make sure the <strong>Buy Now Price</strong> is higher than
+                  the <strong>Initial Price</strong>
+                </p>
+              </div>
+
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Participants [comma separated] (optional)
+                </label>
+
+                {/* Fused input container - minimal */}
+                <div className="flex items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
+                  {/* Checkbox section */}
+                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                    <input
+                      type="checkbox"
+                      name="private"
+                      checked={formData.product.private}
+                      onChange={handleProductChange}
+                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
+                    />
+                    <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                      Private
+                    </span>
+                  </label>
+
+                  {/* Price input section */}
+                  <input
+                    type="text"
+                    name="participants"
+                    onChange={(e) => handleParticipantsChange(e)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        handleParticipantsChange(e);
+                      }
+                    }}
+                    disabled={!formData.product.private}
+                    placeholder={
+                      formData.product.private
+                        ? 'Enter invited participants email addresses'
+                        : 'Check private box to enable'
+                    }
+                    className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
+                      !formData.product.private
+                        ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                        : 'text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2 py-3">
+                  {participants.map((participant, index) => (
+                    <span
+                      key={index}
+                      className="flex items-center gap-3 bg-gray-200 text-gray-800 px-2 py-2 rounded-full text-xs"
+                    >
+                      <span>{participant}</span>
+                      <span
+                        className="text-[12px] cursor-pointer hover:text-[14px] transition-text duration-200"
+                        onClick={() => removeParticipant(participant)}
+                      >
+                        x
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="flex space-x-4">
@@ -341,9 +453,6 @@ const Description = ({
     </div>
   );
 };
-
-
-
 
 Description.propTypes = {
   handleStepChange: PropTypes.func.isRequired,
