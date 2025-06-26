@@ -203,7 +203,7 @@ const Description = ({
             {/* Left Side */}
             <div className="flex flex-col space-y-4">
               <div>
-                <label className="block text-black font-semibold">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Product name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -212,7 +212,7 @@ const Description = ({
                   placeholder="Graphic card GIGABYTE GeForce RTX 3050"
                   value={formData.item.name}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
+                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-white"
                   maxLength={60}
                   required
                 />
@@ -222,7 +222,7 @@ const Description = ({
               </div>
 
               <div>
-                <label className="block text-black font-semibold">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -230,7 +230,7 @@ const Description = ({
                   placeholder="Enter product details..."
                   value={formData.item.description}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-gray-100 h-[400px] sm:h-[400px]"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-white h-[500px] sm:h-[400px]"
                   maxLength={1200}
                   required
                 />
@@ -243,7 +243,7 @@ const Description = ({
             {/* Right Side */}
             <div className="flex flex-col space-y-4">
               <div className="group relative">
-                <label className="block text-black font-semibold">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   <input
                     type="checkbox"
                     name="refundable"
@@ -261,7 +261,7 @@ const Description = ({
               </div>
 
               <div>
-                <label className="block text-black font-semibold">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Initial price <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -269,14 +269,14 @@ const Description = ({
                   name="start_price"
                   placeholder="Product price"
                   onChange={handleProductChange}
-                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
+                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-white"
                   min="1"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-black font-semibold">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Start Date <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -284,13 +284,13 @@ const Description = ({
                   name="start_date"
                   value={formatDateForInput(formData.product.start_date)}
                   onChange={handleProductChange}
-                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
+                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-black font-semibold">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   End Date <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -298,7 +298,7 @@ const Description = ({
                   name="end_date"
                   value={formatDateForInput(formData.product.end_date)}
                   onChange={handleProductChange}
-                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-gray-100"
+                  className="w-full mt-1 p-2 border border-gray-200 rounded-lg bg-white"
                   required
                 />
                 {formData.product.end_date &&
@@ -310,6 +310,7 @@ const Description = ({
                   )}
               </div>
 
+              {/* Buy now price */}
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Buy Now Price{' '}
@@ -354,12 +355,63 @@ const Description = ({
                     min={1}
                   />
                 </div>
-                <p className="text-sm text-maroon mt-1">
+                <p className="text-xs text-maroon mt-1">
                   Make sure the <strong>Buy Now Price</strong> is higher than
                   the <strong>Initial Price</strong>
                 </p>
               </div>
 
+              {/* Reserve price */}
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Reserve Price
+                </label>
+
+                {/* Fused input container - minimal */}
+                <div className="flex items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
+                  {/* Checkbox section */}
+                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                    <input
+                      type="checkbox"
+                      name="use_reserve_price"
+                      checked={formData.product.reserve_price}
+                      onChange={handleProductChange}
+                      disabled={true}
+                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
+                    />
+                    <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                      Reserve Price
+                    </span>
+                  </label>
+
+                  {/* Price input section */}
+                  <input
+                    type="number"
+                    name="reserve_price"
+                    onChange={handleProductChange}
+                    // disabled={!formData.product.buy_now}
+                    placeholder={
+                      formData.product.reserve_price
+                        ? 'Enter Reserve price'
+                        : 'Check Reserve price box to enable'
+                    }
+                    className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
+                      !formData.product.reserve_price
+                        ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
+                        : 'text-gray-900'
+                    }`}
+                    min={1}
+                    disabled={true}
+                  />
+                </div>
+                <p className="text-xs text-maroon mt-1">
+                  Make sure the <strong>Reserve Price</strong> is higher than
+                  the <strong>Initial Price</strong> and lower than the{' '}
+                  <strong>Buy Now Price</strong>
+                </p>
+              </div>
+
+              {/* Participants */}
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Participants [comma separated] (optional)

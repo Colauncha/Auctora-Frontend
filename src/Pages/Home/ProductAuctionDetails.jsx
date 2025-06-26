@@ -464,7 +464,7 @@ const ProductAuctionDetails = () => {
                           )
                         )}
                       </span>
-                      {auction?.status === 'completed' && (
+                      {auction?.status === 'completed' && auction.payment && (
                         <span className="ml-2 pl-3 text-blue-400">
                           <FaLink className="inline" />
                           <a

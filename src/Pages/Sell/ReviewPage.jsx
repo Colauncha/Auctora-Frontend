@@ -277,7 +277,7 @@ const ReviewPage = () => {
                 </h2>
                 <div
                   className={`rounded-md p-2 ${
-                    paymentStatMap[payment?.status].cls ||
+                    paymentStatMap[payment?.status]?.cls ||
                     'bg-gray-100 text-gray-800'
                   }`}
                 >

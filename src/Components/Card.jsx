@@ -1,54 +1,86 @@
 import { Link } from "react-router-dom";
 import { PropTypes } from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { capitalize } from '../utils';
 
-const Card = ({ imgUrl, itemName, price, sellerName, bid, countDown, to }) => {
+const Card = ({
+  imgUrl,
+  itemName,
+  price,
+  sellerName,
+  bid,
+  countDown,
+  to,
+  status,
+  startDate,
+}) => {
   const [timeLeft, setTimeLeft] = useState(countDown);
+  const [timeDesc, setTimeDesc] = useState({
+    value: '',
+    style: '',
+  });
 
-  const calculateTimeLeft = (endTime) => {
+  const calculateTimeLeft = useCallback(
+    (endTime) => {
+      const now = new Date().getTime();
+      const distance = new Date(endTime) - now;
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      if (distance < 0 || status === 'completed') {
+        return 'Auction Ended';
+      }
+
+      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    },
+    [status],
+  );
+
+  // timeDesc effect
+  useEffect(() => {
     const now = new Date().getTime();
-    const distance = new Date(endTime) - now;
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor(
-      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-    );
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-  };
+
+    const displacement = new Date(countDown) - new Date(startDate);
+    const distance2Start = now - new Date(startDate);
+    const distance2End = new Date(countDown) - now;
+
+    if (status === 'active') {
+      if ((distance2Start / displacement) * 100 < 10) {
+        // change to 10
+        setTimeDesc({
+          value: 'New',
+          style: 'bg-green-400 text-white hover:bg-green-500',
+        });
+      } else if ((distance2End / displacement) * 100 < 10) {
+        //change 50 to 90
+        setTimeDesc({
+          value: 'Ending Soon!!',
+          style: 'bg-red-400 text-white hover:bg-red-500',
+        });
+      }
+    }
+  }, [countDown, startDate, status]);
 
   useEffect(() => {
+    console.log(sellerName);
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft(countDown));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [countDown]);
+  }, [countDown, sellerName, calculateTimeLeft]);
+
+  const statusColorScheme = {
+    active: 'bg-blue-400 text-white hover:bg-blue-500',
+    completed: 'bg-green-400 text-white hover:bg-green-500',
+    cancled: 'bg-red-400 text-white hover:bg-red-500',
+    pending: 'bg-yellow-300 text-black hover:bg-yellow-500',
+  };
 
   return (
-    // <Link className="flex flex-col relative" to={to}>
-    //   <img
-    //     src={imgUrl}
-    //     alt=""
-    //     className="w-[200px] h-[161px] rounded-md bg-slate-300 md:w-[210px] md:h-[249px]"
-    //   />
-    //   <div className="w-[171px] h-[65px] flex flex-col md:w-[285px]">
-    //     <h3 className="text-[#9F3247] text-[12px] font-[700] md:text-[15px]">
-    //       {itemName}
-    //     </h3>
-    //     <div className="flex w-[171px] justify-between md:gap-2 flex-col md:flex-row">
-    //       <p className="font-[700] w-[70px] text-[13px] text-[#9F3247] text-left border-1">
-    //         {price}
-    //       </p>
-    //       <p className="text-[12px] text-[#9f3247] flex items-center justify-center text-right">
-    //         {bid} bid(s)
-    //       </p>
-    //     </div>
-    //     <div className="flex items-center justify-center cursor-pointer hover:bg-[#9f3248] text-[10px] text-[#fff] bg-[#9f324864] px-1 py-2 font-bold absolute top-[55%] left-3 lg:top-[70%]">
-    //       <p>Time Left:</p> <span className="ml-1">{timeLeft}</span>
-    //     </div>
-    //   </div>
-    // </Link>
     <Link
       to={to}
       className="relative flex flex-col items-center gap-2 transition-transform hover:scale-[1.02]"
@@ -75,6 +107,18 @@ const Card = ({ imgUrl, itemName, price, sellerName, bid, countDown, to }) => {
           <p className="font-bold">Time Left:</p>
           <span className="ml-1">{timeLeft}</span>
         </div>
+        <div
+          className={`absolute top-[5%] left-3 lg:top-[5%] flex items-center justify-center opacity-80 hover:opacity-90 ${statusColorScheme[status]} text-[11px] font-semibold px-2 py-1 rounded-md shadow cursor-pointer transition-all duration-300`}
+        >
+          <span className="ml-1">{capitalize(status)}</span>
+        </div>
+        {timeDesc.value && (
+          <div
+            className={`absolute top-[5%] right-3 lg:top-[5%] flex items-center justify-center opacity-80 hover:opacity-90 ${timeDesc.style} text-[8px] animate-ping font-semibold px-2 py-1 rounded-md shadow cursor-pointer transition-all duration-300`}
+          >
+            <span className="ml-1">{capitalize(timeDesc.value)}</span>
+          </div>
+        )}
       </div>
     </Link>
   );
@@ -87,7 +131,9 @@ Card.propTypes = {
   sellerName: PropTypes.string.isRequired,
   bid: PropTypes.number.isRequired,
   countDown: PropTypes.string.isRequired,
+  startDate: PropTypes.string,
   to: PropTypes.string.isRequired,
+  status: PropTypes.oneOf(['active', 'completed', 'cancled', 'pending']),
 };
 
 export default Card;
