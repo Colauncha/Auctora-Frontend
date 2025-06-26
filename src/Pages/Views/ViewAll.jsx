@@ -9,6 +9,7 @@ import { current, currencyFormat, charLimit } from '../../utils';
 import Card from '../../Components/Card';
 import PriceRange from '../../Components/PriceRange';
 import CategoryFilter from '../../Components/CaregoryFilter';
+import RadioButtonFilter from '../../Components/RadioButtonFilter';
 import Button from '../../Components/Button';
 
 const ViewAll = () => {
@@ -20,8 +21,8 @@ const ViewAll = () => {
   const [startPriceQuery, setStartPriceQuery] = useState([]);
   const [category, setCategory] = useState({});
   const [buyNowPriceQuery, setBuyNowPriceQuery] = useState([]);
-  // const [statusQuery, setStatusQuery] = useState('active');
-  // const [buyNowQuery, setBuyNowQuery] = useState(false);
+  const [statusQuery, setStatusQuery] = useState('ACTIVE');
+  const [buyNowQuery, setBuyNowQuery] = useState(null);
   const [clearFilter, setClearFilter] = useState(false);
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
@@ -39,7 +40,7 @@ const ViewAll = () => {
     page = 1,
     others = null,
   }) => {
-    let endPoint = `${endpoint}?page=${page}&per_page=${per_page}&status=ACTIVE`;
+    let endPoint = `${endpoint}?page=${page}&per_page=${per_page}`;
     if (others !== null) {
       let queryString = '';
       for (let k in others) {
@@ -71,7 +72,7 @@ const ViewAll = () => {
     window.scrollTo(0, 0);
     const fetchData = async () => {
       try {
-        const endpoint = `${current}auctions/`;
+        const endpoint = `${current}auctions/?status=ACTIVE&`;
         const resp = await runFetch({ endpoint, per_page: itemsPerPage });
         let data = resp.data;
         setTotalPages(resp.pages);
@@ -162,6 +163,14 @@ const ViewAll = () => {
         queries.sub_category_id = subCatId;
       }
     }
+    if (buyNowQuery !== null) {
+      queries.buy_now = buyNowQuery;
+    }
+    if (statusQuery !== null) {
+      queries.status = statusQuery;
+    }
+    console.log('Queries:', queries);
+
     window.scrollTo(0, 0);
     setLoading(true);
     const fetchData = async () => {
@@ -189,6 +198,8 @@ const ViewAll = () => {
     setBuyNowPriceQuery([]);
     setCurrentPriceQuery([]);
     setStartPriceQuery([]);
+    setCategory({});
+    setStatusQuery('active');
 
     setTimeout(() => {
       setClearFilter(false);
@@ -212,6 +223,26 @@ const ViewAll = () => {
               func={setCategory}
               label={'Category'}
             />
+            <RadioButtonFilter
+              label={'Status'}
+              func={setStatusQuery}
+              clear={clearFilter}
+              options={[
+                { label: 'Active', value: 'ACTIVE' },
+                { label: 'Completed', value: 'COMPLETED' },
+                { label: 'Cancelled', value: 'CANCLED' },
+                { label: 'Pending', value: 'PENDING' },
+              ]}
+            />
+            <RadioButtonFilter
+              label={'Buy Now'}
+              func={setBuyNowQuery}
+              clear={clearFilter}
+              options={[
+                { label: 'True', value: true },
+                { label: 'False', value: false },
+              ]}
+            />
             <PriceRange
               clear={clearFilter}
               func={setCurrentPriceQuery}
@@ -227,35 +258,6 @@ const ViewAll = () => {
               func={setBuyNowPriceQuery}
               label={'Buy Now Price'}
             />
-            {/* <div className="flex flex-col gap-2">
-              <h3 className="font-[500] text-start text-[#9f3248] text-[16px]">
-                Status
-              </h3>
-              <div className="flex gap-2 place-items-center">
-                <input
-                  type="radio"
-                  name="status"
-                  value="active"
-                  checked={statusQuery === 'active'}
-                  onChange={(e) => {
-                    setStatusQuery(e.target.value);
-                  }}
-                />
-                <label htmlFor="active">Active</label>
-              </div>
-              <div className="flex gap-2 place-items-center">
-                <input
-                  type="radio"
-                  name="status"
-                  value="completed"
-                  checked={statusQuery === 'completed'}
-                  onChange={(e) => {
-                    setStatusQuery(e.target.value);
-                  }}
-                />
-                <label htmlFor="completed">Completed</label>
-              </div>
-            </div> */}
             <Button
               label="Apply Filter"
               className="w-full mt-4"
@@ -331,8 +333,10 @@ const ViewAll = () => {
                       sellerName={item.user?.username || 'Anonymous'}
                       bid={item.bids.length}
                       countDown={item.end_date}
+                      startDate={item.start_date}
                       to={`/product-details/${item.id}`}
                       className="w-full max-w-xs min-h-[450px] mx-auto"
+                      status={item.status}
                     />
                   </div>
                 ))}

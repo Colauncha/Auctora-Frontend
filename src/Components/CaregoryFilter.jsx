@@ -128,34 +128,30 @@ const CategoryFilter = ({ label, func, clear }) => {
             <ul className="space-y-4">
               {categories.map((cat) => (
                 <li key={cat.id} className="border-b pb-2">
-                  <label className="flex items-center gap-2 font-medium text-sm">
+                  <label className="inline-flex items-center space-x-2 cursor-pointer font-medium text-[#9f3248] text-sm">
                     <input
                       type="checkbox"
                       checked={selected[cat.id] !== undefined}
                       onChange={() => handleToggle(cat.id)}
-                      className="accent-[#9f3248]"
+                      className="hidden"
                     />
-                    {cat.name}
+                    <div className="w-4 h-4 border border-[#9f3248] rounded-sm flex items-center justify-center relative">
+                      {selected[cat.id] !== undefined && (
+                        <svg
+                          className="w-3 h-3 text-[#9f3248]"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    <span>{cat.name}</span>
                   </label>
-
-                  {/* Subcategories */}
-                  {/* {cat.subcategories?.length > 0 && (
-                    <ul className="pl-5 mt-1 space-y-1">
-                      {cat.subcategories.map((sub) => (
-                        <li key={sub.id}>
-                          <label className="flex items-center gap-2 text-xs text-gray-700">
-                            <input
-                              type="checkbox"
-                              checked={selected[cat.id]?.has(sub.id)}
-                              onChange={() => handleToggle(cat.id, sub.id)}
-                              className="accent-[#9f3248]"
-                            />
-                            {sub.name}
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-                  )} */}
                 </li>
               ))}
             </ul>

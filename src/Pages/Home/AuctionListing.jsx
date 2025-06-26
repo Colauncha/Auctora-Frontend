@@ -50,6 +50,8 @@ const AuctionListing = () => {
             description: auction.description || 'No description available',
             timeLeft: auction.end_date || 'N/A',
             slug: auction.id || 'no-id',
+            status: auction.status,
+            end_date: auction.end_date,
           };
         });
 
@@ -165,7 +167,9 @@ const AuctionListing = () => {
                 bid={item.bidCount}
                 bidTimes={item.bidCount}
                 countDown={item.timeLeft}
+                startDate={item.start_date}
                 to={`/product-details/${item.slug}`}
+                status={item.status}
                 className="w-[600px] max-w-[600px] min-h-[500px]"
               />{' '}
             </div>
