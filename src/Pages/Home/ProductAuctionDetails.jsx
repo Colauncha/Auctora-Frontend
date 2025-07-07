@@ -1,24 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
 import { PropTypes } from "prop-types";
-import { useLocation } from 'react-router-dom';
-import {
-  // FiArrowLeft, FiHeart, FiShare2,
-  FiClock,
-  FiDollarSign,
-  FiUser,
-  FiCheck,
-  FiEye,
-} from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FiClock, FiUser, FiCheck, FiEye } from 'react-icons/fi';
+import { FaNairaSign, FaLink } from 'react-icons/fa6';
 import { BsLightningCharge, BsStarFill } from 'react-icons/bs';
 import { FaEthereum } from 'react-icons/fa';
+import { RiRefund2Line } from 'react-icons/ri';
 import { capitalize, currencyFormat, current } from '../../utils';
 import style from './css/ProductAuctionDetails.module.css';
 import Loading from '../../assets/loader2';
+import Alerts from '../../Components/alerts/Alerts';
+import { shipping, delivery } from '../../Constants';
 
 const ProductAuctionDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [auction, setAuction] = useState(null);
   const [seller_, setSeller] = useState(null);
+  const [sellerImage, setSellerImage] = useState('');
   const [bids, setBids] = useState(null);
   const [biddersPrice, setBiddersPrice] = useState(0);
   const [images, setImages] = useState([]);
@@ -44,8 +42,21 @@ const ProductAuctionDetails = () => {
   const [socket, setSocket] = useState(null);
 
   // misc
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: '',
+    message: '',
+    detail: '',
+  });
+  const navigate = useNavigate();
   const id = useLocation().pathname.split('/').pop();
   const endpoint = current;
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 5000);
+  };
 
   // Status tag color scheme
   const statusTagColor = {
@@ -71,7 +82,12 @@ const ProductAuctionDetails = () => {
       });
       if (!response.ok) {
         let error = await response.json();
-        alert(`Error: ${error.message}`);
+        showAlert(
+          'fail',
+          error.message || 'An error occurred while fetching data.',
+          error.detail || 'Please try again later.',
+        );
+        // alert(`Error: ${error.message}`);
         setLoading(false);
         setBuyNowLoading(false);
         setPlaceBidLoading(false);
@@ -88,7 +104,7 @@ const ProductAuctionDetails = () => {
     }
   };
 
-  // Optimized countdown timer
+  // Auction effects
   useEffect(() => {
     window.scrollTo(0, 0);
     setSellerLoading(true);
@@ -105,7 +121,7 @@ const ProductAuctionDetails = () => {
       setImages(() =>
         [
           data?.item[0]?.image_link?.link ||
-            'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743011639/qet83lshyl43jfyfugoh.jpg',
+            'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg',
           data?.item[0]?.image_link_1?.link || null,
           data?.item[0]?.image_link_2?.link || null,
           data?.item[0]?.image_link_3?.link || null,
@@ -117,6 +133,7 @@ const ProductAuctionDetails = () => {
       setBids(data.bids);
       setSeller(data.user);
       setSellerLoading(false);
+      setSellerImage(data.user?.image_link?.link || '');
       setBiddersLoading(false);
       // await fetchBiddersData(data.id);
       // await fetchSellerData(data.users_id);
@@ -124,7 +141,7 @@ const ProductAuctionDetails = () => {
     fetchAuctionData();
   }, [endpoint, id]);
 
-  // Auction effects
+  // Optimized countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
       if (!auction) return;
@@ -161,7 +178,7 @@ const ProductAuctionDetails = () => {
     let socket_;
 
     if (live) {
-      const token = JSON.parse(localStorage.getItem('token'));
+      const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
       socket_ = new WebSocket(
         `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`,
       );
@@ -185,11 +202,13 @@ const ProductAuctionDetails = () => {
             setBids(data?.payload.sort((a, b) => b.amount - a.amount));
           }
         } catch (error) {
+          showAlert('fail', 'Error parsing WebSocket message', error.message);
           console.error('Error parsing WebSocket message:', error);
         }
       };
 
       socket_.onerror = (error) => {
+        showAlert('fail', 'WebSocket error', error);
         console.error('WebSocket error:', error);
       };
 
@@ -236,16 +255,23 @@ const ProductAuctionDetails = () => {
     if (live) {
       setPlaceBidLoading(true);
       if (!socket || socket.readyState !== WebSocket.OPEN) {
-        alert('WebSocket is not connected. Please try again later.');
+        showAlert('fail', 'WebSocket Error', 'WebSocket is not connected.');
+        // alert('WebSocket is not connected. Please try again later.');
         setPlaceBidLoading(false);
         return;
       } else if (!amount) {
-        alert('Please enter a bid amount');
+        showAlert('warn', 'Invalid Bid', 'Please enter a bid amount.');
+        // alert('Please enter a bid amount');
         setPlaceBidLoading(false);
         return;
       } else if (amount < bids[0]?.amount) {
         setPlaceBidLoading(false);
-        alert('Bid amount must be greater than the current price');
+        showAlert(
+          'warn',
+          'Invalid Bid',
+          'Bid amount must be greater than the current price.',
+        );
+        // alert('Bid amount must be greater than the current price');
         return;
       }
 
@@ -261,12 +287,18 @@ const ProductAuctionDetails = () => {
 
     // Static
     if (!amount) {
-      alert('Please enter a bid amount');
+      // alert('Please enter a bid amount');
+      showAlert('warn', 'Invalid Bid', 'Please enter a bid amount.');
       setPlaceBidLoading(false);
       return;
     } else if (amount < auction?.current_price) {
       setPlaceBidLoading(false);
-      alert('Bid amount must be greater than the current price');
+      showAlert(
+        'warn',
+        'Invalid Bid',
+        'Bid amount must be greater than the current price.',
+      );
+      // alert('Bid amount must be greater than the current price');
       return;
     }
     try {
@@ -291,11 +323,12 @@ const ProductAuctionDetails = () => {
           ...prevAuction,
           current_price: resp.amount,
         }));
-        alert('Bid placed successfully');
+        showAlert('success', 'Bid Successfully Placed');
+        // alert('Bid placed successfully');
       }
     } catch (error) {
       setPlaceBidLoading(false);
-      alert('An error occurred while processing your request.');
+      // alert('An error occurred while processing your request.');
       console.error('An error occured: ', error);
       return;
     }
@@ -326,11 +359,22 @@ const ProductAuctionDetails = () => {
           current_price: resp.amount,
           status: 'Completed',
         }));
-        alert('Purchase successful');
+        showAlert(
+          'success',
+          'Bid successful',
+          'You have successfully placed your bid.',
+        );
+        navigate(`/product/finalize/${auction_id}`);
       }
     } catch (error) {
       setBuyNowLoading(false);
-      alert('An error occurred while processing your request.');
+      setBiddersPrice(0);
+      showAlert(
+        'fail',
+        'Bid failed',
+        'An error occurred while processing your request.',
+      );
+      // alert('An error occurred while processing your request.');
       console.error('An error occurred: ', error);
       return;
     }
@@ -338,6 +382,14 @@ const ProductAuctionDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 mb-40" id="Top">
+      {alertT.isAlert && (
+        <Alerts
+          key={`${alertT.level}-${alertT.message}`}
+          message={alertT.message}
+          detail={alertT.detail}
+          type={alertT.level}
+        />
+      )}
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -388,42 +440,113 @@ const ProductAuctionDetails = () => {
             {/* Product Description */}
             <div className="mt-6 p-6 rounded-md border border-gray-200">
               {auction && (
-                <div className="flex gap-4 mb-6 pb-6 items-center border-b border-gray-200 justify-start">
+                <div className="flex gap-4 mb-6 pb-6 items-center border-b border-gray-200 justify-between">
                   <h1 className="text-2xl font-bold text-maroon">
                     {capitalize(auction?.item[0]?.name)}
                   </h1>
-                  <div
-                    className={`flex items-center rounded-full px-3 py-1
+                  <div className="flex gap-2">
+                    <div
+                      className={`flex items-center rounded-full px-3 py-1 justify-center
                     ${statusTagColor[auction?.status.toLowerCase()]}`}
-                  >
-                    {capitalize(auction?.status)}
-                    <span
-                      className={`ml-2 text-sm ${
-                        statusTagColor[auction?.status.toLowerCase()]
-                      }`}
                     >
-                      {auction?.status === 'completed' ||
-                      auction?.status === 'active' ? (
-                        <FiCheck className="inline" />
-                      ) : (
-                        auction?.status ===
-                        'pending'(<FiClock className="inline" />)
+                      <span
+                        className={`text-sm ${
+                          statusTagColor[auction?.status.toLowerCase()]
+                        }`}
+                      >
+                        {capitalize(auction?.status)}
+                        {auction?.status === 'completed' ||
+                        auction?.status === 'active' ? (
+                          <FiCheck className="inline ml-1" />
+                        ) : (
+                          auction?.status === 'pending' && (
+                            <FiClock className="inline ml-1" />
+                          )
+                        )}
+                      </span>
+                      {auction?.status === 'completed' && auction.payment && (
+                        <span className="ml-2 pl-3 text-blue-400">
+                          <FaLink className="inline" />
+                          <a
+                            href={`/product/finalize/${auction?.id}`}
+                            className="ml-1 text-blue-400 hover:underline transition-colors duration-300 ease-in-out"
+                            aria-label="View auction details"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View Details
+                          </a>
+                        </span>
                       )}
-                    </span>
+                    </div>
+                    {auction?.refundable && (
+                      <div className="flex items-center justify-center bg-gray-200 rounded-full px-3 py-1">
+                        <span className="text-sm text-gray-500">
+                          Refundable
+                          <RiRefund2Line className="inline ml-1 text-green-500" />
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
               <div className="mb-6 pb-6 bg-gray-50 rounded-sm border-b border-gray-200">
                 <h3 className="text-xl mb-3 text-maroon">Description</h3>
-                <p className="text-black-700 text-sm">
+                <p className="text-black-700 text-sm whitespace-pre-wrap">
                   {auction?.item[0]?.description ||
                     'No description available for this auction.'}
                 </p>
               </div>
+              {auction?.logistic_type.length > 0 && (
+                <div className="mb-6 pb-6 bg-gray-50 rounded-sm border-b border-gray-200">
+                  <h3 className="text-xl mb-3 text-maroon">
+                    Pickup and Logistics
+                  </h3>
+                  <div className="flex flex-col text-black-700 text-sm">
+                    {auction?.logistic_type.map((logistic, ind) => (
+                      <span
+                        key={ind}
+                        className="flex justify-between bg-gray-200 w-[30%] rounded-full px-3 py-1 mr-2 mb-2 text-sm font-medium text-gray-700"
+                      >
+                        {capitalize(logistic)}
+                        {logistic === 'Self pickup' ? (
+                          <img
+                            className="w-[25px] h-[25px]"
+                            src={delivery}
+                            alt="Pickup icon"
+                          />
+                        ) : (
+                          <img
+                            className="w-[25px] h-[25px]"
+                            src={shipping}
+                            alt="Delivery Icon"
+                          />
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                  {auction?.logistic_type.includes('Self pickup') && (
+                    <p className="text-black-700 text-sm mt-2">
+                      <span className="text-maroon font-medium">
+                        Pickup Address:{' '}
+                      </span>
+                      {auction?.pickup_address}
+                    </p>
+                  )}
+                </div>
+              )}
               <h2 className="text-xl mb-4 text-maroon">Sellers Information</h2>
               <div className="flex items-center bg-black bg-opacity-5 p-4 rounded-lg">
-                <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4">
-                  <FiUser className="text-gray-500" size={20} />
+                <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center mr-4 overflow-hidden">
+                  {sellerImage ? (
+                    <img
+                      src={sellerImage}
+                      alt="Profile-photo"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <FiUser className="text-gray-500" size={20} />
+                  )}
                 </div>
                 <div>
                   <h4 className="font-medium">{seller_?.username}</h4>
@@ -548,7 +671,10 @@ const ProductAuctionDetails = () => {
                       onClick={() => handleBuyNow(auction?.id)} // To be updated
                     >
                       <FiCheck className="mr-2" />
-                      Buy Now
+                      Buy Now{' '}
+                      <span className="ml-3 text-xs font-light">
+                        ({currencyFormat(auction?.buy_now_price)})
+                      </span>
                     </button>
                     {buyNowLoading && (
                       <div className="ml-2 transition-opacity duration-300 ease-in-out opacity-100">
@@ -580,7 +706,7 @@ const ProductAuctionDetails = () => {
 
                 <div className="flex justify-between text-sm text-gray-500 mt-2">
                   <span>
-                    <FiDollarSign className="inline mr-1" /> Start:{' '}
+                    <FaNairaSign className="inline mr-1" /> Start:{' '}
                     {currencyFormat(auction?.start_price)}
                   </span>
                   <span>

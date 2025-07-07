@@ -1,393 +1,268 @@
-// import { useState } from "react";
-// import { PropTypes } from "prop-types";
-// import uploadIcon from "../../../assets/icons/upload.png"; // Make sure this icon is styled in blue
-// import { FaTrash } from "react-icons/fa";
-// import { current } from "../../../utils";
-// import Loader from '../../../assets/loader2';
-
-// const Photos = ({ activeStep, handleStepChange }) => {
-//   const [images, setImages] = useState([]); // Store uploaded images
-//   const [loading, setLoading] = useState(false); // Loading state
-//   const [uploading, setUploading] = useState(false); // Uploading state
-
-//   const handleFileUpload = (event) => {
-//     setLoading(true);
-//     const files = event.target.files;
-//     if (files.length + images.length > 5) {
-//       setLoading(false);
-//       alert('You can upload a maximum of 5 photos.');
-//       return;
-//     }
-
-//     for (let i = 0; i < files.length; i++) {
-//       const file = files[i];
-//       const reader = new FileReader();
-
-//       reader.onload = (e) => {
-//         const imageUrl = e.target.result;
-//         const imageName = file.name;
-//         const imageSize = (file.size / 1024 / 1024).toFixed(2) + ' MB'; // Convert bytes to MB
-
-//         setImages((prev) => [
-//           ...prev,
-//           { url: imageUrl, name: imageName, size: imageSize, file: file },
-//         ]);
-//       };
-
-//       reader.readAsDataURL(file);
-//     }
-//     setLoading(false);
-//   };
-
-//   const handleDeleteImage = (index) => {
-//     setLoading(true);
-//     const updatedImages = images.filter((_, i) => i !== index);
-//     setImages(updatedImages);
-//     setLoading(false);
-//   };
-
-//   const uploadImage = async () => {
-//     setUploading(true);
-//     const endpoint = `${current}items/upload_images`;
-//     const formData = new FormData();
-//     const itemId = JSON.parse(sessionStorage.getItem('product')).data?.item[0]
-//       ?.id;
-
-//     images.forEach((image, index) => {
-//       if (image) {
-//         console.log(image);
-//         formData.append(`image${index + 1}`, image.file);
-//       }
-//     });
-
-//     try {
-//       const response = await fetch(
-//         `${endpoint}?item_id=${encodeURIComponent(itemId)}`,
-//         {
-//           method: 'PUT',
-//           body: formData,
-//           headers: {
-//             Authorization: `Bearer ${localStorage.getItem('token')}`,
-//           },
-//           credentials: 'include',
-//         },
-//       );
-
-//       if (!response.ok) {
-//         throw new Error(`Error: ${response.statusText}`);
-//       }
-
-//       const result = await response.json();
-//       console.log('Upload successful:', result);
-//       sessionStorage.setItem('product', JSON.stringify(result));
-//       setUploading(false);
-//       return true;
-//     } catch (error) {
-//       console.error('Upload failed:', error);
-//       setUploading(false);
-//       alert('Upload failed. Please try again.');
-//       return false;
-//     }
-//   };
-
-//   return (
-//     <div className="bg-[#F2F0F1] min-h-screen w-full">
-//       <div className="formatter">
-//         <div className=" bg-white rounded-lg p-10 mb-4 mt-4 ">
-//           {/* Header */}
-//           <h2 className="w-full max-w-full text-xl font-bold mb-4">
-//             Add product photos (max 5)
-//           </h2>
-
-//           <div className="border-2 border-dotted border-gray-300 p-4 rounded-lg bg-gray-50 flex flex-wrap gap-6 justify-start h-96">
-//             <div className="text-left max-w-[100px]">
-//               <div className="border-2 border-blue-500 p-2 rounded-lg w-[100px] h-[100px] flex flex-col items-center justify-center">
-//                 <img
-//                   src={uploadIcon}
-//                   alt="Upload"
-//                   className="w-3 h-3 mb-1 object-contain filter-blue"
-//                 />
-//                 <input
-//                   type="file"
-//                   accept="image/*"
-//                   multiple
-//                   onChange={handleFileUpload}
-//                   className="hidden"
-//                   id="upload-photo"
-//                 />
-//                 <label
-//                   htmlFor="upload-photo"
-//                   className="text-black-500 text-xs cursor-pointer hover:text-blue-600 transition duration-300 text-center"
-//                 >
-//                   Upload a photo
-//                 </label>
-//               </div>
-
-//               <p className="text-xs font-semibold text-black-500 mt-1">
-//                 Max size - 5Mb
-//               </p>
-//               <p className="text-xs text-gray-500 mt-1">Jpg, Png, Gif</p>
-//             </div>
-
-//             {/* Uploaded Images Section */}
-//             {images.map((image, index) => (
-//               <div
-//                 key={index}
-//                 className="relative p-0 rounded-lg max-w-[100px] w-[100px] h-[100px] group"
-//               >
-//                 {/* Image Preview */}
-//                 <img
-//                   src={image.url}
-//                   alt={image.name}
-//                   className="w-full h-full object-cover"
-//                 />
-
-//                 {/* Image Name and Size  */}
-//                 <p className="text-xs font-semibold text-black-500 mt-1">
-//                   {image.name}
-//                 </p>
-//                 <p className="text-xs text-gray-500 mt-1">{image.size}</p>
-
-//                 {/* Delete Icon */}
-//                 <div
-//                   className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-//                   onClick={() => handleDeleteImage(index)}
-//                 >
-//                   <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-//                     <FaTrash className="text-white text-sm" />
-//                   </div>
-//                 </div>
-//               </div>
-//             ))}
-//             {loading && (
-//               <div className="flex items-center justify-center">
-//                 <Loader />
-//               </div>
-//             )}
-//           </div>
-
-//           <div className="mt-6 flex items-center gap-4 justify-center">
-//             <button
-//               onClick={async () => {
-//                 (await uploadImage())
-//                   ? handleStepChange(activeStep + 1)
-//                   : () => {};
-//               }}
-//               type="button"
-//               className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
-//             >
-//               Next
-//             </button>
-
-//             {uploading && (
-//               <div className="flex items-center">
-//                 <Loader />
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// Photos.propTypes = {
-//   handleStepChange: PropTypes.func.isRequired,
-//   activeStep: PropTypes.number.isRequired,
-// }
-
-// export default Photos;
-
-
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PropTypes } from "prop-types";
 import uploadIcon from "../../../assets/icons/upload.png"; 
 import { FaTrash } from "react-icons/fa";
-import { current } from "../../../utils";
 import Loader from '../../../assets/loader2';
+import LoaderW from '../../../assets/loaderWhite';
+// import { current } from '../../../utils';
+import Alerts from '../../../Components/alerts/Alerts';
 
-const Photos = ({ activeStep, handleStepChange }) => {
-  const [images, setImages] = useState([]); 
-  const [loading, setLoading] = useState(false); 
-  const [uploading, setUploading] = useState(false); 
+const Photos = ({
+  activeStep,
+  handleStepChange,
+  formData,
+  updateFormData,
+  updateFormValidity, // Added this prop
+}) => {
+  const [images, setImages] = useState(formData.photos || []);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const prevImagesRef = useRef(images);
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: '',
+    message: '',
+    detail: '',
+  });
+
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 5000);
+  };
+
+  // Update form data and validate when images change
+  useEffect(() => {
+    if (JSON.stringify(images) !== JSON.stringify(prevImagesRef.current)) {
+      updateFormData({
+        ...formData,
+        photos: images,
+      });
+      updateFormValidity(activeStep, images.length > 0);
+      prevImagesRef.current = images;
+    }
+  }, [images, formData, activeStep, updateFormData, updateFormValidity]);
+
+  const handleReset = () => {
+    setImages([]);
+  };
 
   const handleFileUpload = (event) => {
     setLoading(true);
-    const files = event.target.files;
-    if (files.length + images.length > 5) {
+    const files = Array.from(event.target.files || []);
+
+    if (files.length === 0) {
       setLoading(false);
-      alert('You can upload a maximum of 5 photos.');
       return;
     }
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const imageUrl = e.target.result;
-        const imageName = file.name;
-        const imageSize = (file.size / 1024 / 1024).toFixed(2) + ' MB'; 
-
-        setImages((prev) => [
-          ...prev,
-          { url: imageUrl, name: imageName, size: imageSize, file: file },
-        ]);
-      };
-
-      reader.readAsDataURL(file);
+    // Check maximum 5 images total
+    if (files.length + images.length > 5) {
+      showAlert('warn', 'Maximum 5 photos allowed');
+      // alert('Maximum 5 photos allowed');
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    const newImages = [];
+    const fileReaders = files.map((file) => {
+      return new Promise((resolve) => {
+        if (file.size > 5 * 1024 * 1024) {
+          showAlert('warn', `${file.name} exceeds 5MB limit`);
+          // alert(`${file.name} exceeds 5MB limit`);
+          resolve();
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          newImages.push({
+            url: e.target.result,
+            name: file.name,
+            size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+            file: file,
+          });
+          resolve();
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(fileReaders).then(() => {
+      setImages((prev) => [...prev, ...newImages]);
+      setLoading(false);
+    });
   };
 
   const handleDeleteImage = (index) => {
-    setLoading(true);
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
-    setLoading(false);
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const uploadImage = async () => {
     setUploading(true);
-    const endpoint = `${current}items/upload_images`;
-    const formData = new FormData();
-    const itemId = JSON.parse(sessionStorage.getItem('product')).data?.item[0]
-      ?.id;
+    // const endpoint = `${current}items/upload_images`;
+    // const itemId = JSON.parse(sessionStorage.getItem('product')).item[0]?.id;
+    const formData_ = new FormData();
+
+    if (images.length === 0) {
+      setUploading(false);
+      showAlert('warn', 'Please add at least one photo');
+      return;
+    }
 
     images.forEach((image, index) => {
       if (image) {
-        console.log(image);
-        formData.append(`image${index + 1}`, image.file);
+        formData_.append(`image${index + 1}`, image.file);
       }
     });
 
-    try {
-      const response = await fetch(
-        `${endpoint}?item_id=${encodeURIComponent(itemId)}`,
-        {
-          method: 'PUT',
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          credentials: 'include',
-        },
-      );
+    console.log('Images:', formData_);
+    updateFormData({
+      ...formData,
+      photos: images,
+    });
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
+    setTimeout(() => {
+      setUploading(false);
+      handleStepChange(activeStep + 1);
+    }, 1000);
+    return true;
+    // try {
+    //   const response = await fetch(
+    //     `${endpoint}?item_id=${encodeURIComponent(itemId)}`,
+    //     {
+    //       method: 'PUT',
+    //       body: formData_,
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem('token')}`,
+    //       },
+    //       credentials: 'include',
+    //     },
+    //   );
 
-      const result = await response.json();
-      console.log('Upload successful:', result);
-      sessionStorage.setItem('product', JSON.stringify(result));
-      setUploading(false);
-      return true;
-    } catch (error) {
-      console.error('Upload failed:', error);
-      setUploading(false);
-      alert('Upload failed. Please try again.');
-      return false;
-    }
+    //   if (!response.ok) {
+    //     const error = await response.json();
+    //     showAlert(
+    //       'fail',
+    //       error.message || 'Upload failed',
+    //       error.detail || 'Please try again',
+    //     );
+    //     throw new Error(`Error: ${error}`);
+    //   }
+
+    //   const result = await response.json();
+    //   console.log('Upload successful:', result);
+    //   showAlert('success', result.message, 'Upload successful');
+    //   setTimeout(() => {
+    //     setUploading(false);
+    //     handleStepChange(activeStep + 1);
+    //   }, 1000);
+    //   return true;
+    // } catch (error) {
+    //   console.error('Upload failed:', error);
+    //   setUploading(false);
+    //   // showAlert('fail', 'Upload failed', 'Please try again');
+    //   // alert('Upload failed. Please try again.');
+    //   return false;
+    // }
   };
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full">
-      <div className="formatter">
-        <div className=" bg-white rounded-lg p-10 mb-4 mt-4 ">
-        
-          <h2 className="w-full max-w-full text-xl font-bold mb-4">
-            Add product photos (max 5)
-          </h2>
-
-          <div className="border-2 border-dotted border-gray-300 p-4 rounded-lg bg-gray-50 flex flex-wrap gap-x-4 gap-y-6 justify-start h-auto min-h-[400px] overflow-y-auto">
-  
-  {/* Upload Button */}
-  <div className="text-left w-[100px] flex-shrink-0">
-    <div className="border-2 border-blue-500 p-2 rounded-lg w-[100px] h-[100px] flex flex-col items-center justify-center">
-      <img
-        src={uploadIcon}
-        alt="Upload"
-        className="w-3 h-3 mb-1 object-contain filter-blue"
-      />
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleFileUpload}
-        className="hidden"
-        id="upload-photo"
-      />
-      <label
-        htmlFor="upload-photo"
-        className="text-black-500 text-xs cursor-pointer hover:text-blue-600 transition duration-300 text-center"
-      >
-        Upload a photo
-      </label>
-    </div>
-    <p className="text-xs font-semibold text-black-500 mt-1">
-      Max size - 5Mb
-    </p>
-    <p className="text-xs text-gray-500 mt-1">Jpg, Png, Gif</p>
-  </div>
-
-  {/* Uploaded Images Section */}
-  {images.map((image, index) => (
-    <div
-      key={index}
-      className="relative w-[100px] flex-shrink-0 group mb-6" 
-    >
-
-      <div className="w-[100px] h-[100px] overflow-hidden rounded-lg mb-1"> 
-        <img
-          src={image.url}
-          alt={image.name}
-          className="w-full h-full object-cover"
+      {alertT.isAlert && (
+        <Alerts
+          key={`${alertT.level}-${alertT.message}`}
+          message={alertT.message}
+          detail={alertT.detail}
+          type={alertT.level}
         />
-      </div>
-      
+      )}
+      <div className="formatter">
+        <div className="bg-white rounded-lg p-10 mb-4 mt-4">
+          <h2 className="text-xl font-bold mb-4">Add product photos (max 5)</h2>
 
-      <div className="w-full">
-        <p className="text-xs font-semibold text-black-500 truncate">
-          {image.name}
-        </p>
-        <p className="text-xs text-gray-500">{image.size}</p>
-      </div>
+          <div className="border-2 border-dotted border-gray-300 p-4 rounded-lg bg-gray-50 flex flex-wrap gap-4 min-h-[400px]">
+            {/* Upload Button */}
+            <div className="w-[100px] flex-shrink-0">
+              <div className="border-2 border-blue-500 p-2 rounded-lg w-[100px] h-[100px] flex flex-col items-center justify-center cursor-pointer">
+                <img src={uploadIcon} alt="Upload" className="w-6 h-6 mb-1" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="upload-photo"
+                />
+                <label
+                  htmlFor="upload-photo"
+                  className="text-xs text-center cursor-pointer"
+                >
+                  Upload photo
+                </label>
+              </div>
+              <p className="text-xs mt-1">Max 5MB</p>
+            </div>
 
-      {/* Delete Icon */}
-      <div
-        className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          handleDeleteImage(index);
-        }}
-      >
-        <FaTrash className="text-white text-sm" />
-      </div>
-    </div>
-  ))}
-  
-  {loading && (
-    <div className="flex items-center justify-center w-full">
-      <Loader />
-    </div>
-  )}
-</div>
+            {/* Image Previews */}
+            {images.map((image, index) => (
+              <div key={index} className="relative w-[100px] group">
+                <img
+                  src={image.url}
+                  alt={image.name}
+                  className="w-[100px] h-[100px] object-cover rounded-lg"
+                />
+                <button
+                  onClick={() => handleDeleteImage(index)}
+                  className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <FaTrash className="text-white text-xs" />
+                </button>
+                <p className="text-xs truncate mt-1">{image.name}</p>
+              </div>
+            ))}
 
-<div className="mt-6 flex items-center gap-4 justify-center">
-  <button
-    onClick={async () => {
-      (await uploadImage())
-        ? handleStepChange(activeStep + 1)
-        : () => {};
-    }}
-    type="button"
-    className="px-20 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
-  >
-    Next
-  </button>
-  {uploading && <Loader />}
-</div>
+            {loading && (
+              <div className="flex items-center justify-center w-full">
+                <Loader />
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={() => handleStepChange(activeStep - 1)}
+              className="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300"
+            >
+              Previous
+            </button>
+
+            <div className="flex gap-2">
+              <button
+                onClick={handleReset}
+                className="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
+              >
+                Reset
+              </button>
+              <button
+                onClick={uploadImage}
+                disabled={images.length === 0}
+                className={`px-6 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full ${
+                  images.length === 0
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:from-maroon hover:to-maroon'
+                }`}
+              >
+                {uploading ? (
+                  <LoaderW otherStyles="h-[25px] w-[25px] border-2 bg-[rgba(230, 84, 113, 0.59)]" />
+                ) : (
+                  'Next'
+                )}
+              </button>
+              {loading && <Loader />}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -397,6 +272,9 @@ const Photos = ({ activeStep, handleStepChange }) => {
 Photos.propTypes = {
   handleStepChange: PropTypes.func.isRequired,
   activeStep: PropTypes.number.isRequired,
-}
+  formData: PropTypes.object.isRequired,
+  updateFormData: PropTypes.func.isRequired,
+  updateFormValidity: PropTypes.func.isRequired, // Added this propType
+};
 
 export default Photos;

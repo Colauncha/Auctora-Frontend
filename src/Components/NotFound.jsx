@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const NotFound = () => {
@@ -19,25 +18,32 @@ const NotFound = () => {
             />
           </svg>
         </div>
-        
-        <h1 className="text-3xl font-extrabold text-black-800 mb-2">404 Error</h1>
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Page Not Found</h2>
-        
+
+        <h1 className="text-3xl font-extrabold text-black-800 mb-2">
+          404 Error
+        </h1>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          Page Not Found
+        </h2>
+
         <p className="text-gray-500 mb-8">
-          Oops! The page you're looking for doesn't exist or has been removed. 
-          Please check the URL or go back to our homepage.
+          Oops! The page you&apos;re looking for doesn&apos;t exist or has been
+          removed. Please check the URL or go back to our homepage.
         </p>
-        
+
         <Link
           to="/"
           className="inline-block px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:from-red-600 hover:to-red-700"
         >
           Return to Homepage
         </Link>
-        
+
         <div className="mt-8 pt-6 border-t border-gray-100">
           <p className="text-sm text-gray-400">
-            Need help? <a href="/contact" className="text-red-500 hover:underline">Customer support</a>
+            Need help?{' '}
+            <a href="/contact-us" className="text-red-500 hover:underline">
+              Customer support
+            </a>
           </p>
         </div>
       </div>

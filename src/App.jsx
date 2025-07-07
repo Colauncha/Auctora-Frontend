@@ -1,64 +1,80 @@
-import { Routes, Route } from "react-router-dom";
-import Ads from "../src/Pages/Home/Ads";
-import Nav from "../src/Pages/Home/Nav";
-import Layout from "../src/Pages/Home/Layout/Layout";
-import AboutUs from "../src/Pages/About/About";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import Ads from '../src/Pages/Home/Ads';
+import Nav from '../src/Pages/Home/Nav';
+import Layout from '../src/Pages/Home/Layout/Layout';
+import AboutUs from '../src/Pages/About/About';
 // import List from "./Pages/Sell/List";
-import Footer from "./Pages/Home/Footer";
-import SignUp from "./Pages/Auth/SignUp";
-import SignIn from "./Pages/Auth/SignIn";
-import ForgotPassword from "./Pages/Auth/ForgotPassword";
+import Footer from './Pages/Home/Footer';
+import SignUp from './Pages/Auth/SignUp';
+import SignIn from './Pages/Auth/SignIn';
+import ForgotPassword from './Pages/Auth/ForgotPassword';
 // import ResetPassword from "./Pages/Auth/ResetPassword";
 
+import ViewAll from './Pages/Views/ViewAll';
+import CategoryResult from './Pages/Category/CategoryResult';
+import DetailPage from './Pages/Detail/Detail';
 
-
-import ViewAll from "./Pages/Views/ViewAll";
-import CategoryResult from "./Pages/Category/CategoryResult";
-import DetailPage from "./Pages/Detail/Detail";
-
-// verification pages
-// import Otp from "./Pages/Account/Otp";
-// import Profile from "./Pages/Dashboard/Profile";
-// import AddressVerification from "./Pages/Dashboard/AddressVerification";
-import Notification from "./Pages/Notification/Notification";
-// import BankVerification from "./Pages/Dashboard/BankVerification";
-// import VerificationLoading from "./Pages/Dashboard/VerificationLoading";
+import Notification from './Pages/Notification/Notification';
 
 // protected route
-import ProtectedRoute from "./Pages/ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from './Pages/ProtectedRoute/ProtectedRoute';
 // import GetStarted from "./Pages/Dashboard/GetStarted";
-import Dashboard from "./Pages/Dashboard/Dashboard";
+import Dashboard from './Pages/Dashboard/Dashboard';
 
 //Sell Routes
-import SellAccount from "./Pages/Sell/SellAccount";
-import CreateAccount from "./Pages/Sell/CreateAccount";
-import AddressForm from "./Pages/Sell/AddressForm";
-import AccountForm from "./Pages/Sell/AccountForm";
-import Verification from "./Pages/Sell/Verification";
-import GetStarted from "./Pages/Sell/GetStarted";
+import SellAccount from './Pages/Sell/SellAccount';
+import CreateAccount from './Pages/Sell/CreateAccount';
+import AddressForm from './Pages/Sell/AddressForm';
+import AccountForm from './Pages/Sell/AccountForm';
+import Verification from './Pages/Sell/Verification';
+import GetStarted from './Pages/Sell/GetStarted';
 
 // Progress Routes
-import ProgressTracker from "./Pages/Sell/AddProduct/ProgressTracker";
+import ProgressTracker from './Pages/Sell/AddProduct/ProgressTracker';
 
 // Payment Routes
-import Payment from "./Pages/Payment/Payment";
-import ProductAuctionDetails from "./Pages/Home/ProductAuctionDetails";
-import YourProduct from "./Pages/Sell/AddProduct/YourProduct";
-import AuctionDetails from "./Pages/Sell/AddProduct/AuctionDetails";
-import NotFound from "./Components/NotFound";
-import ProductSuccess from "./Pages/Sell/AddProduct/ProductSuccess";
-// import AppTest from "./Pages/Payment/AppTest";
-// import ProgressTracker from "./Pages/Sell/ProgressTracker";
+import Payment from './Pages/Payment/Payment';
+import ProductAuctionDetails from './Pages/Home/ProductAuctionDetails';
+import YourProduct from './Pages/Sell/AddProduct/YourProduct';
+import AuctionDetails from './Pages/Sell/AddProduct/AuctionDetails';
+import ProductSuccess from './Pages/Sell/AddProduct/ProductSuccess';
+import ReviewPage from './Pages/Sell/ReviewPage';
 
 //privacy policy and terms and conditions
-import PrivacyPolicy from "./Pages/Terms & Privacy Policy/PrivacyPolicy";
-import TermsCondition from "./Pages/Terms & Privacy Policy/TermsCondition";
+import PrivacyPolicy from './Pages/Terms & Privacy Policy/PrivacyPolicy';
+import TermsCondition from './Pages/Terms & Privacy Policy/TermsCondition';
+import NotFound from './Components/NotFound';
+import Construction from './Pages/misc/Construction';
+import ContactUs from './Pages/misc/ContactUs';
 
 // For all pages to start from top
-import ScrollToTop from "./Components/ScrollToTop";
+import ScrollToTop from './Components/ScrollToTop';
 
+import useAuthStore from './Store/AuthStore';
+
+// ToastContainer
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === 'GOOGLE_AUTH_SUCCESS') {
+        console.log('✅ Google login successful (from popup)');
+        login(true);
+        navigate('/dashboard');
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [navigate, login]);
+
   return (
     <div>
       <ScrollToTop />
@@ -82,19 +98,7 @@ const App = () => {
         {/* Auth Routes */}
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
-
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
-        
-
-
-        {/* Verification Routes */}
-        {/* <Route path="/otp" element={<Otp />} /> */}
-        {/* complete logic for Otp and redirect to Profile */}
-        {/* <Route path="/profile" element={<Profile />} />
-        <Route path="/address-verification" element={<AddressVerification />} />
-        <Route path="/bank-verification" element={<BankVerification />} />
-        <Route path="/verification-loading" element={<VerificationLoading />} /> */}
 
         {/* Sell Routes */}
         <Route path="/otp" element={<SellAccount />} />
@@ -106,6 +110,9 @@ const App = () => {
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
+
+        <Route path="/construction/*" element={<Construction />} />
+        <Route path="/contact-us" element={<ContactUs />} />
 
         {/* Privacy Policy */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -127,6 +134,14 @@ const App = () => {
           element={<ProductAuctionDetails />}
         />
         <Route
+          path="/product/finalize/:id"
+          element={
+            <ProtectedRoute>
+              <ReviewPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/products"
           element={
             <ProtectedRoute>
@@ -135,14 +150,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/auctiondetails/:id"
-          element={
-            <ProtectedRoute>
-              <AuctionDetails />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/products/:id" element={<AuctionDetails />} />
 
         <Route
           path="/product-success"
@@ -173,6 +181,21 @@ const App = () => {
           }
         />
       </Routes>
+
+      {/* Add ToastContainer here */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+
       <Footer />
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import deliveryIcon from "../../../assets/svg/DeliverySVG.svg";
 import photosIcon from "../../../assets/svg/Photos.svg";
 import categoryIcon from "../../../assets/svg/category.svg";
@@ -12,6 +12,7 @@ import Breadcrumbs from "../../../Components/Breadcrumbs";
 const ProgressTracker = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formValidity, setFormValidity] = useState({
     0: false, // Description
     1: false, // Categories
@@ -19,23 +20,79 @@ const ProgressTracker = () => {
     3: false, // Delivery
   });
 
-  const steps = ["Description", "Categories", "Photos", "Delivery"];
+  const [formData, setFormData] = useState({
+    item: {
+      name: '',
+      description: '',
+      category_id: '',
+      sub_category_id: '',
+    },
+    product: {
+      start_price: 0,
+      current_price: 0,
+      buy_now: false,
+      buy_now_price: 0,
+      start_date: new Date().toISOString(),
+      end_date: '',
+      users_id: sessionStorage.getItem('_user')
+        ? JSON.parse(sessionStorage.getItem('_user')).id
+        : '',
+      refundable: false,
+      private: false,
+      participants: [],
+      status: 'pending',
+    },
+    photos: [],
+    delivery: {
+      options: [],
+      address: '',
+      pickup_longitude: null,
+      pickup_latitude: null,
+    },
+  });
+
+  const steps = ['Description', 'Categories', 'Photos', 'Delivery'];
+
+  // Add updateFormData function
+  const updateFormData = (newData) => {
+    setFormData(newData);
+  };
+
+  useEffect(() => {
+    console.log(`Active step changed to: ${activeStep}`);
+    console.log('Form Data:', formData);
+    console.log('Form Validity:', formValidity);
+  }, [activeStep, formData, formValidity]);
 
   const handleStepChange = (index) => {
+    // Prevent moving to any step unless all previous steps are completed
+    if (index > 0) {
+      const allPreviousStepsValid = Array(index)
+        .fill()
+        .every((_, i) => formValidity[i]);
+      if (!allPreviousStepsValid) {
+        setErrorMessage(`Please complete all previous steps first`);
+        setTimeout(() => setErrorMessage(''), 3000);
+        return;
+      }
+    }
+
+    // Handle forward movement (only if current step is valid)
     if (index > activeStep) {
-      if (formValidity[activeStep]) {
-        console.log(
-          `Cannot proceed to ${steps[index]}: Current step ${steps[activeStep]} is not valid.`,
-          `validity: ${formValidity}`,
-        );
+      if (!formValidity[activeStep]) {
+        setErrorMessage(`Please complete the current step first`);
+        setTimeout(() => setErrorMessage(''), 3000);
         return;
       }
       setCompletedSteps([...completedSteps, activeStep]);
     }
+    // Handle backward movement
     else if (index < activeStep) {
       setCompletedSteps(completedSteps.filter((step) => step < index));
     }
+
     setActiveStep(index);
+    setErrorMessage(''); // Clear any existing error when navigation succeeds
   };
 
   const updateFormValidity = (stepIndex, isValid) => {
@@ -53,7 +110,7 @@ const ProgressTracker = () => {
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
-      {/* Responsive Style Overrides */}
+      {/* Your existing styles remain unchanged */}
       <style>{`
         /* 500px and below */
         @media (max-width: 500px) {
@@ -102,6 +159,14 @@ const ProgressTracker = () => {
         <div className="py-6">
           <Breadcrumbs />
           <div className="bg-[#F0F0F0] flex flex-col items-center space-y-3 py-3 min-h-[calc(100vh-200px)]">
+            {/* Error message display */}
+            {errorMessage && (
+              <div className="text-red-500 text-sm mt-2 animate-pulse">
+                {errorMessage}
+              </div>
+            )}
+
+            {/* Rest of your existing JSX remains unchanged */}
             <div className="flex items-center">
               {steps.map((step, index) => (
                 <div key={index} className="flex items-center">
@@ -155,6 +220,8 @@ const ProgressTracker = () => {
               <Description
                 activeStep={activeStep}
                 updateFormValidity={updateFormValidity}
+                formData={formData} // Add this prop
+                updateFormData={updateFormData} // Add this prop
                 handleStepChange={handleStepChange}
               />
             )}
@@ -162,21 +229,27 @@ const ProgressTracker = () => {
               <Categories
                 activeStep={activeStep}
                 updateFormValidity={updateFormValidity}
+                formData={formData}
+                updateFormData={updateFormData}
                 handleStepChange={handleStepChange}
               />
             )}
             {activeStep === 2 && (
               <Photos
                 activeStep={activeStep}
-                updateFormValidity={updateFormValidity}
                 handleStepChange={handleStepChange}
+                formData={formData} // Required
+                updateFormData={updateFormData} // Required
+                updateFormValidity={updateFormValidity} // Required for validation
               />
             )}
             {activeStep === 3 && (
               <Delivery
                 activeStep={activeStep}
-                updateFormValidity={updateFormValidity}
                 handleStepChange={handleStepChange}
+                formData={formData}
+                updateFormData={updateFormData}
+                updateFormValidity={updateFormValidity}
               />
             )}
 

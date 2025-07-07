@@ -24,6 +24,8 @@ import { PropTypes } from 'prop-types';
 import { useMemo } from 'react';
 import MainModal from '../../Components/modals/MainModal';
 import ReferralView from '../../Components/modals/ReferralView';
+import FundingWallet from '../../Components/modals/FundingWallet';
+import Withdrawal from '../../Components/modals/Withdrawal';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
@@ -37,7 +39,65 @@ const Dashboard = () => {
   const offCta = ctaContext((state) => state.turnOff);
 
   // Modals
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState({ state: false, type: '' });
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   offCta();
+  //   sessionStorage.removeItem('newAccount');
+  //   sessionStorage.removeItem('_user');
+
+  //   const getUser = async () => {
+  //     let endpoint = `${current}users/profile`;
+  //     try {
+  //       const response = await fetch(endpoint, {
+  //         method: 'GET',
+  //         credentials: 'include',
+  //       });
+  //       if (response.ok) {
+  //         let data = await response.json();
+  //         setTimeout(() => {
+  //           setUser(data.data);
+  //           setDisplayName(
+  //             data.data.username
+  //               ? `@${capitalize(data.data.username)}`
+  //               : data.data.email,
+  //           );
+  //           setAuctions(data.data.auctions);
+  //           setBids(data.data.bids);
+  //           setRating(data.data.rating);
+  //           setLoading(false);
+  //           sessionStorage.setItem('_user', JSON.stringify(data.data));
+  //           console.log(data.data);
+  //         }, 1000);
+  //       } else {
+  //         let data = await response.json();
+  //         console.error(data);
+  //         navigate('/sign-in');
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //       navigate('/sign-in');
+  //     }
+  //   };
+
+  //   let userId = localStorage.getItem('userId');
+  //   let data = JSON.parse(sessionStorage.getItem('_user'));
+  //   if (!data || !userId) {
+  //     console.log('running fetch...');
+  //     getUser();
+  //     return;
+  //   } else {
+  //     console.log(data);
+  //     setUser(data);
+  //     setDisplayName(
+  //       data.username ? `@${capitalize(data.username)}` : data.email,
+  //     );
+  //     setAuctions(data.auctions);
+  //     setLoading(false);
+  //     return;
+  //   }
+  // }, [navigate, offCta]);
 
   useEffect(() => {
     setLoading(true);
@@ -46,54 +106,56 @@ const Dashboard = () => {
     sessionStorage.removeItem('_user');
 
     const getUser = async () => {
-      let endpoint = `${current}users/profile`;
+      const endpoint = `${current}users/profile`;
       try {
         const response = await fetch(endpoint, {
           method: 'GET',
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
-          },
-          credentials: 'include',
+          credentials: 'include', // important for sending cookies
         });
+
         if (response.ok) {
-          let data = await response.json();
-          setTimeout(() => {
-            setUser(data.data);
-            setDisplayName(
-              data.data.username
-                ? `@${capitalize(data.data.username)}`
-                : data.data.email,
-            );
-            setAuctions(data.data.auctions);
-            setBids(data.data.bids);
-            setRating(data.data.rating);
+          const result = await response.json();
+          const data = result.data;
+          if (data === null) {
             setLoading(false);
-            sessionStorage.setItem('_user', JSON.stringify(data.data));
-            console.log(data.data);
+            navigate('/sign-in');
+            return;
+          }
+          setTimeout(() => {
+            setUser(data);
+            setDisplayName(
+              data.username ? `@${capitalize(data.username)}` : data.email,
+            );
+            setAuctions(data.auctions);
+            setBids(data.bids);
+            setRating(data.rating);
+            setLoading(false);
+            sessionStorage.setItem('_user', JSON.stringify(data)); // optional cache
           }, 1000);
         } else {
-          let data = await response.json();
-          console.error(data);
+          const error = await response.json();
+          console.error(error);
           navigate('/sign-in');
         }
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        console.error(err);
         navigate('/sign-in');
       }
     };
-    let userId = localStorage.getItem('userId');
-    let data = JSON.parse(sessionStorage.getItem('_user'));
-    if (!data || !userId) {
+
+    const cachedData = sessionStorage.getItem('_user');
+    if (!cachedData) {
       getUser();
-      return;
     } else {
+      const data = JSON.parse(cachedData);
       setUser(data);
       setDisplayName(
         data.username ? `@${capitalize(data.username)}` : data.email,
       );
       setAuctions(data.auctions);
+      setBids(data.bids);
+      setRating(data.rating);
       setLoading(false);
-      return;
     }
   }, [navigate, offCta]);
 
@@ -129,7 +191,7 @@ const Dashboard = () => {
   };
 
   const viewAuction = async (id) => {
-    navigate(`/auctiondetails/${id}`);
+    navigate(`/products/${id}`);
   };
 
   const AddProduct = () => {
@@ -180,25 +242,35 @@ const Dashboard = () => {
   }, []);
 
   const handleCloseModal = () => {
-    setModalIsOpen(false);
+    setModalIsOpen({ state: false, type: '' });
   };
 
-  const showReferralModal = () => {
-    setModalIsOpen(true);
+  const showModal = (type) => {
+    setModalIsOpen({ state: true, type: type });
   };
 
   return (
     <>
       <div className={style.container}>
-        {modalIsOpen && (
+        {modalIsOpen.state && modalIsOpen.type === 'referral' && (
           <MainModal header="Referrals" close={handleCloseModal}>
             <ReferralView />
+          </MainModal>
+        )}
+        {modalIsOpen.state && modalIsOpen.type === 'funding' && (
+          <MainModal header="Fund Wallet" close={handleCloseModal}>
+            <FundingWallet />
+          </MainModal>
+        )}
+        {modalIsOpen.state && modalIsOpen.type === 'withdraw' && (
+          <MainModal header="Withdraw" close={handleCloseModal}>
+            <Withdrawal />
           </MainModal>
         )}
         <div className={style.sandwich}>
           <div className={style.avatar}>
             <Avatar
-              imageUrl={user?.image ? user.image.public_url : null}
+              imageUrl={user?.image_link ? user?.image_link?.link : null}
               username={user.username ? user.username : user.email}
             />
             <div className={style.avatarAfter}></div>
@@ -236,7 +308,7 @@ const Dashboard = () => {
               className={style.button}
               iconClassName={style.buttonIcon}
               label="Referral"
-              onClick={() => showReferralModal()}
+              onClick={() => showModal('referral')}
             />
             <Button
               icon={Logout}
@@ -316,14 +388,14 @@ const Dashboard = () => {
                   className={style.panelButton}
                   iconClassName={style.buttonIcon}
                   label="Fund Wallet"
-                  onClick={() => {}}
+                  onClick={() => showModal('funding')}
                 />
                 <Button
                   icon={Withdraw}
                   className={style.panelButton}
                   iconClassName={style.buttonIcon}
                   label="Withdraw"
-                  onClick={() => {}}
+                  onClick={() => showModal('withdraw')}
                 />
               </div>
             </div>

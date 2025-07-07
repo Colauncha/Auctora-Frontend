@@ -1,16 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // Add useRef
 import { PropTypes } from 'prop-types';
 import arrowright from "../../../assets/svg/arrow-right.svg";
 import x from "../../../assets/svg/x.svg";
 import { current } from "../../../utils";
 import Loader from '../../../assets/loader2';
+import LoaderW from '../../../assets/loaderWhite';
+import Alerts from '../../../Components/alerts/Alerts';
 
-const Categories = ({ handleStepChange, activeStep }) => {
+const Categories = ({
+  handleStepChange,
+  activeStep,
+  updateFormValidity,
+  formData,
+  updateFormData,
+}) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [catLoading, setcatLoading] = useState(false);
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: '',
+    message: '',
+    detail: '',
+  });
+
+  const prevValidityRef = useRef(false);
+
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 5000);
+  };
+
+  // Add form validation effect
+  useEffect(() => {
+    const isValid = selectedCategories.length > 0;
+    if (isValid !== prevValidityRef.current) {
+      updateFormValidity(activeStep, isValid);
+      prevValidityRef.current = isValid;
+
+      // Update form data only when validity changes
+      updateFormData({
+        ...formData,
+        item: {
+          ...formData.item,
+          category_id: isValid ? selectedCategories[0]?.category_id : '',
+          sub_category_id: isValid ? selectedCategories[0]?.id : '',
+        },
+      });
+    }
+  }, [
+    selectedCategories,
+    activeStep,
+    updateFormValidity,
+    formData,
+    updateFormData,
+  ]);
 
   useEffect(() => {
     setcatLoading(true);
@@ -29,15 +77,18 @@ const Categories = ({ handleStepChange, activeStep }) => {
     console.log(item);
     setSelectedCategories((prevSelected) => {
       if (prevSelected.includes(item)) {
-        // Uncheck the checkbox
         setCheckedItems((prev) => ({ ...prev, [item.name]: false }));
         return prevSelected.filter((category) => category.name !== item.name);
       } else {
         if (prevSelected.length >= 1) {
-          alert('You can only select up to 1 categories.');
+          showAlert(
+            'warn',
+            'Maximum 1 category allowed',
+            'You can only select up to 1 categories.',
+          );
+          // alert('You can only select up to 1 categories.');
           return prevSelected;
         }
-        // Check the checkbox
         setCheckedItems((prev) => ({ ...prev, [item.name]: true }));
         return [...prevSelected, item];
       }
@@ -48,43 +99,107 @@ const Categories = ({ handleStepChange, activeStep }) => {
     setSelectedCategories((prevSelected) =>
       prevSelected.filter((category) => category.name !== item.name),
     );
-    // Uncheck the checkbox when removing the category
     setCheckedItems((prev) => ({ ...prev, [item.name]: false }));
   };
 
-  const submit = async () => {
-    const endpoint = `${current}auctions/`;
-    let data = JSON.parse(sessionStorage.getItem('product'));
-    data.item.category_id = selectedCategories[0].category_id;
-    data.item.sub_category_id = selectedCategories[0].id;
+  // Add reset function
+  const handleReset = () => {
+    setSelectedCategories([]);
+    setCheckedItems({});
+    updateFormData({
+      ...formData,
+      item: {
+        ...formData.item,
+        category_id: '',
+        sub_category_id: '',
+      },
+    });
+  };
 
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(data),
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Product submitted successfully: ', data);
-        sessionStorage.setItem('product', JSON.stringify(data));
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error('Error submitting product: ', errorData);
-        return false;
-      }
-    } catch (error) {
-      console.error('Error submitting product: ', error);
-    }
+  const submit = () => {
+    setLoading(true);
+    // try {
+    //   const endpoint = `${current}auctions/`;
+    //   let data = JSON.parse(sessionStorage.getItem('product')) || formData;
+    //   data.item.category_id = selectedCategories[0]?.category_id;
+    //   data.item.sub_category_id = selectedCategories[0]?.id;
+
+    //   // Validate selection before API call
+    //   if (!data.item.category_id || !data.item.sub_category_id) {
+    //     showAlert(
+    //       'warn',
+    //       'No category selected',
+    //       'Please select a category before proceeding.',
+    //     );
+    //     throw new Error('No category selected');
+    //   }
+
+    //   updateFormData(data);
+    //   let item = data.item;
+    //   let product = data.product;
+    //   data = { item, ...product };
+
+    //   const response = await fetch(endpoint, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${localStorage.getItem('token')}`,
+    //     },
+    //     body: JSON.stringify(data),
+    //     credentials: 'include',
+    //   });
+
+    //   if (!response.ok) {
+    //     const errorData = await response.json();
+    //     showAlert(
+    //       'fail',
+    //       errorData.message || 'Failed to submit',
+    //       errorData.detail || 'Please try again',
+    //     );
+    //     throw new Error(errorData.message || 'Failed to submit');
+    //   }
+
+    //   const responseData = await response.json();
+    //   showAlert(
+    //     'success',
+    //     responseData.message || 'Submission successful',
+    //     'Your auction has been submitted successfully',
+    //   );
+    //   sessionStorage.setItem('product', JSON.stringify(responseData.data));
+    //   return true;
+    // } catch (error) {
+    //   console.error('Submission error:', error);
+    //   showAlert('fail', 'Submissison error', error || 'Please try again');
+    //   // alert(`Error: ${error.message}`);
+    //   return false;
+    // }
+    updateFormData({
+      ...formData,
+      item: {
+        ...formData.item,
+        category_id: selectedCategories[0]?.category_id,
+        sub_category_id: selectedCategories[0]?.id,
+      },
+    });
+    let data = formData;
+    sessionStorage.setItem('product', JSON.stringify(data));
+    setTimeout(() => {
+      setLoading(false);
+      handleStepChange(activeStep + 1);
+    }, 1000);
+    return true;
   };
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full py-8">
+      {alertT.isAlert && (
+        <Alerts
+          key={`${alertT.level}-${alertT.message}`}
+          message={alertT.message}
+          detail={alertT.detail}
+          type={alertT.level}
+        />
+      )}
       <div className="formatter mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="md:grid md:grid-cols-3 md:gap-6 p-6">
@@ -163,7 +278,7 @@ const Categories = ({ handleStepChange, activeStep }) => {
             </div>
           </div>
 
-          {/* Selected Categories and Next Button */}
+          {/* Selected Categories and Buttons */}
           <div className="bg-gray-100 p-6 rounded-b-lg">
             <p className="font-semibold mb-4">
               Selected category:{' '}
@@ -183,21 +298,38 @@ const Categories = ({ handleStepChange, activeStep }) => {
               ))}
             </p>
 
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
+              {' '}
+              {/* Changed to space-between */}
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => handleStepChange(activeStep - 1)}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition"
+                >
+                  Reset
+                </button>
+              </div>
               <button
-                onClick={async () => {
-                  setLoading(true);
-                  (await submit())
-                    ? handleStepChange(activeStep + 1)
-                    : () => {};
-                  setLoading(false);
-                }}
+                onClick={() => submit()}
                 type="button"
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon"
+                className={`inline-flex items-center px-5 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white transition rounded-full focus:outline-none hover:from-maroon hover:to-maroon ${
+                  selectedCategories.length === 0
+                    ? 'opacity-50 cursor-not-allowed'
+                    : ''
+                }`}
                 disabled={selectedCategories.length === 0 || loading}
               >
-                Next
-                {loading && <Loader className="ml-2 w-5 h-5" />}
+                {loading ? (
+                  <LoaderW otherStyles="h-[20px] w-[20px] border-2" />
+                ) : (
+                  'Next'
+                )}
               </button>
             </div>
           </div>
@@ -210,251 +342,9 @@ const Categories = ({ handleStepChange, activeStep }) => {
 Categories.propTypes = {
   handleStepChange: PropTypes.func.isRequired,
   activeStep: PropTypes.number.isRequired,
+  updateFormValidity: PropTypes.func.isRequired,
+  formData: PropTypes.object.isRequired,
+  updateFormData: PropTypes.func.isRequired,
 };
 
 export default Categories;
-
-
-
-// import { useState, useEffect } from "react";
-// import { PropTypes } from 'prop-types';
-// import arrowright from "../../../assets/svg/arrow-right.svg";
-// import x from "../../../assets/svg/x.svg";
-// import { current } from "../../../utils";
-// import Loader from '../../../assets/loader2';
-
-// const Categories = ({ handleStepChange, activeStep }) => {
-//   const [selectedCategories, setSelectedCategories] = useState([]);
-//   const [checkedItems, setCheckedItems] = useState({});
-//   const [categories, setCategories] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [catLoading, setCatLoading] = useState(false);
-//   const [activeMainCategory, setActiveMainCategory] = useState('All Subcategories');
-
-//   useEffect(() => {
-//     setCatLoading(true);
-//     fetch(`${current}categories`)
-//       .then((response) => response.json())
-//       .then((data) => {
-//         setCategories(data.data);
-//         setCatLoading(false);
-//       })
-//       .catch((error) => {
-//         console.error('Error fetching categories: ', error);
-//         setCatLoading(false);
-//       });
-//   }, []);
-
-//   const handleCheckboxChange = (item) => {
-//     setSelectedCategories((prevSelected) => {
-//       if (prevSelected.some(cat => cat.id === item.id)) {
-//         setCheckedItems((prev) => ({ ...prev, [item.name]: false }));
-//         return prevSelected.filter((category) => category.id !== item.id);
-//       } else {
-//         if (prevSelected.length >= 1) {
-//           alert('You can only select up to 1 category.');
-//           return prevSelected;
-//         }
-//         setCheckedItems((prev) => ({ ...prev, [item.name]: true }));
-//         return [...prevSelected, item];
-//       }
-//     });
-//   };
-
-//   const handleRemoveCategory = (item) => {
-//     setSelectedCategories(prev => prev.filter(cat => cat.id !== item.id));
-//     setCheckedItems(prev => ({ ...prev, [item.name]: false }));
-//   };
-
-//   const submit = async () => {
-//     if (selectedCategories.length === 0) {
-//       alert('Please select at least one category');
-//       return false;
-//     }
-
-//     const endpoint = `${current}auctions/`;
-//     let data = JSON.parse(sessionStorage.getItem('product'));
-//     data.item.category_id = selectedCategories[0].category_id;
-//     data.item.sub_category_id = selectedCategories[0].id;
-
-//     try {
-//       const response = await fetch(endpoint, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           Authorization: `Bearer ${localStorage.getItem('token')}`,
-//         },
-//         body: JSON.stringify(data),
-//         credentials: 'include',
-//       });
-      
-//       if (response.ok) {
-//         const responseData = await response.json();
-//         sessionStorage.setItem('product', JSON.stringify(responseData));
-//         return true;
-//       } else {
-//         const errorData = await response.json();
-//         console.error('Error submitting product: ', errorData);
-//         return false;
-//       }
-//     } catch (error) {
-//       console.error('Error submitting product: ', error);
-//       return false;
-//     }
-//   };
-
-//   const mainCategories = [
-//     'All Subcategories',
-//     'Electronics', 'Fashion', 'Home and Garden', 'Supermarket',
-//     'Beauty', 'Culture', 'Sports and tourism', 'Automotive', 'Properties'
-//   ];
-
-//   return (
-//     <div className="bg-[#F2F0F1] min-h-screen w-full px-4 sm:px-6 py-8">
-//       <div className="bg-white rounded-lg p-6 max-w-6xl mx-auto">
-        
-//         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-//           Select the category your goods belong to
-//         </h2>
-
-        
-//         <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-300px)] sm:h-[calc(100vh-250px)] overflow-hidden">
-//           {/* Main Categories (Left)  */}
-//           <div className="w-full lg:w-64 bg-white p-4 rounded-lg border border-gray-200 overflow-y-auto" 
-//                style={{ minHeight: '400px' }}>
-
-//             <ul className="space-y-3">
-//               {mainCategories.map((category, index) => (
-//                 <li key={index}>
-//                   <button
-//                     onClick={() => setActiveMainCategory(category)}
-//                     className={`flex items-center justify-between w-full p-2 rounded-md transition-colors ${activeMainCategory === category ? 'bg-[#F8E8EB] text-[#9F3247]' : 'hover:bg-gray-50'}`}
-//                   >
-//                     <span>{category}</span>
-//                     {category !== 'All Subcategories' && (
-//                       <img src={arrowright} alt="" className="w-3 h-3" />
-//                     )}
-//                   </button>
-//                 </li>
-//               ))}
-//             </ul>
-//           </div>
-
-//           {/* Subcategories (Right) */}
-//           <div className="flex-1 bg-white p-4 rounded-lg border border-gray-200 overflow-y-auto"
-//           style={{
-//             minHeight: window.innerWidth < 768 ? '600px' : '400px', // Adjust height dynamically
-//           }}
-//           >
-//             {catLoading ? (
-//               <div className="flex items-center justify-center h-full">
-//                 <Loader />
-//               </div>
-//             ) : (
-//               <>
-//                 <h3 className="font-semibold text-lg text-[#9F3247] mb-4">
-//                   {activeMainCategory}
-//                 </h3>
-//                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-//                   {categories
-//                     .filter(category => 
-//                       activeMainCategory === 'All Subcategories' || 
-//                       category.name.includes(activeMainCategory))
-//                     .map((category) => (
-//                       <div key={category.id} className="bg-gray-50 p-3 rounded-lg">
-//                         <h4 className="font-medium text-[#9F3247] mb-2">{category.name}</h4>
-//                         <ul className="space-y-1">
-//                           {category.subcategories.map((item) => (
-//                             <li key={item.id}>
-//                               <label className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 transition-colors cursor-pointer">
-//                                 <input
-//                                   type="checkbox"
-//                                   className="w-4 h-4 border-2 border-gray-300 rounded text-[#9F3247] focus:ring-[#9F3247]"
-//                                   checked={checkedItems[item.name] || false}
-//                                   onChange={() => handleCheckboxChange({
-//                                     ...item,
-//                                     category_id: category.id,
-//                                   })}
-//                                 />
-//                                 <span className="text-gray-700">{item.name}</span>
-//                               </label>
-//                             </li>
-//                           ))}
-//                         </ul>
-//                       </div>
-//                     ))}
-//                 </div>
-//               </>
-//             )}
-//           </div>
-//         </div>
-
- 
-//         <p className="font-bold mb-6 mt-4">
-//           Selected categories:{' '}
-//           {selectedCategories.length > 0 ? (
-//             selectedCategories.map((category) => (
-//               <span
-//                 key={category.id}
-//                 className="inline-flex items-center bg-gray-100 rounded-full px-3 py-1 m-1"
-//               >
-//                 {category.name}
-//                 <button
-//                   onClick={() => handleRemoveCategory(category)}
-//                   className="ml-2"
-//                 >
-//                   <img src={x} alt="Remove" className="w-3 h-3" />
-//                 </button>
-//               </span>
-//             ))
-//           ) : (
-//             <span className="text-gray-500">None selected</span>
-//           )}
-//         </p>
-
-
-// <div className="mt-2 text-center">
-//   <button
-//     onClick={async (e) => {
-//       e.preventDefault();
-//       setLoading(true);
-//       try {
-        
-//         const success = await submit();
-//         if (success) {
-//           handleStepChange(activeStep + 1); 
-//         } else {
-//           alert('Submission failed. Please try again.');
-//         }
-//       } catch (error) {
-//         console.error('Error during submission: ', error);
-//         alert('An error occurred during submission. Please check the console for details.');
-//       } finally {
-//         setLoading(false);
-//       }
-//     }}
-//     disabled={loading || selectedCategories.length === 0}
-//     className={`px-8 py-3 rounded-full text-white font-medium transition-colors ${selectedCategories.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-br from-[#5e1a28] to-[#e65471] hover:from-[#9F3247] hover:to-[#9F3247]'}`}
-//   >
-//     {loading ? (
-//       <span className="flex items-center justify-center gap-2">
-//         <Loader className="w-5 h-5" />
-//         Processing...
-//       </span>
-//     ) : (
-//       'Next'
-//     )}
-//   </button>
-// </div>
-
-//       </div>
-//     </div>
-//   );
-// };
-
-// Categories.propTypes = {
-//   handleStepChange: PropTypes.func.isRequired,
-//   activeStep: PropTypes.number.isRequired,
-// };
-
-// export default Categories;

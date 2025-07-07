@@ -33,27 +33,27 @@ html, body {
   width: 100%;
   max-width: 1433px;
   margin: 0 auto;
-  padding: 0 16px; /* Reduce spacing */
-  overflow-x: hidden; /* No horizontal scrolling on large screens */
+  padding: 0 16px; 
+  overflow-x: hidden; 
 }
 
 .format {
-  min-width: 100%; /* Stretches to full container width */
-  overflow-x: hidden; /* No scroll by default */
-  white-space: nowrap; /* Prevent content from wrapping */
+  min-width: 100%; 
+  overflow-x: hidden; 
+  white-space: nowrap;
 }
 
 @media screen and (max-width: 1324px) {
   .format {
-    min-width: 900px; /* Set a smaller minimum width on smaller screens */
-    overflow-x: auto; /* Enable horizontal scrolling when screen width is reduced */
-    overflow-y: hidden; /* Prevent vertical scrolling */
+    min-width: 900px; 
+    overflow-x: auto; 
+    overflow-y: hidden; 
   }
 }
 
 @media (min-width: 759px) and (max-width: 1023px) {
   .icon-container {
-    background-color: #f2f0f1; /* Match the background color */
+    background-color: #f2f0f1; 
     padding: 10px;
     border-radius: 12px;
   }
@@ -66,8 +66,8 @@ html, body {
 
 /* Hide scrollbar for IE, Edge, and Firefox */
 .format {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
 }
 
 
@@ -81,8 +81,8 @@ html, body {
 
 /* For the whole page */
 ::-webkit-scrollbar {
-  width: 10px; /* Width of vertical scrollbar */
-  height: 10px; /* Height of horizontal scrollbar */
+  width: 10px; 
+  height: 10px; 
 }
 
 /* Track (background) */
@@ -95,7 +95,7 @@ html, body {
 ::-webkit-scrollbar-thumb {
   background: #9f3247; 
   border-radius: 15px; 
-  border: 3px solid #f0f0f0; /* Space between thumb and track */
+  border: 3px solid #f0f0f0; 
 }
 
 /* On hover */
@@ -114,6 +114,8 @@ html {
     width: 390px;
   }
 
+
+
   
 
 
@@ -121,3 +123,11 @@ html {
 /* .state-area {
   width: 648px;
 } */
+
+
+.FaLinkedin {
+  transition: transform 0.2s ease;
+}
+.FaLinkedin:hover {
+  transform: scale(1.2);
+}

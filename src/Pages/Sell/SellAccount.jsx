@@ -3,6 +3,7 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import Loader from '../../assets/loader2';
 import { current } from '../../utils';
+import Alerts from '../../Components/alerts/Alerts';
 
 const SellAccount = () => {
   const [otp, setOtp] = useState([]);
@@ -13,6 +14,19 @@ const SellAccount = () => {
   const refBox4 = useRef();
   const refBox5 = useRef();
   const [loading, setLoading] = useState(false);
+  const [alertT, setAlert] = useState({
+    isAlert: false,
+    level: '',
+    message: '',
+    detail: '',
+  });
+
+  const showAlert = (level, message, detail = '') => {
+    setAlert({ isAlert: true, level, message, detail });
+    setTimeout(() => {
+      setAlert({ isAlert: false, level: '', message: '', detail: '' });
+    }, 10000);
+  };
 
   const navigate = useNavigate();
 
@@ -31,11 +45,21 @@ const SellAccount = () => {
       if (!response.ok) {
         setLoading(false);
         const errorData = await response.json();
-        alert(`${errorData.message}: ${errorData.detail}`);
+        showAlert(
+          'fail',
+          errorData.message || 'Error',
+          errorData.detail || 'An error occurred',
+        );
+        // alert(`${errorData.message}: ${errorData.detail}`);
         throw new Error(await response.json());
       }
       const resp = await response.json();
       console.log('Success: ', resp.success);
+      showAlert(
+        'success',
+        resp.message || 'Success',
+        resp.detail || 'OTP verified successfully',
+      );
       return resp.success;
     } catch (error) {
       console.error('Error: ', error);
@@ -51,18 +75,22 @@ const SellAccount = () => {
       email: sessionStorage.getItem('email-otp'),
     };
     if (otp_.length < 6) {
-      alert('OTP must be six characters');
+      // alert('OTP must be six characters');
+      showAlert(
+        'warn',
+        'OTP must be six characters',
+        'Please enter a valid OTP',
+      );
       setLoading(false);
       return;
     } else {
-      setTimeout(async () => {
-        console.log(cred);
-        if (await runFetch(cred)) {
-          sessionStorage.removeItem('email-otp');
+      if (await runFetch(cred)) {
+        sessionStorage.removeItem('email-otp');
+        setTimeout(() => {
           setLoading(false);
           navigate('/update-profile');
-        }
-      }, 2000);
+        }, 2000);
+      }
     }
   };
 
@@ -73,7 +101,8 @@ const SellAccount = () => {
 
     const email = sessionStorage.getItem('email-otp');
     if (!email) {
-      alert('Email not found. Please log in again.');
+      // alert('Email not found. Please log in again.');
+      showAlert('fail', 'Email not found', 'Please log in again to resend OTP');
       return;
     }
 
@@ -92,19 +121,30 @@ const SellAccount = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('OTP Resent Successfully:', data);
-        alert('OTP has been resent to your email.');
+        // alert('OTP has been resent to your email.');
+        showAlert(
+          'success',
+          'OTP Resent Successfully',
+          data.data.detail || 'Please check your email for the new OTP.',
+        );
       } else {
         const errorData = await response.json();
         console.error('Failed to Resend OTP:', errorData);
-        alert(
-          `${errorData.message || 'Error'}: ${
-            errorData.detail || 'Could not resend OTP.'
-          }`,
+        showAlert(
+          'fail',
+          errorData.message || 'Error',
+          errorData.detail || 'Could not resend OTP.',
         );
+        // alert(
+        //   `${errorData.message || 'Error'}: ${
+        //     errorData.detail || 'Could not resend OTP.'
+        //   }`,
+        // );
       }
     } catch (error) {
       console.error('Unexpected Error:', error);
-      alert('An unexpected error occurred while resending OTP.');
+      showAlert('fail', 'An unexpected error occurred while resending OTP.');
+      // alert('An unexpected error occurred while resending OTP.');
     } finally {
       setResending(false);
     }
@@ -127,6 +167,14 @@ const SellAccount = () => {
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
       <div className="formatter">
+        {alertT.isAlert && (
+          <Alerts
+            key={`${alertT.level}-${alertT.message}`}
+            message={alertT.message}
+            detail={alertT.detail}
+            type={alertT.level}
+          />
+        )}
         <div className="py-6">
           <Breadcrumbs />
           <div className="min-h-screen flex items-center justify-center bg-[#F0F0F0]">

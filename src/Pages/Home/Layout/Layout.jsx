@@ -8,7 +8,7 @@ const Layout = () => {
   return (
     <div>
       <Spotlight />
-      <Separator title={`ONGOING AUCTIONS`} />
+      <Separator title={`TRENDING AUCTIONS`} />
       <Wrapper />
       <Category />
     </div>

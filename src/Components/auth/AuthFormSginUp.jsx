@@ -64,11 +64,16 @@ const AuthFormSginUp = ({ heading }) => {
       return;
     }
 
+    let payload = { email, password };
+    if (referral_code.length > 0) {
+      payload = { ...payload, referral_code };
+    }
+
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, referral_code }),
+        body: JSON.stringify(payload),
       });
 
       if (response.status === 200 || response.status === 201) {
@@ -96,6 +101,22 @@ const AuthFormSginUp = ({ heading }) => {
 
   const SignIn = () => navigate('/sign-in');
 
+  const googleSignUp = async () => {
+    const response = await fetch(`${current}users/google/auth`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+      window.open(data.data.url, '_blank');
+    } else {
+      const errorData = await response.json();
+      showAlert('fail', errorData.message, errorData.detail);
+    }
+  };
+
   const validatePassword = (pwd) => {
     const startsWithCapital = /^[A-Z]/.test(pwd);
     const hasMinLength = pwd.length >= 8;
@@ -106,7 +127,7 @@ const AuthFormSginUp = ({ heading }) => {
   };
 
   return (
-    <div className="w-[620px] h-[560px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
+    <div className="w-[900px] h-[590px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
       {alertT.isAlert && (
         <Alerts
           key={`${alertT.level}-${alertT.message}`}
@@ -238,9 +259,16 @@ const AuthFormSginUp = ({ heading }) => {
       </form>
 
       <div className="flex flex-col gap-3 mt-2 items-center">
-        <p>Or sign Up With</p>
-        <div className="flex items-center gap-3">
-          <img src={google_auth} alt="Google Sign In" className="w-10 h-10" />
+        <p>Or Sign Up with</p>
+        <div
+          onClick={googleSignUp}
+          className="bg-[#f5f5f5] p-3 rounded-full cursor-pointer hover:bg-[#de506d] hover:scale-105 transition-transform duration-300"
+        >
+          <img
+            src={google_auth}
+            alt="Google Auth"
+            className="w-10 h-10 cursor-pointer"
+          />
         </div>
       </div>
     </div>

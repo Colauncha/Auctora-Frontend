@@ -1,87 +1,91 @@
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { current, formatDateTime } from "../../utils";
-import Loader from "../../assets/loader2"; // Update the path to the correct location of the Loader component
+import Loader from '../../assets/loader2';
+import Pagination from '../../Components/Pagination';
 
 const Notify = () => {
   const [notice, setNotice] = useState([]);
-  const [read, setRead] = useState([]);
-  const [activeTab, setActiveTab] = useState("notice");
-  const [sort, setSort] = useState("asc");
+  const [total, setTotal] = useState(0);
+  const [sort, setSort] = useState('asc');
   const [loading, setLoading] = useState(false);
-  const notifications = {
-    notice: notice,
-    read: read,
+
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(10);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   useEffect(() => {
     setLoading(true);
-    const inboxEndpoint = `${current}users/notifications`;
-    const readEndpoint = `${current}users/notifications/?read=true`;
-    const fetchNotifications = async (endpoint, func) => {
+    const inboxEndpoint = `${current}users/notifications?page=${currentPage}&per_page=10`;
+    const fetchNotifications = async (endpoint, func, func2) => {
       const response = await fetch(endpoint, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
       });
       if (!response.ok) {
         setLoading(false);
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch notifications");
+        throw new Error(errorData.message || 'Failed to fetch notifications');
       }
       const data = await response.json();
+      console.log(data);
       func(data.data);
+      func2(data.total);
+      setTotalPages(data.pages);
       setLoading(false);
-    }
-    fetchNotifications(inboxEndpoint, setNotice);
-    fetchNotifications(readEndpoint, setRead);
-  }, []);
+      window.scrollTo(0, 0);
+    };
+    fetchNotifications(inboxEndpoint, setNotice, setTotal);
+  }, [currentPage]);
 
   const handleNotificationSort = () => {
     setNotice((prev) => prev.reverse());
-    setRead((prev) => prev.reverse());
-    setSort((prevSort) => (prevSort === "desc" ? "asc" : "desc"));
+    setSort((prevSort) => (prevSort === 'desc' ? 'asc' : 'desc'));
   };
 
-  const toggleRead = async (id, read_) => {
+  const toggleRead = async (id) => {
     const tempNotice = notice;
-    const tempRead = read;
-    if (!read_) {
-      setNotice((prev) => prev.filter((item) => item.id !== id));
-      setRead((prev) => [...prev, tempNotice.find((item) => {
-        item.read = true;
-        return item.id === id
-      })]);
-    } else {
-      setRead((prev) => prev.filter((item) => item.id !== id));
-      setNotice((prev) => [...prev, tempRead.find((item) => {
-        item.read = false;
-        return item.id === id
-      })]);
-    }
+    const tempTotal = total;
+    setNotice((prev) => prev.filter((item) => item.id !== id));
 
     const endpoint = `${current}users/notifications/${id}`;
     const response = await fetch(endpoint, {
-      method: "PUT",
-      body: JSON.stringify({ read: !read_ }),
+      method: 'PUT',
+      body: JSON.stringify({ read: true }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
     });
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || "An error occurred while updating the notification.");
+      throw new Error(
+        errorText || 'An error occurred while updating the notification.',
+      );
     }
     const data = await response.json();
-    if (!data.data && !read_) {
+    setTotal((prev) => prev - 1);
+    sessionStorage.setItem(
+      'notification',
+      JSON.stringify({
+        data: tempNotice.filter((item) => item.id !== id),
+        total: tempTotal - 1,
+      }),
+    );
+    if (!data.data) {
       setNotice(tempNotice);
-      setRead(tempRead);
-    } else if (!data.data && read_) {
-      setRead(tempRead);
-      setNotice(tempNotice);
+      setTotal(tempTotal);
+      sessionStorage.setItem(
+        'notification',
+        JSON.stringify({ data: tempNotice, total: tempTotal }),
+      );
     }
   };
 
@@ -105,36 +109,19 @@ const Notify = () => {
       {/* Tabs */}
       <div className="flex mt-3 border-b">
         <button
-          className={`flex-1 py-2 font-semibold ${
-            activeTab === 'notice'
-              ? 'border-b-2 border-[#9f3248] text-[#9f3248]'
-              : 'text-gray-500'
-          }`}
-          onClick={() => setActiveTab('notice')}
+          className={`flex-1 py-2 font-semibold border-b-2 border-[#9f3248] text-[#9f3248]`}
+          onClick={() => {}}
         >
           Inbox{' '}
           <span className="bg-[#9f3248] text-white px-2 rounded-full text-sm">
-            {notice.length}
-          </span>
-        </button>
-        <button
-          className={`flex-1 py-2 font-semibold ${
-            activeTab === 'read'
-              ? 'border-b-2 border-gray-500 text-gray-500'
-              : 'text-gray-500'
-          }`}
-          onClick={() => setActiveTab('read')}
-        >
-          Read{' '}
-          <span className="bg-gray-500 text-white px-2 rounded-full text-sm">
-            {read.length}
+            {total}
           </span>
         </button>
       </div>
 
       {/* Notification List */}
       <div className="flex flex-col mt-3">
-        {notifications[activeTab]?.length === 0 ? (
+        {notice?.length === 0 ? (
           <div className="flex items-center justify-around h-[30vh] w-[60%] ml-[20%]">
             {loading ? (
               <Loader />
@@ -143,7 +130,7 @@ const Notify = () => {
             )}
           </div>
         ) : (
-          notifications[activeTab]?.map((item) => (
+          notice.map((item) => (
             <div
               key={item?.id}
               className="flex items-center p-3 bg-white rounded-lg shadow-sm mb-2"
@@ -157,15 +144,34 @@ const Notify = () => {
               </div>
               <button
                 className="text-gray-600"
-                onClick={async () => await toggleRead(item?.id, item?.read)}
+                onClick={async () => await toggleRead(item?.id)}
               >
-                {activeTab == 'notice'
-                  ? 'Mark as read ✉️'
-                  : 'Mark as unread 📩'}
+                Mark as read ✉️
               </button>
             </div>
           ))
         )}
+      </div>
+      <div className="flex justify-center items-center mb-6">
+        <div className="relative w-full max-w-4xl flex flex-col items-center gap-4">
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+
+          {loading && (
+            <div className="flex items-center justify-center">
+              <Loader otherStyles="h-5 w-5 border-2" />
+            </div>
+          )}
+
+          <div className="w-full text-center mt-2">
+            <p className="text-gray-500 text-sm">
+              Showing {notice.length} of {total} notifications
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

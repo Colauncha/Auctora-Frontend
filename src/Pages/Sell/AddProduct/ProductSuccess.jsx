@@ -39,7 +39,7 @@ function ProductSuccess() {
         <div className="mt-8 pt-6 border-t border-gray-100">
           <p className="text-sm text-gray-400">
             Need help?{' '}
-            <a href="/contact" className="text-red-500 hover:underline">
+            <a href="/contact-us" className="text-red-500 hover:underline">
               Customer support
             </a>
           </p>
