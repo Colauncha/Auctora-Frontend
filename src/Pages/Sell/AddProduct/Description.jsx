@@ -374,9 +374,9 @@ const Description = ({
                     <input
                       type="checkbox"
                       name="use_reserve_price"
-                      checked={formData.product.reserve_price}
+                      checked={formData.product.use_reserve_price}
                       onChange={handleProductChange}
-                      disabled={true}
+                      // disabled={true}
                       className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
                     />
                     <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
@@ -389,19 +389,18 @@ const Description = ({
                     type="number"
                     name="reserve_price"
                     onChange={handleProductChange}
-                    // disabled={!formData.product.buy_now}
                     placeholder={
-                      formData.product.reserve_price
+                      formData.product.use_reserve_price
                         ? 'Enter Reserve price'
                         : 'Check Reserve price box to enable'
                     }
                     className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
-                      !formData.product.reserve_price
+                      !formData.product.use_reserve_price
                         ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
                         : 'text-gray-900'
                     }`}
                     min={1}
-                    disabled={true}
+                    disabled={!formData.product.use_reserve_price}
                   />
                 </div>
                 <p className="text-xs text-maroon mt-1">

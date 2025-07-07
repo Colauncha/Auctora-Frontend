@@ -690,13 +690,14 @@ const AuctionDetails = () => {
           {/* Restart */}
           <div
             className={`${
-              auction.status === 'completed' &&
+              (auction.status === 'completed' ||
+                auction.status === 'cancled') &&
               (!payment || payment.status === 'refunded')
                 ? 'flex'
                 : 'hidden'
             } flex-col items-start justify-center mb-10 max-w-full bg-white rounded-lg mx-auto p-4`}
           >
-            {auction.status === 'completed' &&
+            {(auction.status === 'completed' || auction.status === 'cancled') &&
               (!payment || payment.status === 'refunded') && (
                 <>
                   <div
