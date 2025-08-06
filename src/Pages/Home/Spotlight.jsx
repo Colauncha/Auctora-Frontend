@@ -1,18 +1,4 @@
-// import CountDown from "../../Components/CountDown";
-// import Carousel from "../../Components/Carousel";
 
-// const Spotlight = () => {
-//   return (
-//     <div className="bg-[#F2F0F1] min-h-screen lg:h-screen w-full">
-//       <div className="max-w-[1433px] mx-auto formatter flex flex-col lg:flex-row justify-between pl-12 pr-8 lg:pl-20 lg:pr-16"> {/* Increased padding with more on the left */}
-//         <CountDown />
-//         <Carousel />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Spotlight;
 
 
 import CountDown from "../../Components/CountDown";
