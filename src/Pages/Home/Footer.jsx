@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import Cta from './Cta';
 import { facebook, linkedin, instaggram, logo, twitter } from '../../Constants';
-import { useEffect } from 'react';
 
 const footerArr = [
   {
@@ -35,10 +34,9 @@ const footerArr = [
 
 const Footer = () => {
   const location = useLocation();
+  const path = location.pathname;
 
-  useEffect(() => {
-    console.log(location.pathname);
-  }, [location.pathname]);
+  if (path.startsWith('/admin')) return null;
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 w-full pt-32 pb-8 relative">
