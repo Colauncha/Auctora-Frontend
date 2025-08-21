@@ -5,7 +5,7 @@ import { current } from '../utils';
 import Loader from '../assets/loader2';
 import { PlaceHolderImage } from '../Constants';
 
-const Search = ({ className, onClick, img, placeholder }) => {
+const Search = ({ className, onClick, img, placeholder, setParent }) => {
   const [searchValue, setSearchValue] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -74,7 +74,10 @@ const Search = ({ className, onClick, img, placeholder }) => {
           type="text"
           placeholder={placeholder}
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+            setParent(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           className="w-full h-[20px] rounded-md bg-[#F0F0F0] outline-none"
         />
@@ -132,6 +135,7 @@ Search.propTypes = {
   onClick: PropTypes.func,
   img: PropTypes.string,
   placeholder: PropTypes.string,
+  setParent: PropTypes.func,
 };
 
 export default Search;

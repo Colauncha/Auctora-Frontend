@@ -58,6 +58,15 @@ import useAuthStore from './Store/AuthStore';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Admin
+import AdminPage from './Pages/Admin/AdminPage';
+import AdminAuth from './Components/admin/Auth';
+
+// Misc
+import Tracking from './Components/Tracking';
+
+// Entry point
+// App function component
 const App = () => {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
@@ -80,123 +89,131 @@ const App = () => {
       <ScrollToTop />
       <Ads />
       <Nav />
-      <Routes>
-        <Route path="/" element={<Layout />} />
-        <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/category" element={<CategoryResult />} />
-        <Route path="/category/:slug" element={<DetailPage />} />
-        <Route path="/Ongoing-Auction" element={<ViewAll />} />
-        <Route
-          path="/notification"
-          element={
-            <ProtectedRoute>
-              <Notification />
-            </ProtectedRoute>
-          }
+      <Tracking>
+        <Routes>
+          <Route path="/" element={<Layout />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/category" element={<CategoryResult />} />
+          <Route path="/category/:slug" element={<DetailPage />} />
+          <Route path="/Ongoing-Auction" element={<ViewAll />} />
+          <Route
+            path="/notification"
+            element={
+              <ProtectedRoute>
+                <Notification />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route path="/admin">
+            <Route path="dashboard" element={<AdminPage />} />
+            <Route path="login" element={<AdminAuth />} />
+          </Route>
+
+          {/* Auth Routes */}
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          {/* Sell Routes */}
+          <Route path="/otp" element={<SellAccount />} />
+          <Route path="/update-profile" element={<CreateAccount />} />
+          <Route path="/update-address" element={<AddressForm />} />
+          <Route path="/bank-account" element={<AccountForm />} />
+          <Route path="/verification" element={<Verification />} />
+          <Route path="/getstarted" element={<GetStarted />} />
+
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+
+          <Route path="/construction/*" element={<Construction />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+
+          {/* Privacy Policy */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
+          {/* Terms and Conditions */}
+          <Route path="/terms-conditions" element={<TermsCondition />} />
+
+          {/* Progress Tracker Routes */}
+          <Route
+            path="/Add-Product"
+            element={
+              <ProtectedRoute>
+                <ProgressTracker />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/product-details/:id"
+            element={<ProductAuctionDetails />}
+          />
+          <Route
+            path="/product/finalize/:id"
+            element={
+              <ProtectedRoute>
+                <ReviewPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute>
+                {' '}
+                <YourProduct />{' '}
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/products/:id" element={<AuctionDetails />} />
+
+          <Route
+            path="/product-success"
+            element={
+              <ProtectedRoute>
+                <ProductSuccess />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Payment Routes */}
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <Payment />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+
+        {/* Add ToastContainer here */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
         />
 
-        {/* Auth Routes */}
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-
-        {/* Sell Routes */}
-        <Route path="/otp" element={<SellAccount />} />
-        <Route path="/update-profile" element={<CreateAccount />} />
-        <Route path="/update-address" element={<AddressForm />} />
-        <Route path="/bank-account" element={<AccountForm />} />
-        <Route path="/verification" element={<Verification />} />
-        <Route path="/getstarted" element={<GetStarted />} />
-
-        {/* 404 Route */}
-        <Route path="*" element={<NotFound />} />
-
-        <Route path="/construction/*" element={<Construction />} />
-        <Route path="/contact-us" element={<ContactUs />} />
-
-        {/* Privacy Policy */}
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-
-        {/* Terms and Conditions */}
-        <Route path="/terms-conditions" element={<TermsCondition />} />
-
-        {/* Progress Tracker Routes */}
-        <Route
-          path="/Add-Product"
-          element={
-            <ProtectedRoute>
-              <ProgressTracker />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/product-details/:id"
-          element={<ProductAuctionDetails />}
-        />
-        <Route
-          path="/product/finalize/:id"
-          element={
-            <ProtectedRoute>
-              <ReviewPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <ProtectedRoute>
-              {' '}
-              <YourProduct />{' '}
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/products/:id" element={<AuctionDetails />} />
-
-        <Route
-          path="/product-success"
-          element={
-            <ProtectedRoute>
-              <ProductSuccess />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Payment Routes */}
-        <Route
-          path="/payment"
-          element={
-            <ProtectedRoute>
-              <Payment />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-
-      {/* Add ToastContainer here */}
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-
-      <Footer />
+        <Footer />
+      </Tracking>
     </div>
   );
 };

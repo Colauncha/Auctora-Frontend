@@ -93,10 +93,10 @@ const AuthFormSignIn = ({ heading }) => {
         showAlert('success', data.message, 'Log In Successful');
         sessionStorage.setItem(
           'websocket-allowance',
-          JSON.stringify(data.data.token),
+          JSON.stringify(data.data.token.token),
         );
         setTimeout(() => {
-          login(true);
+          login(true, data.data.token.token, data.data.user);
           setLoading(false);
 
           if (
