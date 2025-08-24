@@ -10,9 +10,12 @@ import {
   Eye,
   Briefcase,
   IdCard,
+  Vote,
 } from 'lucide-react';
 import PropTypes from 'prop-types';
 import useAuthStore from '../../../Store/AuthStore';
+import Fetch from '../../../utils/Fetch';
+import { current } from '../../../utils';
 
 const Overview = () => {
   const identity = useAuthStore((state) => state.data);
@@ -20,12 +23,14 @@ const Overview = () => {
     visitors: null,
     users: null,
     auctions: null,
+    bids: null,
     categories: null,
   });
   const [loading, setLoading] = useState({
     visitors: false,
     users: false,
     auctions: false,
+    bids: false,
     categories: false,
   });
   const [error, setError] = useState('');
@@ -57,6 +62,91 @@ const Overview = () => {
       setError('Failed to load some statistics');
     } finally {
       setLoading((prev) => ({ ...prev, visitors: false }));
+    }
+  };
+
+  const fetchUsersCount = async () => {
+    setLoading((prev) => ({ ...prev, users: true }));
+    try {
+      const { data, error, success } = await Fetch({
+        url: current + 'users/stats/count',
+        method: 'GET',
+      });
+      if (!success) {
+        throw new Error(error || 'Failed to fetch users count');
+      }
+      setStats((prev) => ({
+        ...prev,
+        users: data?.data?.user_count || 0,
+      }));
+    } catch (err) {
+      console.error('Error fetching users count:', err);
+      setError('Failed to load some statistics');
+    } finally {
+      setLoading((prev) => ({ ...prev, users: false }));
+    }
+  };
+
+  const fetchAuctionCount = async () => {
+    setLoading((prev) => ({ ...prev, auctions: true }));
+    try {
+      const { data, error, success } = await Fetch({
+        url: current + 'auctions/stats/count',
+      });
+      if (!success) {
+        throw new Error(error || 'Failed to fetch auctions count');
+      }
+      setStats((prev) => ({
+        ...prev,
+        auctions: data?.data?.total || 0,
+      }));
+    } catch (err) {
+      console.error('Error fetching auctions count:', err);
+      setError('Failed to load some statistics');
+    } finally {
+      setLoading((prev) => ({ ...prev, auctions: false }));
+    }
+  };
+
+  const fetchBidsCount = async () => {
+    setLoading((prev) => ({ ...prev, bids: true }));
+    try {
+      const { data, error, success } = await Fetch({
+        url: current + 'auctions/bids/stats/count',
+      });
+      if (!success) {
+        throw new Error(error || 'Failed to fetch bids count');
+      }
+      setStats((prev) => ({
+        ...prev,
+        bids: data?.data?.result || 0,
+      }));
+    } catch (err) {
+      console.error('Error fetching bids count:', err);
+      setError('Failed to load some statistics');
+    } finally {
+      setLoading((prev) => ({ ...prev, bids: false }));
+    }
+  };
+
+  const fetchCatCount = async () => {
+    setLoading((prev) => ({ ...prev, categories: true }));
+    try {
+      const { data, error, success } = await Fetch({
+        url: current + 'categories/stats/count',
+      });
+      if (!success) {
+        throw new Error(error || 'Failed to fetch Category count');
+      }
+      setStats((prev) => ({
+        ...prev,
+        categories: data?.data?.categories || 0,
+      }));
+    } catch (err) {
+      console.error('Error fetching Category count:', err);
+      setError('Failed to load some statistics');
+    } finally {
+      setLoading((prev) => ({ ...prev, categories: false }));
     }
   };
 
@@ -112,7 +202,11 @@ const Overview = () => {
               </p>
             )}
           </div>
-          <div className={`p-3 rounded-lg border ${colorStyles[color]}`}>
+          <div
+            className={`p-3 rounded-lg border ${colorStyles[color]} ${
+              loading && 'hidden'
+            }`}
+          >
             <Icon size={24} alt={Icon} />
           </div>
         </div>
@@ -131,8 +225,11 @@ const Overview = () => {
   useEffect(() => {
     // Fetch visitors count
     fetchVisitorsCount();
-    console.log(identity);
-  }, [identity]);
+    fetchUsersCount();
+    fetchAuctionCount();
+    fetchBidsCount();
+    fetchCatCount();
+  }, []);
 
   if (!identity) {
     return (
@@ -248,11 +345,19 @@ const Overview = () => {
             />
 
             <StatCard
-              title="Auction"
+              title="Auctions"
               value={stats.auctions}
               icon={Wrench}
               loading={loading.auctions}
               color="purple"
+            />
+
+            <StatCard
+              title="Bids"
+              value={stats.bids}
+              icon={Vote}
+              loading={loading.bids}
+              color="indigo"
             />
 
             <StatCard

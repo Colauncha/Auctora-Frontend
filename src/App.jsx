@@ -35,7 +35,6 @@ import GetStarted from './Pages/Sell/GetStarted';
 import ProgressTracker from './Pages/Sell/AddProduct/ProgressTracker';
 
 // Payment Routes
-import Payment from './Pages/Payment/Payment';
 import ProductAuctionDetails from './Pages/Home/ProductAuctionDetails';
 import YourProduct from './Pages/Sell/AddProduct/YourProduct';
 import AuctionDetails from './Pages/Sell/AddProduct/AuctionDetails';
@@ -173,16 +172,6 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ProductSuccess />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Payment Routes */}
-          <Route
-            path="/payment"
-            element={
-              <ProtectedRoute>
-                <Payment />
               </ProtectedRoute>
             }
           />

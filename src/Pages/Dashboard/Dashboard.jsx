@@ -1,27 +1,29 @@
-import BreadCrumb from "../../Components/Breadcrumbs";
-import style from "./css/Dashboard.module.css"
-import { useState, useEffect } from "react";
-import Button from "../../Components/Button";
-import { useNavigate } from "react-router-dom";
-import { 
-  Withdraw,
-  WalletHistory,
-  FundWallet,
-  AddIcon,
-  ActivityIcon,
-  SettingsIcon,
-  Logout,
+import BreadCrumb from '../../Components/Breadcrumbs';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Plus,
+  Activity,
+  Settings,
+  LogOut,
   Edit,
-  Money,
-} from "../../Constants"
-import Loader from "../../assets/loader";
-import useAuthStore from "../../Store/AuthStore";
-import { ctaContext } from "../../Store/ContextStore";
-import { capitalize, currencyFormat, charLimit, current } from "../../utils";
-import Avatar  from "./Avatar";
-import { BsStarFill } from 'react-icons/bs';
-import { PropTypes } from 'prop-types';
-import { useMemo } from 'react';
+  CreditCard,
+  Wallet,
+  Download,
+  DollarSign,
+  Star,
+  TrendingUp,
+  Eye,
+  ChevronDown,
+  ChevronUp,
+  ChartArea,
+} from 'lucide-react';
+import Loader from '../../assets/loader2';
+import useAuthStore from '../../Store/AuthStore';
+import { ctaContext } from '../../Store/ContextStore';
+import { capitalize, currencyFormat, charLimit, current } from '../../utils';
+import Avatar from './Avatar';
+import PropTypes from 'prop-types';
 import MainModal from '../../Components/modals/MainModal';
 import ReferralView from '../../Components/modals/ReferralView';
 import FundingWallet from '../../Components/modals/FundingWallet';
@@ -37,67 +39,11 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const logoutUser = useAuthStore((state) => state.logout);
   const offCta = ctaContext((state) => state.turnOff);
+  const [quickActionsExpanded, setQuickActionsExpanded] = useState(false);
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
 
   // Modals
   const [modalIsOpen, setModalIsOpen] = useState({ state: false, type: '' });
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   offCta();
-  //   sessionStorage.removeItem('newAccount');
-  //   sessionStorage.removeItem('_user');
-
-  //   const getUser = async () => {
-  //     let endpoint = `${current}users/profile`;
-  //     try {
-  //       const response = await fetch(endpoint, {
-  //         method: 'GET',
-  //         credentials: 'include',
-  //       });
-  //       if (response.ok) {
-  //         let data = await response.json();
-  //         setTimeout(() => {
-  //           setUser(data.data);
-  //           setDisplayName(
-  //             data.data.username
-  //               ? `@${capitalize(data.data.username)}`
-  //               : data.data.email,
-  //           );
-  //           setAuctions(data.data.auctions);
-  //           setBids(data.data.bids);
-  //           setRating(data.data.rating);
-  //           setLoading(false);
-  //           sessionStorage.setItem('_user', JSON.stringify(data.data));
-  //           console.log(data.data);
-  //         }, 1000);
-  //       } else {
-  //         let data = await response.json();
-  //         console.error(data);
-  //         navigate('/sign-in');
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       navigate('/sign-in');
-  //     }
-  //   };
-
-  //   let userId = localStorage.getItem('userId');
-  //   let data = JSON.parse(sessionStorage.getItem('_user'));
-  //   if (!data || !userId) {
-  //     console.log('running fetch...');
-  //     getUser();
-  //     return;
-  //   } else {
-  //     console.log(data);
-  //     setUser(data);
-  //     setDisplayName(
-  //       data.username ? `@${capitalize(data.username)}` : data.email,
-  //     );
-  //     setAuctions(data.auctions);
-  //     setLoading(false);
-  //     return;
-  //   }
-  // }, [navigate, offCta]);
 
   useEffect(() => {
     setLoading(true);
@@ -110,7 +56,7 @@ const Dashboard = () => {
       try {
         const response = await fetch(endpoint, {
           method: 'GET',
-          credentials: 'include', // important for sending cookies
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -130,7 +76,7 @@ const Dashboard = () => {
             setBids(data.bids);
             setRating(data.rating);
             setLoading(false);
-            sessionStorage.setItem('_user', JSON.stringify(data)); // optional cache
+            sessionStorage.setItem('_user', JSON.stringify(data));
           }, 1000);
         } else {
           const error = await response.json();
@@ -218,28 +164,84 @@ const Dashboard = () => {
     navigate(`/product-details/${id}`);
   };
 
-  const StarRating = useMemo(() => {
-    const Component = ({ rating }) => (
-      <>
-        {Array(5)
-          .fill(0)
-          .map((_, i) => (
-            <BsStarFill
-              key={i}
-              className={`${
-                i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'
-              } w-5 h-5`}
-            />
-          ))}
-      </>
-    );
+  const StarRating = ({ rating }) => (
+    <>
+      {Array(5)
+        .fill(0)
+        .map((_, i) => (
+          <Star
+            key={i}
+            className={`${
+              i < Math.floor(rating)
+                ? 'text-yellow-400 fill-yellow-400'
+                : 'text-gray-300'
+            } w-5 h-5`}
+          />
+        ))}
+    </>
+  );
 
-    Component.propTypes = {
-      rating: PropTypes.number.isRequired,
+  StarRating.propTypes = {
+    rating: PropTypes.number.isRequired,
+  };
+
+  const CustomButton = ({
+    icon: Icon,
+    label,
+    onClick,
+    variant = 'primary',
+    size = 'md',
+    className = '',
+    disabled = false,
+    ...props
+  }) => {
+    const baseClasses =
+      'flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+
+    const variants = {
+      primary: `bg-[#9f3247] text-white hover:bg-[#7a2837] focus:ring-[#9f3247] border border-[#9f3247]`,
+      secondary: `bg-[rgba(159,50,71,0.1)] text-[#9f3247] hover:bg-[rgba(159,50,71,0.15)] border border-[rgba(159,50,71,0.3)] focus:ring-[#9f3247]`,
+      outline: `bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 focus:ring-gray-500`,
+      ghost: `bg-transparent text-white hover:bg-white/20 border border-white/30 focus:ring-white`,
+      danger: `bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 focus:ring-red-500`,
     };
 
-    return Component;
-  }, []);
+    const sizes = {
+      sm: 'px-3 py-1.5 text-sm',
+      md: 'px-4 py-2 text-sm',
+      lg: 'px-6 py-3 text-base',
+    };
+
+    return (
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className={`${baseClasses} ${variants[variant]} ${
+          sizes[size]
+        } ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        {...props}
+      >
+        {Icon && <Icon className="w-4 h-4" />}
+        {label}
+      </button>
+    );
+  };
+
+  CustomButton.propTypes = {
+    icon: PropTypes.elementType,
+    label: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
+    variant: PropTypes.oneOf([
+      'primary',
+      'secondary',
+      'outline',
+      'ghost',
+      'danger',
+    ]),
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
+    className: PropTypes.string,
+    disabled: PropTypes.bool,
+  };
 
   const handleCloseModal = () => {
     setModalIsOpen({ state: false, type: '' });
@@ -251,7 +253,8 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className={style.container}>
+      <div className="min-h-screen bg-gray-50">
+        {/* Modals */}
         {modalIsOpen.state && modalIsOpen.type === 'referral' && (
           <MainModal header="Referrals" close={handleCloseModal}>
             <ReferralView />
@@ -267,261 +270,460 @@ const Dashboard = () => {
             <Withdrawal />
           </MainModal>
         )}
-        <div className={style.sandwich}>
-          <div className={style.avatar}>
-            <Avatar
-              imageUrl={user?.image_link ? user?.image_link?.link : null}
-              username={user.username ? user.username : user.email}
-            />
-            <div className={style.avatarAfter}></div>
-            <p>{charLimit(displayName, 20)}</p>
-            <p className={style.avatarEmail}>
-              {user.username ? charLimit(user.email, 20) : ''}
-            </p>
-          </div>
-          <div className={style.actions}>
-            <Button
-              icon={AddIcon}
-              className={style.button}
-              iconClassName={style.buttonIcon}
-              label="Create New"
-              onClick={() => AddProduct()}
-            />
-            <Button
-              icon={ActivityIcon}
-              className={style.button}
-              iconClassName={style.buttonIcon}
-              label="Auctions"
-              onClick={() => viewAuctions()}
-            />
-            <Button
-              icon={WalletHistory}
-              className={style.button}
-              iconClassName={style.buttonIcon}
-              label="Wallet History"
-              onClick={() => {}}
-            />
-          </div>
-          <div className={style.preferences}>
-            <Button
-              icon={SettingsIcon}
-              className={style.button}
-              iconClassName={style.buttonIcon}
-              label="Referral"
-              onClick={() => showModal('referral')}
-            />
-            <Button
-              icon={Logout}
-              className={style.button}
-              iconClassName={style.buttonIcon}
-              label="Logout"
-              onClick={() => logout()}
-            />
-          </div>
-        </div>
-        <div className={style.panel}>
-          <BreadCrumb />
-          {loading && <Loader />}
-          <div className={style.top}>
-            <div className={style.greet}>
-              <h1>Welcome back, {charLimit(displayName, 20)}</h1>
-              <div className="flex gap-3 flex-wrap">
-                <Button
-                  icon={Money}
-                  className={style.panelButton}
-                  iconClassName={style.buttonIcon}
-                  label="Account details"
-                  onClick={() => updateBank()}
-                />
-                <Button
-                  icon={Edit}
-                  className={style.panelButton}
-                  iconClassName={style.buttonIcon}
-                  label="Update profile"
-                  onClick={() => updateProfile()}
-                />
-                <Button
-                  icon={AddIcon}
-                  className={style.panelButton}
-                  iconClassName={style.buttonIcon}
-                  label="Create Auction"
-                  onClick={() => AddProduct()}
-                />
-                <Button
-                  icon={Edit}
-                  className={style.panelButton}
-                  iconClassName={style.buttonIcon}
-                  label="Update address"
-                  onClick={() => updateAddress()}
-                />
-              </div>
-            </div>
-            <div className={style.wallet}>
-              <h1>Wallet Balance</h1>
-              <div className={style.walletBalance}>
-                <p className="relative group" id={style.total}>
-                  <strong>Available:</strong>
-                  <div>
-                    {user.wallet
-                      ? currencyFormat(user.available_balance)
-                      : currencyFormat('0.00')}
-                  </div>
-                  <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                    Money spent while bidding is deducted from this balance
-                  </span>
-                </p>
-                <p className="relative group" id={style.available}>
-                  <span>Total:</span>
-                  <span>
-                    {user.wallet
-                      ? currencyFormat(user.wallet)
-                      : currencyFormat('0.00')}
-                  </span>
-                  <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                    Total amount in your wallet
-                  </span>
-                </p>
-              </div>
-              <div className={style.walletActions}>
-                <Button
-                  icon={FundWallet}
-                  className={style.panelButton}
-                  iconClassName={style.buttonIcon}
-                  label="Fund Wallet"
-                  onClick={() => showModal('funding')}
-                />
-                <Button
-                  icon={Withdraw}
-                  className={style.panelButton}
-                  iconClassName={style.buttonIcon}
-                  label="Withdraw"
-                  onClick={() => showModal('withdraw')}
-                />
-              </div>
-            </div>
-          </div>
-          <div className={style.bottom}>
-            <div className={style.bottomLeft}>
-              {loading ?? <Loader />}
-              {auctions && auctions.length > 0 ? (
-                <>
-                  <h1>
-                    Your Auctions{' '}
-                    <span onClick={() => viewAuctions()}>View all</span>
-                  </h1>
-                  <table className={style.auctionTable}>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Start price</th>
-                        <th>Current price</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {auctions.map((obj) => (
-                        <tr key={obj.id} onClick={() => viewAuction(obj.id)}>
-                          <td className="relative group">
-                            {charLimit(obj.item[0]?.name, 10)}
-                            {/* {charLimit(obj.id, 10)} */}
-                            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                              {obj.item[0]?.name}
-                              {/* {obj.id} */}
-                            </span>
-                          </td>
-                          <td className="relative group">
-                            {charLimit(obj.item[0]?.description, 20)}
-                            {/* {charLimit(obj.id, 20)} */}
-                            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                              {obj.item[0]?.description}
-                              {/* {obj.id} */}
-                            </span>
-                          </td>
-                          <td className="relative group">
-                            {currencyFormat(obj.start_price)}
-                            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                              {currencyFormat(obj.start_price)}
-                            </span>
-                          </td>
-                          <td className="relative group">
-                            {currencyFormat(obj.current_price)}
-                            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                              {currencyFormat(obj.current_price)}
-                            </span>
-                          </td>
-                          <td className="relative group">
-                            {capitalize(obj.status)}
-                            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-                              {capitalize(obj.status)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {/* <Button label="View All" className={`${style.panelButton} ${style.bottomLeftButton}`} onClick={() => {}} /> */}
-                </>
-              ) : (
-                <>
-                  <h2>No Auctions yet</h2>
-                  <Button
-                    icon={AddIcon}
-                    className={style.panelButton}
-                    iconClassName={style.buttonIcon}
-                    label="Create Auction"
-                    onClick={() => AddProduct()}
+
+        {/* Main Layout */}
+        <div className="flex flex-col lg:flex-row min-h-screen">
+          {/* Sidebar */}
+          <aside className="w-full lg:w-80 bg-white shadow-lg border-r border-gray-200 lg:min-h-screen">
+            {/* User Profile Section */}
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative mb-4">
+                  <Avatar
+                    imageUrl={user?.image_link ? user?.image_link?.link : null}
+                    username={user.username ? user.username : user.email}
                   />
-                </>
-              )}
-            </div>
-            <div className={style.bottomRight}>
-              <div className={style.bottomRightRating}>
-                <StarRating rating={rating} />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  {charLimit(displayName, 20)}
+                </h3>
+                {user.username && (
+                  <p className="text-sm text-gray-500 mb-3">
+                    {charLimit(user.email, 20)}
+                  </p>
+                )}
+                <div className="flex items-center gap-1 mb-4">
+                  <StarRating rating={rating} />
+                  <span className="text-sm text-gray-600 ml-2">
+                    ({rating.toFixed(1)})
+                  </span>
+                </div>
               </div>
-              <div className={style.bottomRightBids}>
-                {bids && bids.length > 0 ? (
-                  <div className={style.bidContainer}>
-                    <h2>Bids</h2>
-                    {bids.map((bid, index) => (
-                      <div
-                        key={index}
-                        className={`${style.bidItem} relative group`}
-                        onClick={() => productDetails(bid.auction_id)}
-                      >
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={bid.auction?.item[0]?.image_link?.link}
-                            alt="Auction Image"
-                            className={style.bidImages}
-                          />
-                          <p>{bid.auction?.item[0]?.name}</p>
-                        </div>
-                        <p>{currencyFormat(bid.amount)}</p>
-                        <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block z-10">
-                          {`Description: ${charLimit(
-                            bid.auction?.item[0]?.description,
-                            30,
-                          )}`}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <>
-                    <h2>No Bids yet</h2>
-                    <Button
-                      icon={AddIcon}
-                      className={style.panelButton}
-                      iconClassName={style.buttonIcon}
-                      label="View Auctions"
-                      onClick={() => AddProduct()}
-                    />
-                  </>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="border-b border-gray-200">
+              <button
+                onClick={() => setQuickActionsExpanded(!quickActionsExpanded)}
+                className="w-full p-6 flex items-center justify-between text-left hover:bg-gray-50 lg:cursor-default lg:hover:bg-transparent transition-colors"
+              >
+                <h4 className="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                  Quick Actions
+                </h4>
+                <div className="lg:hidden">
+                  {quickActionsExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                  )}
+                </div>
+              </button>
+
+              <div
+                className={`px-6 pb-6 space-y-2 transition-all duration-300 ease-in-out lg:block ${
+                  quickActionsExpanded ? 'block' : 'hidden'
+                }`}
+              >
+                <CustomButton
+                  icon={Plus}
+                  className="w-full justify-start"
+                  label="Create New Auction"
+                  onClick={() => AddProduct()}
+                  variant="secondary"
+                />
+                <CustomButton
+                  icon={Activity}
+                  className="w-full justify-start"
+                  label="View All Auctions"
+                  onClick={() => viewAuctions()}
+                  variant="outline"
+                />
+                <CustomButton
+                  icon={Wallet}
+                  className="w-full justify-start"
+                  label="Wallet History"
+                  onClick={() => {}}
+                  variant="outline"
+                />
+                {user?.role === 'admin' && (
+                  <CustomButton
+                    icon={ChartArea}
+                    className="w-full justify-start"
+                    label="Admin Dashboard"
+                    onClick={() => navigate('/admin/dashboard')}
+                    variant="outline"
+                  />
                 )}
               </div>
             </div>
-          </div>
+
+            {/* Settings & Preferences */}
+            <div>
+              <button
+                onClick={() => setSettingsExpanded(!settingsExpanded)}
+                className="w-full p-6 flex items-center justify-between text-left hover:bg-gray-50 lg:cursor-default lg:hover:bg-transparent transition-colors"
+              >
+                <h4 className="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                  Settings
+                </h4>
+                <div className="lg:hidden">
+                  {settingsExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                  )}
+                </div>
+              </button>
+
+              <div
+                className={`px-6 pb-6 space-y-2 transition-all duration-300 ease-in-out lg:block ${
+                  settingsExpanded ? 'block' : 'hidden'
+                }`}
+              >
+                <CustomButton
+                  icon={Settings}
+                  className="w-full justify-start"
+                  label="Referral Program"
+                  onClick={() => showModal('referral')}
+                  variant="outline"
+                />
+                <CustomButton
+                  icon={LogOut}
+                  className="w-full justify-start"
+                  label="Logout"
+                  onClick={() => logout()}
+                  variant="danger"
+                />
+              </div>
+            </div>
+          </aside>
+          {/* Main Content */}
+          <main className="flex-1 lg:overflow-auto">
+            <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+              <div className="mb-3">
+                <BreadCrumb />
+              </div>
+
+              {loading ? (
+                <div className="flex items-center justify-center h-[80dvh]">
+                  <Loader otherStyles={'!w-30 !h-30'} />
+                </div>
+              ) : (
+                <>
+                  {/* Welcome Section */}
+                  <div className="mb-8">
+                    <div
+                      className="rounded-xl p-6 text-white mb-6"
+                      style={{
+                        background:
+                          'linear-gradient(135deg, #9f3247 0%, #7a2837 100%)',
+                      }}
+                    >
+                      <h1 className="text-2xl lg:text-3xl font-bold mb-4">
+                        Welcome back, {charLimit(displayName, 20)}
+                      </h1>
+                      <div className="flex flex-row flex-wrap gap-3">
+                        <CustomButton
+                          icon={CreditCard}
+                          label="Account Details"
+                          onClick={() => updateBank()}
+                          variant="ghost"
+                        />
+                        <CustomButton
+                          icon={Edit}
+                          label="Update Profile"
+                          onClick={() => updateProfile()}
+                          variant="ghost"
+                        />
+                        <CustomButton
+                          icon={Plus}
+                          label="Create Auction"
+                          onClick={() => AddProduct()}
+                          variant="ghost"
+                        />
+                        <CustomButton
+                          icon={Edit}
+                          label="Update Address"
+                          onClick={() => updateAddress()}
+                          variant="ghost"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Wallet Section */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+                        <div>
+                          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                            Wallet Balance
+                          </h2>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 lg:mb-0">
+                            <div className="relative group">
+                              <div
+                                className="rounded-lg p-4"
+                                style={{
+                                  backgroundColor: 'rgba(159, 50, 71, 0.1)',
+                                  border: '1px solid rgba(159, 50, 71, 0.3)',
+                                }}
+                              >
+                                <p
+                                  className="text-sm font-medium mb-1"
+                                  style={{ color: '#7a2837' }}
+                                >
+                                  Available Balance
+                                </p>
+                                <p
+                                  className="text-2xl font-bold"
+                                  style={{ color: '#9f3247' }}
+                                >
+                                  {user.wallet
+                                    ? currencyFormat(user.available_balance)
+                                    : currencyFormat('0.00')}
+                                </p>
+                              </div>
+                              <span className="absolute left-0 bottom-full mb-2 hidden w-max bg-gray-900 text-white text-xs rounded py-2 px-3 group-hover:block z-10">
+                                Money spent while bidding is deducted from this
+                                balance
+                              </span>
+                            </div>
+                            <div className="relative group">
+                              <div
+                                className="rounded-lg p-4"
+                                style={{
+                                  backgroundColor: 'rgba(159, 50, 71, 0.05)',
+                                  border: '1px solid rgba(159, 50, 71, 0.2)',
+                                }}
+                              >
+                                <p
+                                  className="text-sm font-medium mb-1"
+                                  style={{ color: '#7a2837' }}
+                                >
+                                  Total Balance
+                                </p>
+                                <p
+                                  className="text-2xl font-bold"
+                                  style={{ color: '#9f3247' }}
+                                >
+                                  {user.wallet
+                                    ? currencyFormat(user.wallet)
+                                    : currencyFormat('0.00')}
+                                </p>
+                              </div>
+                              <span className="absolute left-0 bottom-full mb-2 hidden w-max bg-gray-900 text-white text-xs rounded py-2 px-3 group-hover:block z-10">
+                                Total amount in your wallet
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-row gap-3">
+                          <CustomButton
+                            icon={DollarSign}
+                            label="Fund Wallet"
+                            onClick={() => showModal('funding')}
+                            variant="primary"
+                          />
+                          <CustomButton
+                            icon={Download}
+                            label="Withdraw"
+                            onClick={() => showModal('withdraw')}
+                            variant="primary"
+                            className="bg-[#b83c51] hover:bg-[#9f3247] border-[#b83c51]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Auctions Section */}
+                  <div className="mb-8">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                      {auctions && auctions.length > 0 ? (
+                        <>
+                          <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-semibold text-gray-900">
+                              Your Auctions
+                            </h2>
+                            <button
+                              onClick={() => viewAuctions()}
+                              className="text-sm font-medium text-[#9f3247] hover:text-[#7a2837] transition-colors flex items-center gap-1"
+                            >
+                              <span>View All</span>
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="border-b border-gray-200">
+                                  <th className="text-left py-3 px-4 font-medium text-gray-700">
+                                    Name
+                                  </th>
+                                  <th className="text-left py-3 px-4 font-medium text-gray-700">
+                                    Description
+                                  </th>
+                                  <th className="text-left py-3 px-4 font-medium text-gray-700">
+                                    Start Price
+                                  </th>
+                                  <th className="text-left py-3 px-4 font-medium text-gray-700">
+                                    Current Price
+                                  </th>
+                                  <th className="text-left py-3 px-4 font-medium text-gray-700">
+                                    Status
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {auctions.map((obj) => (
+                                  <tr
+                                    key={obj.id}
+                                    onClick={() => viewAuction(obj.id)}
+                                    className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                                  >
+                                    <td className="py-3 px-4 relative group">
+                                      <span className="font-medium text-gray-900">
+                                        {charLimit(obj.item[0]?.name, 10)}
+                                      </span>
+                                      <span className="absolute left-0 bottom-full mb-2 hidden w-max bg-gray-900 text-white text-xs rounded py-2 px-3 group-hover:block z-10">
+                                        {obj.item[0]?.name}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-4 relative group">
+                                      <span className="text-gray-600">
+                                        {charLimit(
+                                          obj.item[0]?.description,
+                                          20,
+                                        )}
+                                      </span>
+                                      <span className="absolute left-0 bottom-full mb-2 hidden w-max bg-gray-900 text-white text-xs rounded py-2 px-3 group-hover:block z-10">
+                                        {obj.item[0]?.description}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-4 text-gray-900 font-medium">
+                                      {currencyFormat(obj.start_price)}
+                                    </td>
+                                    <td
+                                      className="py-3 px-4 font-semibold flex items-center gap-1"
+                                      style={{ color: '#9f3247' }}
+                                    >
+                                      <TrendingUp className="w-4 h-4" />
+                                      {currencyFormat(obj.current_price)}
+                                    </td>
+                                    <td className="py-3 px-4">
+                                      <span
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                          obj.status === 'active'
+                                            ? 'text-green-800'
+                                            : obj.status === 'ended'
+                                            ? 'text-gray-800'
+                                            : 'text-yellow-800'
+                                        }`}
+                                        style={{
+                                          backgroundColor:
+                                            obj.status === 'active'
+                                              ? 'rgba(34, 197, 94, 0.1)'
+                                              : obj.status === 'ended'
+                                              ? 'rgba(107, 114, 128, 0.1)'
+                                              : 'rgba(245, 158, 11, 0.1)',
+                                        }}
+                                      >
+                                        {capitalize(obj.status)}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center py-12">
+                          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                            <Plus className="w-8 h-8 text-gray-400" />
+                          </div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            No Auctions Yet
+                          </h3>
+                          <p className="text-gray-600 mb-6">
+                            Start by creating your first auction to begin
+                            selling.
+                          </p>
+                          <CustomButton
+                            icon={Plus}
+                            label="Create Your First Auction"
+                            onClick={() => AddProduct()}
+                            variant="primary"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bids Section */}
+                  <div className="mb-8">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                      {bids && bids.length > 0 ? (
+                        <>
+                          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                            Your Bids
+                          </h2>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {bids.map((bid, index) => (
+                              <div
+                                key={index}
+                                className="relative group border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                                onClick={() => productDetails(bid.auction_id)}
+                              >
+                                <div className="flex items-center gap-3 mb-3">
+                                  <img
+                                    src={bid.auction?.item[0]?.image_link?.link}
+                                    alt="Auction"
+                                    className="w-12 h-12 rounded-lg object-cover"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-gray-900 truncate">
+                                      {bid.auction?.item[0]?.name}
+                                    </p>
+                                    <p
+                                      className="text-sm font-medium"
+                                      style={{ color: '#9f3247' }}
+                                    >
+                                      Your Bid: {currencyFormat(bid.amount)}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className="absolute left-0 bottom-full mb-2 hidden w-max bg-gray-900 text-white text-xs rounded py-2 px-3 group-hover:block z-10 max-w-xs">
+                                  {bid.auction?.item[0]?.description}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center py-12">
+                          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                            <Activity className="w-8 h-8 text-gray-400" />
+                          </div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            No Bids Yet
+                          </h3>
+                          <p className="text-gray-600 mb-6">
+                            Browse auctions and place your first bid.
+                          </p>
+                          <CustomButton
+                            icon={Activity}
+                            label="View Auctions"
+                            onClick={() => viewAuctions()}
+                            variant="primary"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </main>
         </div>
       </div>
     </>
@@ -529,4 +731,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

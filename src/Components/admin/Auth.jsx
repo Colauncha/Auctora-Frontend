@@ -73,10 +73,10 @@ const Auth = () => {
         </h2>
 
         <span
-          className="fixed top-5 left-3 flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#9f3248] to-[#de506d] hover:to-[#de506cec] hover:from-[#9f3248e4] hover:shadow-lg hover:scale-105 rounded-full shadow-md transition-all duration-500"
+          className="fixed top-5 left-5 flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#9f3248] to-[#de506d] hover:to-[#de506cec] hover:from-[#9f3248e4] hover:shadow-lg hover:scale-105 rounded-full shadow-md transition-all duration-500"
           onClick={() => navigate('/')}
         >
-          <House className="text-white" size={24} />
+          <House className="hover:scale-105 text-white" size={24} />
         </span>
         {/* Feedback message */}
         {message && (

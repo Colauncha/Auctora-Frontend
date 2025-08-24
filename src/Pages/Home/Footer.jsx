@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import Cta from './Cta';
+import { ctaContext } from '../../Store/ContextStore';
 import { facebook, linkedin, instaggram, logo, twitter } from '../../Constants';
 
 const footerArr = [
@@ -35,20 +36,29 @@ const footerArr = [
 const Footer = () => {
   const location = useLocation();
   const path = location.pathname;
+  const useCta = ctaContext((state) => state.useCta);
 
   if (path.startsWith('/admin')) return null;
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-gray-100 w-full pt-32 pb-8 relative">
+    <div
+      className={`bg-gradient-to-b from-gray-50 to-gray-100 w-full ${
+        useCta ? 'pt-32' : 'pt-6 border-t-2'
+      } pb-8 relative`}
+    >
       {/* CTA Section */}
-      <div className="absolute top-[-80px] left-0 w-full flex justify-center px-6 z-100">
+      <div className="absolute top-[-40px] left-0 w-full flex justify-center px-6 z-100">
         <div className="container mx-auto">
           <Cta className="shadow-xl rounded-xl" />
         </div>
       </div>
 
       {/* Footer code */}
-      <footer className="container mx-auto px-6 sm:px-8 lg:px-12 mt-40 sm:mt-48 lg:mt-10">
+      <footer
+        className={`container mx-auto px-6 sm:px-8 lg:px-12 mt-20 lg:${
+          useCta ? 'mt-10' : 'mt-4'
+        }`}
+      >
         <div className="flex flex-col lg:flex-row justify-between gap-16 w-full">
           {/* Left Section  */}
           <div className="flex flex-col gap-6 max-w-md">
