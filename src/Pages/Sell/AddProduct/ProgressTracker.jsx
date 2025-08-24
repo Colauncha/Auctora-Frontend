@@ -253,7 +253,7 @@ const ProgressTracker = () => {
               />
             )}
 
-            {/* Navigation Buttons */}
+            {/* Navigation Buttons
             <div className="flex space-x-4">
               <button
                 onClick={() => handleStepChange(activeStep - 1)}
@@ -279,7 +279,7 @@ const ProgressTracker = () => {
               >
                 Next
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

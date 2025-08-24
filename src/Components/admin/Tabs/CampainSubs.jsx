@@ -263,7 +263,7 @@ const CampaignSubs = () => {
           <button
             onClick={handleRenewToken}
             disabled={renewingToken}
-            className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+            className="bg-[#9f3248] cursor-pointer text-white px-6 py-2 rounded hover:bg-[#ba3852] disabled:opacity-50"
           >
             {renewingToken ? 'Renewing Token...' : 'Renew Token'}
           </button>
@@ -279,14 +279,14 @@ const CampaignSubs = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setShowExportModal(true)}
-              className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+              className="bg-[#9f3248] hover:bg-[#c03d57] text-white px-3 py-2 rounded "
             >
               Export CSV
             </button>
             <button
               onClick={fetchSubscribers}
               disabled={loadingSubscribers}
-              className="text-blue-500 hover:text-blue-700 text-sm"
+              className="text-[#9f3248] hover:text-[#c03d57] text-sm cursor-pointer"
             >
               {loadingSubscribers ? 'Loading...' : 'Refresh'}
             </button>

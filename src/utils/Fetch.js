@@ -34,6 +34,7 @@ const Fetch = async ({
     method: method || 'GET',
     headers: headers,
     body: reqData,
+    credentials: 'include',
   });
   if (!res.ok) {
     error = new Error(`HTTP error! status: ${res}`);
