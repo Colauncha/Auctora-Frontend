@@ -15,12 +15,20 @@ import CampaignSubs from './Tabs/CampainSubs';
 import Overview from './Tabs/Overview';
 import ManageUsers from './Tabs/Users';
 import useAuthStore from '../../Store/AuthStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('Overview');
 
   const navigate = useNavigate();
+  const location = useLocation();
+  // Redirect to the specified tab if provided in the state
+  const stateTab = location.state?.tab;
+  if (stateTab && stateTab !== activeTab) {
+    setActiveTab(stateTab);
+    // Clear the state to prevent repeated redirects
+    navigate(location.pathname, { replace: true, state: {} });
+  }
   const identity = useAuthStore((state) => state.data);
   const logout = useAuthStore((state) => state.logout);
 
@@ -90,7 +98,7 @@ const Dashboard = () => {
         </aside>
 
         {/* Content area */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-x-auto">
           {activeTab === 'Overview' && (
             <div className="text-gray-700">
               🗂 Overview content...
