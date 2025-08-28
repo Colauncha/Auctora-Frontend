@@ -191,7 +191,7 @@ const AuctionDetails = () => {
       }));
       if (!auction) {
         toast.info('Auction not found in user data');
-        navigate('/products');
+        navigate('/dashboard/products');
         try {
           getUpdatedAuction();
         } catch (error) {
@@ -246,7 +246,7 @@ const AuctionDetails = () => {
       );
 
       toast.success('Auction deleted successfully');
-      navigate('/products');
+      navigate('/dashboard/products');
     } catch (error) {
       console.error('Delete error:', error);
       toast.error(error.message || 'Failed to delete auction');
