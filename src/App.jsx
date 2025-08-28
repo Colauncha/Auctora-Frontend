@@ -63,6 +63,7 @@ import AdminAuth from './Components/admin/Auth';
 
 // Misc
 import Tracking from './Components/Tracking';
+import WalletHistory from './Pages/Dashboard/WalletHistory';
 
 // Entry point
 // App function component
@@ -156,16 +157,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/products"
-            element={
-              <ProtectedRoute>
-                {' '}
-                <YourProduct />{' '}
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/products/:id" element={<AuctionDetails />} />
 
           <Route
             path="/product-success"
@@ -177,14 +168,34 @@ const App = () => {
           />
 
           {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/dashboard">
+            <Route
+              path=""
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="products/:id" element={<AuctionDetails />} />
+            <Route
+              path="products"
+              element={
+                <ProtectedRoute>
+                  {' '}
+                  <YourProduct />{' '}
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="wallet-history"
+              element={
+                <ProtectedRoute>
+                  <WalletHistory />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
         </Routes>
 
         {/* Add ToastContainer here */}

@@ -137,7 +137,7 @@ const Dashboard = () => {
   };
 
   const viewAuction = async (id) => {
-    navigate(`/products/${id}`);
+    navigate(`/dashboard/products/${id}`);
   };
 
   const AddProduct = () => {
@@ -157,7 +157,11 @@ const Dashboard = () => {
   };
 
   const viewAuctions = () => {
-    navigate('/products');
+    navigate('/dashboard/products');
+  };
+
+  const WalletHistory = () => {
+    navigate('/dashboard/wallet-history');
   };
 
   const productDetails = (id) => {
@@ -343,7 +347,7 @@ const Dashboard = () => {
                   icon={Wallet}
                   className="w-full justify-start"
                   label="Wallet History"
-                  onClick={() => {}}
+                  onClick={() => WalletHistory()}
                   variant="outline"
                 />
                 {user?.role === 'admin' && (
