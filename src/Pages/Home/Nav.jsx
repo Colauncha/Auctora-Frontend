@@ -13,6 +13,7 @@ const Nav = () => {
   const menuArr = [
     { _id: 1, label: 'Home', link: '/' },
     { _id: 2, label: 'Auctlist', link: '/Ongoing-Auction' },
+
     { _id: 3, label: 'Sell', link: '/Add-product' },
     { _id: 4, label: 'About Us', link: '/about-us' },
   ];
@@ -88,7 +89,7 @@ const Nav = () => {
                 clearInterval(intervalRef.current);
                 intervalRef.current = null;
               }
-              logoutUser(); // Triggers a state update and possibly a rerender
+              logoutUser(); 
               return;
             }
             throw new Error('Failed to fetch user data');
@@ -104,7 +105,7 @@ const Nav = () => {
         }
       };
 
-      fetchUserData(); // run once immediately
+      fetchUserData(); 
       intervalRef.current = setInterval(fetchUserData, 60000);
 
       return () => {
@@ -273,6 +274,7 @@ const Nav = () => {
                 src={likee}
                 alt=""
                 className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
+                onClick={() => navigate('/dashboard')}
               />
               <img
                 src={user}
@@ -295,3 +297,5 @@ const Nav = () => {
 };
 
 export default Nav;
+
+

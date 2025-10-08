@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PropTypes } from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { current } from '../utils';
@@ -12,30 +12,58 @@ const Search = ({ className, onClick, img, placeholder, setParent }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleKeyDown = async (event) => {
-    if (event.key === 'Enter') {
-      onClick(searchValue);
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `${current}landing/search?q=${encodeURIComponent(searchValue)}`,
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setSearchResults(data.data || []);
-          setIsDropdownVisible(true);
-        } else {
-          console.error('Error fetching search results:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching search results:', error);
-      } finally {
-        setLoading(false);
-      }
-    } else if (event.key === 'Escape') {
-      clearSearch();
+
+  const wrapperRef = useRef();
+
+
+    useEffect(() => {
+    if (!searchValue.trim()) {
+      setSearchResults([]);
+      setIsDropdownVisible(false);
+      return;
     }
-  };
+
+    const delayDebounce = setTimeout(async () => {
+  try {
+    const response = await fetch(
+      `${current}landing/search?q=${encodeURIComponent(searchValue)}`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      setSearchResults(data.data || []);
+      setIsDropdownVisible(true);
+    }
+  } catch (error) {
+    console.error('Error fetching search results:', error);
+  } finally {
+    setLoading(false); 
+  }
+}, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchValue]);
+
+
+
+
+  const [activeIndex, setActiveIndex] = useState(-1);
+
+const handleKeyDown = async (event) => {
+  if (event.key === 'Enter') {
+    if (activeIndex >= 0 && searchResults.length > 0) {
+      handleResultClick(searchResults[activeIndex]);
+    } else {
+      onClick(searchValue);
+      setIsDropdownVisible(false);
+    }
+  } else if (event.key === 'Escape') {
+    clearSearch();
+  } else if (event.key === 'ArrowDown') {
+    setActiveIndex((prev) => Math.min(prev + 1, searchResults.length - 1));
+  } else if (event.key === 'ArrowUp') {
+    setActiveIndex((prev) => Math.max(prev - 1, 0));
+  }
+}; 
 
   const onclick_ = () => {
     onClick(searchValue);
@@ -45,6 +73,16 @@ const Search = ({ className, onClick, img, placeholder, setParent }) => {
     setIsDropdownVisible(!isDropdownVisible);
   };
 
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+      setIsDropdownVisible(false);
+    }
+  };
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, []);
+
   const clearSearch = () => {
     setSearchValue('');
     setSearchResults([]);
@@ -52,14 +90,15 @@ const Search = ({ className, onClick, img, placeholder, setParent }) => {
   };
 
   const handleResultClick = (result) => {
-    navigate(`/product-details/${result.id}`); // Adjust the navigation path as needed
+    navigate(`/product-details/${result.id}`);
     clearSearch();
   };
 
   return (
-    <div className="relative">
+      <div className="relative" ref={wrapperRef}>
+
       <div
-        className={`border-[1px] rounded-2xl w-[700px] h-[36px] flex items-center gap-4 p-2 bg-[#F0F0F0] ${className}`}
+        className={`border rounded-2xl w-full max-w-xl h-[36px] flex items-center gap-4 p-2 bg-[#F0F0F0] ${className}`}
       >
         <img
           src={img}
@@ -85,24 +124,28 @@ const Search = ({ className, onClick, img, placeholder, setParent }) => {
           onClick={clearSearch}
           className="text-sm text-gray-500 hover:text-gray-700"
         >
-          Clear
+          x
         </button>
       </div>
       {loading && (
-        <div className="absolute top-full mt-1 w-[700px] bg-white border-[1px] rounded-md shadow-lg flex justify-center items-center p-4">
+        <div className="absolute top-full mt-1 w-full max-w-xl bg-white border rounded-md shadow-lg flex justify-center items-center p-4">
           <Loader />
         </div>
       )}
       {isDropdownVisible && !loading && (
-        <div className="absolute top-full mt-1 w-[700px] bg-white border-[1px] rounded-md shadow-lg">
+        <div className="absolute top-full mt-1 w-full max-w-xl bg-white border rounded-md shadow-lg">
+
           <ul className="list-none p-2">
             {searchResults.length > 0 ? (
               searchResults.map((result, index) => (
                 <li
-                  key={index}
-                  className="p-2 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => handleResultClick(result)}
-                >
+  key={index}
+  className={`p-2 hover:bg-gray-200 cursor-pointer ${
+    index === activeIndex ? 'bg-gray-200' : ''
+  }`}
+  onClick={() => handleResultClick(result)}
+>
+
                   <div className="flex items-center gap-2">
                     <img
                       src={

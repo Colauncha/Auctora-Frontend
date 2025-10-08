@@ -8,6 +8,7 @@ import { current, currencyFormat } from '../../utils';
 const Withdrawal = () => {
   const [amount, setAmount] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [alertT, setAlert] = useState({
     isAlert: false,
     level: 'warn',
@@ -42,14 +43,6 @@ const Withdrawal = () => {
       }, 1000);
       return;
     }
-
-    // if (amount < 1000) {
-    //   setTimeout(() => {
-    //     showAlert('warn', 'Minimum funding amount is ₦1000', '');
-    //     setLoading(false);
-    //   }, 1000);
-    //   return;
-    // }
 
     const endpoint = `${current}users/transactions/withdraw?amount=${amount}`;
     const identifier = JSON.parse(sessionStorage.getItem('_user')).email;
@@ -119,14 +112,32 @@ const Withdrawal = () => {
             Authenticate
           </button>
         </div>
-        {isAuthenticating && (
+        {/* {isAuthenticating && (
           <input
             type="text"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
           />
-        )}
+        )} */}
+        {isAuthenticating && (
+  <div className="relative w-full">
+    <input
+      type={showPassword ? 'text' : 'password'}
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      placeholder="Enter password"
+      className="pr-10 w-full"
+    />
+{/*     <span
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+    >
+      {showPassword ? '🙈' : '👁️'}
+    </span> */}
+  </div>
+)}
+
         <button
           className="flex justify-center items-center"
           onClick={() => handleSubmit()}
