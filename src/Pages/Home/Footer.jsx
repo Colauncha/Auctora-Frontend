@@ -213,10 +213,36 @@ const Footer = () => {
               alt="Biddius Logo" 
               className="w-48 h-auto" 
             />
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Join online auctions and find unique items to buy and sell with excitement! 
-              Discover amazing deals and rare collectibles in our vibrant marketplace.
-            </p>
+           <div className="space-y-3">
+  <p className="text-gray-600 text-sm leading-relaxed max-w-md">
+    Join online auctions and find unique items to buy and sell with excitement! 
+    Discover amazing deals and rare collectibles in our vibrant marketplace.
+  </p>
+
+  <div className="text-gray-600 text-sm leading-relaxed">
+    <div className="flex flex-col">
+      <div className="flex items-start">
+        <span className="font-medium text-gray-700 whitespace-nowrap">
+          Connect with us:
+        </span>
+        <a
+          href="tel:+2347084274918"
+          className="underline text-maroon hover:text-red transition-colors ml-2"
+        >
+          +234 708 427 8194
+        </a>
+      </div>
+      <a
+        href="mailto:Info@biddius.com"
+        className="underline text-maroon hover:text-red transition-colors ml-[117px]"
+      >
+        Info@biddius.com
+      </a>
+    </div>
+  </div>
+</div>
+
+
             <div className="flex gap-4">
               <a href="#" className="p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
                 <img src={facebook} alt="Facebook" className="w-5 h-5" />
