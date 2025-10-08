@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import Button from '../../Components/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
 // import useModeStore from "../../Store/Store";
-import { currencyFormat } from '../../utils';
-import { current } from '../../utils';
+import { currencyFormat, current, charLimit } from '../../utils';
 
 const AuctionListing = () => {
   // const { isMobile } = useModeStore();
@@ -41,7 +40,7 @@ const AuctionListing = () => {
           return {
             imgUrl:
               auction.item[0].image_link?.link ||
-              'https://res.cloudinary.com/dtkv6il4e/image/upload/v1743008126/ddsdomp6w9lwqb2igqx7.jpg',
+              'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg',
             name: auction.item[0].name || 'Untitled Auction',
             currentBid: currencyFormat(auction.current_price) || 0,
             startingPrice: currencyFormat(auction.start_price) || 0,
@@ -51,6 +50,8 @@ const AuctionListing = () => {
             description: auction.description || 'No description available',
             timeLeft: auction.end_date || 'N/A',
             slug: auction.id || 'no-id',
+            status: auction.status,
+            end_date: auction.end_date,
           };
         });
 
@@ -160,13 +161,15 @@ const AuctionListing = () => {
                 // Display auction
 
                 image
-                itemName={item.name}
+                itemName={charLimit(item.name, 20)}
                 price={item.currentBid}
                 sellerName={item.seller}
                 bid={item.bidCount}
                 bidTimes={item.bidCount}
                 countDown={item.timeLeft}
+                startDate={item.start_date}
                 to={`/product-details/${item.slug}`}
+                status={item.status}
                 className="w-[600px] max-w-[600px] min-h-[500px]"
               />{' '}
             </div>

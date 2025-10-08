@@ -1,15 +1,17 @@
 import { useState } from "react"; // Import useState for state management
 import Button from "../../Components/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from "../../Store/AuthStore";
 
 const Ads = () => {
   const [isVisible, setIsVisible] = useState(true); // State to manage visibility
   const navigate = useNavigate();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const location = useLocation();
+  const path = location.pathname;
 
   const signup = () => {
-    navigate("/sign-up", { state: { referrer: "Hompage" } });
+    navigate('/sign-up', { state: { referrer: 'Hompage' } });
   };
 
   const closeAds = () => {
@@ -17,6 +19,8 @@ const Ads = () => {
   };
 
   if (!isVisible) return null; // If not visible, don't render the component
+
+  if (path.startsWith('/admin')) return null;
 
   return (
     <div className="bg-gradient-to-r z-100 from-[#7B2334] to-[#9F3247] h-[45px] w-full flex items-center justify-center gap-2 text-[12px] md:text-[14px] overflow-hidden mb-4 relative">

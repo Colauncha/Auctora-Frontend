@@ -3,13 +3,18 @@ import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
   isAuthenticated: !!localStorage.getItem('loggedIn'),
-  login: (bool) => {
+  token: '',
+  data: sessionStorage.getItem('_user')
+    ? JSON.parse(sessionStorage.getItem('_user'))
+    : {},
+  login: (bool, token, data) => {
     localStorage.setItem('loggedIn', bool);
-    set({ isAuthenticated: true });
+    sessionStorage.setItem('_user', JSON.stringify(data));
+    set({ isAuthenticated: true, token: token, data: data });
   },
   logout: () => {
     localStorage.removeItem('loggedIn');
-    set({ isAuthenticated: false });
+    set({ isAuthenticated: false, token: '', data: {} });
   },
 }));
 

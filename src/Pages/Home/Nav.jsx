@@ -1,5 +1,5 @@
 
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef } from "react";
 import { LuAlignJustify } from "react-icons/lu";
 import { RiCloseLargeFill } from "react-icons/ri";
@@ -28,6 +28,9 @@ const Nav = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logoutUser = useAuthStore((state) => state.logout);
   const [notifTotal, setNotifTotal] = useState(0);
+
+  const location = useLocation();
+  const path = location.pathname;
 
   const intervalRef = useRef(null);
 
@@ -93,7 +96,7 @@ const Nav = () => {
           }
 
           sessionStorage.setItem(
-            'notifications',
+            'notification',
             JSON.stringify({ data: data.data, total: data.total }),
           );
           setNotifTotal(data.total);
@@ -125,6 +128,8 @@ const Nav = () => {
   const handleNotification = () => {
     navigate('/notification');
   };
+
+  if (path.startsWith('/admin')) return null;
 
   return (
     <>

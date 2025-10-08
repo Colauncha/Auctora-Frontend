@@ -45,7 +45,7 @@ function Alerts({ message, detail, type }) {
           {iconMap[type] || iconMap.warn}
           {message}
         </div>
-        <p>{detail?.length === 0 ? '' : charLimit(detail, 40)}</p>
+        <p>{detail?.length === 0 ? '' : charLimit(detail, 80)}</p>
         <span className={`${style.bar} ${barClass}`} />
       </div>
     </div>
