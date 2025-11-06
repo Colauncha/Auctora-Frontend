@@ -11,6 +11,7 @@ const footerArr = [
       { name: 'Features', url: '/features' },
       { name: 'Works', url: '/construction/works' },
       { name: 'Career', url: '/construction/career' },
+      { name: 'Blog', url: '/blog' }
     ],
   },
   {
@@ -29,6 +30,7 @@ const footerArr = [
       { name: 'Manage Deliveries', url: '/construction/delivery' },
       { name: 'Orders', url: '/construction/orders' },
       { name: 'Payments', url: '/construction/payments' },
+      
     ],
   },
 ];
