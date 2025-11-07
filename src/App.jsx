@@ -47,6 +47,8 @@ import TermsCondition from './Pages/Terms & Privacy Policy/TermsCondition';
 import NotFound from './Components/NotFound';
 import Construction from './Pages/misc/Construction';
 import ContactUs from './Pages/misc/ContactUs';
+import Blog from './Pages/Blog.jsx'
+import BlogSection from './Pages/BlogSection.jsx'
 
 // For all pages to start from top
 import ScrollToTop from './Components/ScrollToTop';
@@ -96,6 +98,8 @@ const App = () => {
           <Route path="/category" element={<CategoryResult />} />
           <Route path="/category/:slug" element={<DetailPage />} />
           <Route path="/Ongoing-Auction" element={<ViewAll />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/bgsection" element={<BlogSection />} />
           <Route
             path="/notification"
             element={
