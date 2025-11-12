@@ -38,6 +38,9 @@ const Fetch = async ({
   });
   if (!res.ok) {
     error = new Error(`HTTP error! status: ${res}`);
+    if (res.status === 401) {
+      window.location.href = '/sign-in';
+    }
   }
   data = await res.json().catch((err) => {
     console.error('Fetch error:', err);

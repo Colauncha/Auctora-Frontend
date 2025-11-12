@@ -4,7 +4,8 @@ import { MdSupportAgent } from 'react-icons/md';
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import TeamCard from "../../Components/TeamCard"; 
-import Uthman from "../../assets/images/uthman.jpg"
+// import Uthman from "../../assets/images/uthman.jpg"
+import Uthman from "../../assets/images/uthman.jpeg"
 import david from "../../assets/images/david.jpg"
 import iyanu from "../../assets/images/iyanu.jpg"
 import ify from "../../assets/images/ify.jpg"

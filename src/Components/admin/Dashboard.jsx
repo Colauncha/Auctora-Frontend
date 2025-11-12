@@ -9,11 +9,13 @@ import {
   LogOut,
   Blocks,
   House,
+  Rss,
 } from 'lucide-react'; // Lucide icons
 import CreateAdmin from './Tabs/CreateAdmin';
 import CampaignSubs from './Tabs/CampainSubs';
 import Overview from './Tabs/Overview';
 import ManageUsers from './Tabs/Users';
+import BlogAdmin from './Tabs/BlogAdmin';
 import useAuthStore from '../../Store/AuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -37,6 +39,7 @@ const Dashboard = () => {
     { label: 'Create Admin', icon: UserPlus },
     { label: 'Users', icon: Users },
     { label: 'Mail list', icon: MailSearch },
+    { label: 'Blog Spot', icon: Rss },
   ];
 
   return (
@@ -115,6 +118,12 @@ const Dashboard = () => {
             <div className="text-gray-700">
               👤 Manages Users...
               <ManageUsers />
+            </div>
+          )}
+          {activeTab === 'Blog Spot' && (
+            <div className="text-gray-700">
+              🗞 Blog Manager...
+              <BlogAdmin />
             </div>
           )}
           {activeTab === 'Mail list' && (
