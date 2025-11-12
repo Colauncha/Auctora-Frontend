@@ -131,3 +131,12 @@ html {
 .FaLinkedin:hover {
   transform: scale(1.2);
 }
+
+:root {
+    --toastify-color-info: #9f3247;
+    --toastify-icon-color-info: var(--toastify-color-info);
+}
+
+.Toastify__toast-icon {
+  display: none;
+}

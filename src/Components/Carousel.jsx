@@ -1,126 +1,90 @@
-import { ps_5, user } from "../Constants";
+// import { ps_5, user } from "../Constants";
+
+// const Carousel = () => {
+//   return (
+//     <div className="p-[80px]">
+//       <img src={ps_5} fetchPriority="high" alt="PS5" />
+//     </div>
+//   );
+// };
+
+// export default Carousel;
+
+import { useState } from 'react';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { ps_5, Nikon, Fride, AC, Macbook } from '../Constants';
+import { ArrowLeftCircle, ArrowRightCircle } from 'lucide-react';
+
+const carouselImages = [ps_5, Nikon, Fride, AC, Macbook];
 
 const Carousel = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const carouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    draggable: true,
+    fade: true,
+    beforeChange: (_, next) => setActiveIndex(next),
+
+    // Custom arrows
+    nextArrow: (
+      <ArrowRightCircle
+        color="#9f3248"
+        className="slick-arrow slick-next"
+        size={30}
+      />
+    ),
+    prevArrow: (
+      <ArrowLeftCircle
+        color="#9f3248"
+        className="slick-arrow slick-prev"
+        size={30}
+      />
+    ),
+
+    // Custom dots with active color
+    customPaging: (i) => (
+      <div
+        className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+          i === activeIndex
+            ? 'bg-[#9f3248aa]'
+            : 'bg-gray-300 hover:bg-[#9f3248]'
+        }`}
+        style={{ display: 'inline-block', margin: '0 5px' }}
+      ></div>
+    ),
+
+    dotsClass: 'slick-dots custom-dots',
+  };
+
   return (
-    <div className="p-[80px]">
-      <img src={ps_5} alt="" />
+    <div className="block w-full p-4 lg:p-20">
+      <Slider {...carouselSettings}>
+        {carouselImages.map((src, i) => (
+          <div
+            key={i}
+            className="flex justify-center items-center bg-transparent"
+          >
+            <img
+              src={src}
+              alt={`carousel image ${i + 1}`}
+              className="w-full h-auto max-w-[600px] object-contain"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </Slider>
     </div>
   );
 };
 
 export default Carousel;
-
-// import { ps_5,  Nikon,  user } from "../Constants";
-
-// const Carousel = () => {
-//   return (
-//     <div className="p-4 lg:p-[80px] flex justify-center">
-//       <img
-//         src={ps_5}
-//         alt=""
-//         className="w-full max-w-[400px] lg:max-w-[600px]"
-//       />
-//     </div>
-//   );
-// };
-
-// export default Carousel;
-
-// import React from "react";
-// import Slider from "react-slick"; // Import react-slick
-// import "slick-carousel/slick/slick.css"; // Import slick-carousel's CSS
-// import "slick-carousel/slick/slick-theme.css";
-// import { ps_5, Nikon, Fride, AC, Macbook, user } from "../Constants";
-
-// const Carousel = () => {
-//   const images = [ps_5, Nikon, Fride, AC, Macbook, user]; // Array of images
-
-//   const settings = {
-//     dots: true, // Display dots for navigation
-//     infinite: true, // Infinite looping
-//     speed: 500, // Transition speed
-//     slidesToShow: 1, // Show one slide at a time
-//     slidesToScroll: 1, // Scroll one slide at a time
-//     autoplay: true, // Auto-play slides
-//     autoplaySpeed: 3000, // 3 seconds interval
-//     arrows: true, // Next/Previous arrows
-//   };
-
-//   return (
-//     <div className="p-4 lg:p-[80px]">
-//       <Slider {...settings}>
-//         {images.map((image, index) => (
-//           <div key={index} className="flex justify-center">
-//             <img
-//               src={image}
-//               alt={`carousel-img-${index}`}
-//               className="w-full max-w-[400px] lg:max-w-[600px]"
-//             />
-//           </div>
-//         ))}
-//       </Slider>
-//     </div>
-//   );
-// };
-
-// export default Carousel;
-
-
-// import React from "react";
-// import Slider from "react-slick"; // Import react-slick
-// import "slick-carousel/slick/slick.css"; // Import slick-carousel's CSS
-// import "slick-carousel/slick/slick-theme.css";
-// import { ps_5, Nikon, Fride, AC, Macbook, user } from "../Constants";
-
-// const Carousel = () => {
-//   const images = [ps_5, Nikon, Fride, AC, Macbook, user]; // Array of images
-
-//   // Settings for the carousel
-//   const settings = {
-//     dots: true, // Display dots for navigation
-//     infinite: true, // Infinite looping
-//     speed: 500, // Transition speed
-//     slidesToShow: 1, // Show one slide at a time
-//     slidesToScroll: 1, // Scroll one slide at a time
-//     autoplay: true, // Auto-play slides
-//     autoplaySpeed: 3000, // 3 seconds interval
-//     arrows: true, // Next/Previous arrows
-//     responsive: [
-//       {
-//         breakpoint: 1024, // Adjust settings for screens smaller than 1024px
-//         settings: {
-//           slidesToShow: 1,
-//           slidesToScroll: 1,
-//           infinite: true,
-//           dots: true,
-//         },
-//       },
-//       {
-//         breakpoint: 768, // Adjust settings for screens smaller than 768px
-//         settings: {
-//           slidesToShow: 1,
-//           slidesToScroll: 1,
-//           initialSlide: 1,
-//         },
-//       },
-//     ],
-//   };
-
-//   return (
-//     <div className="p-4 lg:p-[80px]">
-//       <Slider {...settings}>
-//         {images.map((image, index) => (
-//           <div key={index} className="flex justify-center">
-//             <img
-//               src={image}
-//               alt={`carousel-img-${index}`}
-//               className="w-full max-w-[400px] lg:max-w-[600px]"
-//             />
-//           </div>
-//         ))}
-//       </Slider>
-//     </div>
-//   );
-// };
-
-// export default Carousel;

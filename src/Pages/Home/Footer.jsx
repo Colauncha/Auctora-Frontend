@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Cta from './Cta';
 import { ctaContext } from '../../Store/ContextStore';
 import { facebook, linkedin, instaggram, logo, twitter } from '../../Constants';
+import { Phone, Mail } from 'lucide-react';
 
 const footerArr = [
   {
@@ -11,7 +12,7 @@ const footerArr = [
       { name: 'Features', url: '/features' },
       { name: 'Works', url: '/construction/works' },
       { name: 'Career', url: '/construction/career' },
-      { name: 'Blog', url: '/blog' }
+      { name: 'Blog', url: '/blog' },
     ],
   },
   {
@@ -64,40 +65,44 @@ const Footer = () => {
         <div className="flex flex-col lg:flex-row justify-between gap-16 w-full">
           {/* Left Section  */}
           <div className="flex flex-col gap-6 max-w-md">
-            <img 
-              src={logo} 
-              alt="Biddius Logo" 
-              className="w-48 h-auto" 
-            />
-           <div className="space-y-3">
-  <p className="text-gray-600 text-sm leading-relaxed max-w-md">
-    Join online auctions and find unique items to buy and sell with excitement! 
-    Discover amazing deals and rare collectibles in our vibrant marketplace.
-  </p>
+            <img src={logo} alt="Biddius Logo" className="w-48 h-auto" />
+            <div className="space-y-3">
+              <p className="text-gray-600 text-sm leading-relaxed max-w-md">
+                Join online auctions and find unique items to buy and sell with
+                excitement! Discover amazing deals and rare collectibles in our
+                vibrant marketplace.
+              </p>
 
-  <div className="text-gray-600 text-sm leading-relaxed">
-    <div className="flex flex-col">
-      <div className="flex items-start">
-        <span className="font-medium text-gray-700 whitespace-nowrap">
-          Connect with us:
-        </span>
-        <a
-          href="tel:+2347084274918"
-          className="underline text-maroon hover:text-red transition-colors ml-2"
-        >
-          +234 708 427 8194
-        </a>
-      </div>
-      <a
-        href="mailto:Info@biddius.com"
-        className="underline text-maroon hover:text-red transition-colors ml-[117px]"
-      >
-        Info@biddius.com
-      </a>
-    </div>
-  </div>
-</div>
-
+              <div className="text-gray-600 text-xs md:text-sm leading-relaxed">
+                <div className="flex">
+                  <div className="flex items-start">
+                    <span className="font-medium text-gray-700 whitespace-nowrap">
+                      Connect with us:
+                    </span>
+                  </div>
+                  <div className="flex flex-col ml-2 space-y-4">
+                    <span>
+                      <a
+                        href="tel:+2347084274918"
+                        className="underline text-maroon hover:text-red transition-colors ml-2"
+                      >
+                        <Phone className="inline-block mr-2" size={14} />
+                        +234 708 427 8194
+                      </a>
+                    </span>
+                    <span>
+                      <a
+                        href="mailto:Info@biddius.com"
+                        className="underline text-maroon hover:text-red transition-colors ml-2"
+                      >
+                        <Mail className="inline-block mr-2" size={14} />
+                        Info@biddius.com
+                      </a>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div className="flex gap-4">
               <a
@@ -155,25 +160,25 @@ const Footer = () => {
         {/* Copyright Section */}
         <div className="mt-16 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-center text-xs md:text-sm">
               © {new Date().getFullYear()} Biddius (A Part of Colauncha). All
               rights reserved.
             </p>
             <div className="flex gap-6">
               <Link
                 to="/terms-conditions"
-                className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors"
+                className="text-gray-500 hover:text-[#9F3247] text-xs md:text-sm transition-colors"
               >
                 Terms and Conditions
               </Link>
               <Link
                 to="/privacy-policy"
-                className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors"
+                className="text-gray-500 hover:text-[#9F3247] text-xs md:text-sm transition-colors"
               >
                 Privacy Policy
               </Link>
 
-              {/* <Link to="/cookies" className="text-gray-500 hover:text-[#9F3247] text-sm transition-colors">
+              {/* <Link to="/cookies" className="text-gray-500 hover:text-[#9F3247] text-xs md:text-sm transition-colors">
                 Cookie Policy
               </Link> */}
             </div>
