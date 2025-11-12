@@ -3,7 +3,7 @@ import Breadcrumbs from '../../Components/Breadcrumbs';
 import Pagination from '../../Components/Pagination';
 import { useState, useEffect } from 'react';
 import useModeStore from '../../Store/Store';
-import { FaFilter } from 'react-icons/fa';
+import { Filter } from 'lucide-react';
 import Modal from '../../Components/Modal';
 import { current, currencyFormat, charLimit } from '../../utils';
 import Card from '../../Components/Card';
@@ -280,7 +280,7 @@ const ViewAll = () => {
               {isMobile ? (
                 <div className="w-32 flex justify-center items-center gap-3">
                   <span>Filters:</span>
-                  <FaFilter
+                  <Filter
                     onClick={openModal}
                     className="cursor-pointer text-gray-500"
                   />

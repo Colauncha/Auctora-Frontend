@@ -1,11 +1,11 @@
 import { FaArrowDown, FaArrowUp, FaBell } from 'react-icons/fa';
 import { Eye, Link } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { NotifContext } from '../../Store/notifContex';
 import Loader from '../../assets/loader2';
 import PropTypes from 'prop-types';
 import { current } from '../../utils';
 
-// Mock utility functions - replace with your actual imports
 const formatDateTime = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -66,6 +66,7 @@ Pagination.propTypes = {
 };
 
 const Notify = () => {
+  const { notifTotal, setNotifTotal } = useContext(NotifContext);
   const [notice, setNotice] = useState([]);
   const [total, setTotal] = useState(0);
   const [sort, setSort] = useState('asc');
@@ -119,8 +120,6 @@ const Notify = () => {
 
   const toggleRead = async (id) => {
     setDeletingId(id);
-    // const tempNotice = notice;
-    // const tempTotal = total;
 
     try {
       const endpoint = `${current}users/notifications/${id}`;
@@ -143,6 +142,7 @@ const Notify = () => {
       // const data = await response.json();
 
       // Animate removal
+      setNotifTotal(notifTotal > 0 ? notifTotal - 1 : 0);
       setTimeout(() => {
         setNotice((prev) => prev.filter((item) => item.id !== id));
         setTotal((prev) => prev - 1);
@@ -296,7 +296,9 @@ const Notify = () => {
 
                     <div
                       className="absolute bottom-0.5 right-1 md:relative ml-4 flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
-                      onClick={() => toggleRead(item?.id)}
+                      onClick={() => {
+                        toggleRead(item?.id);
+                      }}
                       disabled={deletingId === item?.id}
                     >
                       {deletingId === item?.id ? (
