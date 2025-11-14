@@ -35,7 +35,7 @@ jobs:
           css=$(ls $build_dir/index*.css | xargs -n1 basename)
           js=$(ls $build_dir/index*.js | xargs -n1 basename)
           
-          cat <<EOF > /etc/nginx/snippets/biddius-preload.conf
+          sudo cat <<EOF > /etc/nginx/snippets/biddius-preload.conf
           add_header Link "</assets/$css>; rel=preload; as=style" always;
           add_header Link "</assets/$js>; rel=preload; as=script" always;
           EOF
