@@ -40,6 +40,6 @@ jobs:
           add_header Link "</assets/$js>; rel=preload; as=script" always;
           EOF
           
-          systemctl reload nginx
+          sudo systemctl reload nginx
           
         shell: bash -l {0}
