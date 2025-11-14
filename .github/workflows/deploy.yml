@@ -29,5 +29,17 @@ jobs:
           npm run build
           sudo rm -rf /var/www/biddius/html/*
           sudo cp -r dist/* /var/www/biddius/html/
+
+          build_dir="/var/www/biddius/html/assets"
+
+          css=$(ls $build_dir/index*.css | xargs -n1 basename)
+          js=$(ls $build_dir/index*.js | xargs -n1 basename)
+          
+          cat <<EOF > /etc/nginx/snippets/biddius-preload.conf
+          add_header Link "</assets/$css>; rel=preload; as=style" always;
+          add_header Link "</assets/$js>; rel=preload; as=script" always;
+          EOF
+          
+          systemctl reload nginx
           
         shell: bash -l {0}
