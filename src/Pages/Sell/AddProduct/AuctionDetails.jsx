@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FiChevronLeft, FiChevronRight, FiUser } from 'react-icons/fi';
 import { API_BASE_URL } from '../../Sell/AddProduct/config';
 import { current } from '../../../utils';
+import useAuthStore from '../../../Store/AuthStore';
 import Loader from '../../../assets/loaderWhite';
 import LoaderM from '../../../assets/loader2';
 import { MdModeEdit } from 'react-icons/md';
@@ -15,6 +16,7 @@ import { CiCircleCheck } from 'react-icons/ci';
 import { HiOutlineReceiptRefund } from 'react-icons/hi2';
 import { TbClockHour4 } from 'react-icons/tb';
 import { MdViewInAr } from 'react-icons/md';
+import ChatSection from '../../../Components/Chat/ChatSection';
 import {
   IoChevronDownCircleOutline,
   IoChevronUpCircleOutline,
@@ -73,12 +75,18 @@ const AuctionDetails = () => {
   });
   const id = location.pathname.split('/').pop();
 
+  // User
+  const identity = useAuthStore((state) => state.data);
+
   // Loader
   const [aloading, setALoading] = useState(false);
   const [iloading, setILoading] = useState(false);
   const [ploading, setPLoading] = useState(false);
   const [rloading, setRLoading] = useState(false);
   const [isRestartingLoading, setIsRestartingLoading] = useState(false);
+
+  // Chat
+  const [showChatSection, setShowChatSection] = useState(false);
 
   const paymentStatMap = {
     pending: { cls: 'bg-blue-100 text-blue-800', icon: TbClockHour4 },
@@ -1277,6 +1285,12 @@ const AuctionDetails = () => {
             </div>
           )}
         </div>
+        <ChatSection
+          chatId={auction?.chat?.id}
+          showState={showChatSection}
+          showFunc={setShowChatSection}
+          profileImage={identity?.image_link?.link}
+        />
       </div>
     </div>
   );

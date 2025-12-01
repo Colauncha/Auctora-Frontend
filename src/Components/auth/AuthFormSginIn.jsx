@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Button from '../Button';
 import Input from './Input';
 import useModeStore from '../../Store/Store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Loader from '../../assets/loader';
 import { useState } from 'react';
 import useAuthStore from '../../Store/AuthStore';
@@ -14,6 +14,8 @@ import Alerts from '../alerts/Alerts';
 const AuthFormSignIn = ({ heading }) => {
   const { isMobile } = useModeStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  const urlState = location.state;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -104,6 +106,8 @@ const AuthFormSignIn = ({ heading }) => {
             sessionStorage.getItem('email-otp') === email
           ) {
             navigate('/otp');
+          } else if (urlState !== null) {
+            navigate(urlState.from);
           } else {
             sessionStorage.removeItem('newAccount');
             sessionStorage.removeItem('email-otp');

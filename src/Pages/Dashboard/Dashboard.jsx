@@ -556,7 +556,7 @@ const Dashboard = () => {
                               <Eye className="w-4 h-4" />
                             </button>
                           </div>
-                          <div className="overflow-x-auto">
+                          <div className="overflow-auto h-80">
                             <table className="w-full">
                               <thead>
                                 <tr className="border-b border-gray-200">

@@ -9,6 +9,7 @@ import { HiOutlineReceiptRefund } from 'react-icons/hi2';
 import { TbClockHour4 } from 'react-icons/tb';
 import { MdViewInAr } from 'react-icons/md';
 import { FiUser } from 'react-icons/fi';
+import ChatSection from '../../Components/Chat/ChatSection';
 
 const ReviewPage = () => {
   const [auctions, setAuctions] = useState([]);
@@ -19,6 +20,7 @@ const ReviewPage = () => {
   const [fLoading, setFLoading] = useState(false);
   const [iLoading, setILoading] = useState(false);
   const [rLoading, setRLoading] = useState(false);
+  const [showChatSection, setShowChatSection] = useState(false);
   const [alertT, setAlert] = useState({
     isAlert: false,
     level: '',
@@ -62,7 +64,7 @@ const ReviewPage = () => {
           navigate(`/product-details/${id}`);
           return;
         }
-        setAuctions(data.data);
+        setAuctions(data?.data);
         setPayment(data?.data?.payment);
         setUserImages(data?.data?.user?.image_link?.link || '');
         setLoading(false);
@@ -241,31 +243,41 @@ const ReviewPage = () => {
               <h2 className="text-2xl font-bold text-[#9F3247] mb-6 border-b pb-2">
                 Seller&apos;s Details
               </h2>
-              <div className="flex flex-col items-start justify-start gap-5 mb-4 md:flex-row md:items-center">
-                <div className="w-20 h-20 rounded-full border-2 bg-purple-200 flex items-center justify-center mr-4 overflow-hidden">
-                  {userImage ? (
-                    <img
-                      src={userImage}
-                      alt="Profile-photo"
-                      className="w-full h-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <FiUser className="text-gray-500" size={40} />
-                  )}
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                <div className="flex w-full  md:w-[90%] border-r flex-col items-start justify-start gap-5 mb-4 md:flex-row md:items-center">
+                  <div className="w-20 h-20 rounded-full border-2 bg-purple-200 flex items-center justify-center mr-4 overflow-hidden">
+                    {userImage ? (
+                      <img
+                        src={userImage}
+                        alt="Profile-photo"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <FiUser className="text-gray-500" size={40} />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-md text-gray-500 font-light">
+                      <span className="text-gray-600 mr-2 font-bold">
+                        Seller email:
+                      </span>
+                      {auctions?.user.email || 'null'}
+                    </p>
+                    <p className="text-md text-gray-500 font-light">
+                      <span className="text-gray-600 mr-2 font-bold">
+                        Seller Phone:
+                      </span>
+                      {auctions?.user.phone_number || 'null'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-md text-gray-500 font-light">
-                    <span className="text-gray-600 mr-2 font-bold">
-                      Seller email:
-                    </span>
-                    {auctions?.user.email || 'null'}
-                  </p>
-                  <p className="text-md text-gray-500 font-light">
-                    <span className="text-gray-600 mr-2 font-bold">
-                      Seller Phone:
-                    </span>
-                    {auctions?.user.phone_number || 'null'}
-                  </p>
+                <div className="flex justify-center items-center">
+                  <button
+                    onClick={() => setShowChatSection(!showChatSection)}
+                    className="px-5 py-2 rounded-full bg-[#9f3247] text-white shadow-md hover:shadow-lg"
+                  >
+                    chat
+                  </button>
                 </div>
               </div>
             </div>
@@ -353,6 +365,37 @@ const ReviewPage = () => {
                 )}
               </div>
             </div>
+
+            {/* <section className="flex flex-col rounded-tl-xl rounded-tr-xl pt-3 fixed bg-[#9f3247] bottom-0 right-0 w-[30%] drop-shadow-lg hover:drop-shadow-xl">
+              <div
+                className="bg-[#9f3247] text-white font-bold p-3 drop-shadow-md cursor-pointer"
+                onClick={() => setShowChatSection(!showChatSection)}
+              >
+                <span className="px-3 text-lg">Chat</span>
+                {showChatSection ? (
+                  <ChevronDown
+                    className="inline float-right cursor-pointer"
+                    size={20}
+                    onClick={() => setShowChatSection(false)}
+                  />
+                ) : (
+                  <ChevronUp
+                    className="inline float-right cursor-pointer"
+                    size={20}
+                    onClick={() => setShowChatSection(true)}
+                  />
+                )}
+              </div>
+              <div
+                className={`bg-[#fff] ${showChatSection ? 'h-[400px]' : 'h-0'}`}
+              ></div>
+            </section> */}
+            <ChatSection
+              chatId={auctions?.chat?.id}
+              showState={showChatSection}
+              showFunc={setShowChatSection}
+              profileImage={userImage}
+            />
           </>
         )}
       </div>

@@ -83,7 +83,7 @@ const Notify = () => {
 
   useEffect(() => {
     setLoading(true);
-    const inboxEndpoint = `${current}users/notifications?page=${currentPage}&per_page=10`;
+    const inboxEndpoint = `${current}users/notifications?page=${currentPage}&per_page=10&order=desc`;
     const fetchNotifications = async (endpoint, func, func2) => {
       try {
         const response = await fetch(endpoint, {
