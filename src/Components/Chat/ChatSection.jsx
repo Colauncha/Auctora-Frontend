@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { CheckCheck, Check } from 'lucide-react';
 
 import {
   ChevronDown,
@@ -10,120 +9,9 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import useAuthStore from '../../Store/AuthStore';
+import Bubble from './Bubble';
+import { quickActionOptions, getStatusIcon } from './util';
 import { toast } from 'react-toastify';
-
-const formatTime = (timestamp) => {
-  const date = new Date(timestamp);
-  return date.toLocaleString('en-NG', {
-    day: '2-digit',
-    month: 'short',
-    year: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-};
-
-const getStatusIcon = (status) => {
-  switch (status) {
-    case 'read':
-      return <CheckCheck size={14} className="text-blue-500" />;
-    case 'delivered':
-      return <CheckCheck size={14} className="text-gray-500" />;
-    case 'sending':
-      return <Check size={14} className="text-gray-400" />;
-    case 'failed':
-      return <span className="text-red-500 text-xs">!</span>;
-    default:
-      return null;
-  }
-};
-
-const Bubble = ({ msg, isOwnMessage }) => {
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
-  const bubbleRef = useRef(null);
-  const menuRef = useRef(null);
-
-  const openMenu = (e) => {
-    e.preventDefault();
-
-    const menuWidth = 160;
-    const menuHeight = 120;
-
-    let x = e.clientX;
-    let y = e.clientY;
-
-    if (x + menuWidth > window.innerWidth) {
-      x = window.innerWidth - menuWidth - 10;
-    }
-    if (y + menuHeight > window.innerHeight) {
-      y = window.innerHeight - menuHeight - 10;
-    }
-
-    setMenuPos({ x, y });
-    setMenuVisible(true);
-  };
-
-  useEffect(() => {
-    if (!menuVisible) return;
-
-    const close = (e) => {
-      if (!menuRef.current?.contains(e.target)) {
-        setMenuVisible(false);
-      }
-    };
-
-    window.addEventListener('mousedown', close);
-    return () => window.removeEventListener('mousedown', close);
-  }, [menuVisible]);
-
-  return (
-    <>
-      <div
-        ref={bubbleRef}
-        onContextMenu={openMenu}
-        className={`relative max-w-[75%] rounded-lg px-4 py-2 ${
-          isOwnMessage ? 'bg-[#9f3247] text-white' : 'bg-gray-200 text-gray-800'
-        }`}
-      >
-        <p className="text-sm break-words">{msg.message}</p>
-
-        <div
-          className={`flex items-center gap-1 mt-1 text-[10px] ${
-            isOwnMessage ? 'text-gray-200' : 'text-gray-500'
-          }`}
-        >
-          <span>{formatTime(msg.timestamp)}</span>
-          {isOwnMessage && getStatusIcon(msg.status)}
-        </div>
-      </div>
-
-      {menuVisible && (
-        <div
-          ref={menuRef}
-          className="fixed z-[500] bg-white shadow-lg rounded-lg p-2 w-40 border border-gray-200 animate-scaleIn"
-          style={{ top: menuPos.y, left: menuPos.x }}
-        >
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100">
-            Copy
-          </button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100">
-            Delete
-          </button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100">
-            Forward
-          </button>
-        </div>
-      )}
-    </>
-  );
-};
-
-Bubble.propTypes = {
-  msg: PropTypes.object.isRequired,
-  isOwnMessage: PropTypes.bool.isRequired,
-};
 
 const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
   const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
@@ -139,15 +27,11 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
     sellerId: '',
     auctionId: '',
   });
+  const [showMsgInfo, setShowMsgInfo] = useState(null);
   const [userType, setUserType] = useState('buyer'); // 'buyer' or 'seller'
 
   const messagesEndRef = useRef(null);
   const chatSectionRef = useRef(null);
-
-  const quickActionOptions = {
-    buyer: ['Set Inspecting', 'Finalize', 'Request Refund'],
-    seller: ['Item sent'],
-  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -218,6 +102,7 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
         message: inputMessage.trim(),
         timestamp: new Date().toISOString(),
         status: 'sending',
+        sender_type: userType,
       },
     };
 
@@ -235,10 +120,10 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
   return (
     <section
       ref={chatSectionRef}
-      className="flex flex-col rounded-t-xl fixed bg-[#9f3247] bottom-0 right-0 w-[30%] pt-3 z-50 shadow-xl"
+      className="flex flex-col rounded-t-3xl fixed bg-[#9f3247] bottom-0 right-0 w-[30%] pt-3 z-50 shadow-xl"
     >
       <div
-        className="bg-[#9f3247] text-white font-bold p-3 flex justify-between items-center cursor-pointer"
+        className="bg-[#9f3247] text-white rounded-t-3xl font-bold p-3 flex justify-between items-center cursor-pointer"
         onClick={() => showFunc(!showState)}
       >
         <span className="flex gap-2 items-center px-3">
@@ -258,7 +143,71 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
           showState ? 'h-[400px]' : 'h-0'
         }`}
       >
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {showMsgInfo && (
+          <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Message Details
+              </h3>
+              <button
+                onClick={() => setShowMsgInfo(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <span className="text-lg">×</span>
+              </button>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-start gap-2">
+                <span className="text-xs font-medium text-gray-500 min-w-[70px]">
+                  Sender:
+                </span>
+                <span className="text-xs text-gray-700 font-mono bg-white px-2 py-1 rounded border border-gray-200 break-all flex-1">
+                  {showMsgInfo.sender_id}
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-xs font-medium text-gray-500 min-w-[70px]">
+                  Time:
+                </span>
+                <span className="text-xs text-gray-700">
+                  {new Date(showMsgInfo.timestamp).toLocaleString('en-US', {
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                  })}
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-xs font-medium text-gray-500 min-w-[70px]">
+                  Status:
+                </span>
+                <span
+                  className={`text-xs font-medium px-2 py-1 rounded-full inline-flex items-center gap-1 ${
+                    showMsgInfo.status === 'read'
+                      ? 'bg-blue-100 text-blue-700'
+                      : showMsgInfo.status === 'delivered'
+                      ? 'bg-green-100 text-green-700'
+                      : showMsgInfo.status === 'sending'
+                      ? 'bg-yellow-100 text-yellow-700'
+                      : 'bg-red-100 text-red-700'
+                  }`}
+                >
+                  {getStatusIcon(showMsgInfo.status)}
+                  {showMsgInfo.status.charAt(0).toUpperCase() +
+                    showMsgInfo.status.slice(1)}
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-xs font-medium text-gray-500 min-w-[70px]">
+                  Type:
+                </span>
+                <span className="text-xs text-gray-700 capitalize">
+                  {showMsgInfo.sender_type}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="flex-1 overflow-y-auto p-3 space-y-2">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full text-gray-400">
               No messages yet
@@ -276,6 +225,8 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
                 <Bubble
                   msg={msg}
                   isOwnMessage={msg.sender_id === identity.id}
+                  socket={socket}
+                  showMsgInfoFunc={setShowMsgInfo}
                 />
               </div>
             ))
@@ -319,12 +270,12 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
             onKeyDown={handleKeyPress}
             placeholder={online ? 'Type a message...' : 'Connecting...'}
             disabled={!online}
-            className="flex-1 px-4 py-2 border rounded-full focus:ring-2 focus:ring-[#9f3247] outline-none"
+            className="flex-1 px-4 py-2 border rounded-full text-[13px] font-extralight focus:ring-2 focus:ring-[#9f3247] outline-none"
           />
 
           <button
             disabled={!online || !inputMessage.trim()}
-            className="bg-[#9f3247] text-white p-3 rounded-full disabled:bg-gray-300"
+            className="text-[#9f3247] px-2 disabled:text-gray-300"
           >
             <Send size={18} />
           </button>
