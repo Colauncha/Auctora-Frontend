@@ -1,4 +1,5 @@
 import { current, links } from './links';
+import Fetch from './Fetch';
 
 const capitalize = (s) => {
   if (typeof s !== 'string') return '';
@@ -40,4 +41,5 @@ export {
   links,
   current,
   formatDateTime,
+  Fetch,
 };

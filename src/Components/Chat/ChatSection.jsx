@@ -49,9 +49,10 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
 
   /** WebSocket Setup */
   useEffect(() => {
-    if (!showState || !token) return;
+    if (!showState || !token || chatId === undefined) return;
 
-    const ws = new WebSocket(`ws://localhost:8000/api/chats/ws/${chatId}`, [
+    const ws = new WebSocket(`wss://api.biddius.com/api/chats/ws/${chatId}`, [
+      // const ws = new WebSocket(`ws://localhost:8000/api/chats/ws/${chatId}`, [
       'auth',
       token,
     ]);
@@ -72,6 +73,15 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
             sellerId: data.payload.seller_id,
             auctionId: data.payload.auction_id,
           });
+        } else if (data.type === 'read_message') {
+          console.log('Message read:', data.payload);
+          setMessages((prev) =>
+            prev.map((m) =>
+              Number(m.chat_number) === Number(data.payload.chat_number)
+                ? { ...m, status: 'read' }
+                : m,
+            ),
+          );
         }
       } catch {
         toast.error('Error parsing server message');
@@ -94,7 +104,7 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
       return;
     }
 
-    const newMsg = {
+    let newMsg = {
       type: 'send_message',
       payload: {
         chat_id: chatId,
@@ -107,6 +117,7 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
     };
 
     socket.send(JSON.stringify(newMsg));
+    newMsg.payload.chat_number = messages.length + 1;
     setMessages((p) => [...p, newMsg.payload]);
     setInputMessage('');
   };
@@ -120,10 +131,10 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
   return (
     <section
       ref={chatSectionRef}
-      className="flex flex-col rounded-t-3xl fixed bg-[#9f3247] bottom-0 right-0 w-[30%] pt-3 z-50 shadow-xl"
+      className="flex flex-col rounded-t-3xl fixed bg-gradient-to-r from-[#9f3247] to-[#b83d56] bottom-0 right-0 w-[30%] pt-3 z-50 shadow-xl"
     >
       <div
-        className="bg-[#9f3247] text-white rounded-t-3xl font-bold p-3 flex justify-between items-center cursor-pointer"
+        className=" text-white rounded-t-3xl font-bold p-3 flex justify-between items-center cursor-pointer"
         onClick={() => showFunc(!showState)}
       >
         <span className="flex gap-2 items-center px-3">

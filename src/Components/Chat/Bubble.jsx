@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ClipboardCopy, Trash2, Flag, Info } from 'lucide-react';
+import {
+  ClipboardCopy,
+  Trash2,
+  Flag,
+  Info,
+  FlagTriangleRight,
+} from 'lucide-react';
 import { formatTime, getStatusIcon, clipboardCopy } from './util';
 
 const Bubble = ({ msg, isOwnMessage, socket, showMsgInfoFunc }) => {
@@ -30,7 +36,7 @@ const Bubble = ({ msg, isOwnMessage, socket, showMsgInfoFunc }) => {
   };
 
   useEffect(() => {
-    if (socket.readyState === 1) {
+    if (socket.readyState === WebSocket.OPEN) {
       if (msg.status !== 'read' && !isOwnMessage) {
         const newMsg = {
           type: 'read_message',
@@ -111,6 +117,10 @@ const Bubble = ({ msg, isOwnMessage, socket, showMsgInfoFunc }) => {
           <button className="flex justify-between w-full px-3 py-2 text-sm hover:bg-gray-100">
             Report
             <Flag size={15} />
+          </button>
+          <button className="flex justify-between w-full px-3 py-2 text-sm hover:bg-gray-100">
+            Flag Chat
+            <FlagTriangleRight size={15} />
           </button>
         </div>
       )}

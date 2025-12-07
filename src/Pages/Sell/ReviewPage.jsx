@@ -366,30 +366,6 @@ const ReviewPage = () => {
               </div>
             </div>
 
-            {/* <section className="flex flex-col rounded-tl-xl rounded-tr-xl pt-3 fixed bg-[#9f3247] bottom-0 right-0 w-[30%] drop-shadow-lg hover:drop-shadow-xl">
-              <div
-                className="bg-[#9f3247] text-white font-bold p-3 drop-shadow-md cursor-pointer"
-                onClick={() => setShowChatSection(!showChatSection)}
-              >
-                <span className="px-3 text-lg">Chat</span>
-                {showChatSection ? (
-                  <ChevronDown
-                    className="inline float-right cursor-pointer"
-                    size={20}
-                    onClick={() => setShowChatSection(false)}
-                  />
-                ) : (
-                  <ChevronUp
-                    className="inline float-right cursor-pointer"
-                    size={20}
-                    onClick={() => setShowChatSection(true)}
-                  />
-                )}
-              </div>
-              <div
-                className={`bg-[#fff] ${showChatSection ? 'h-[400px]' : 'h-0'}`}
-              ></div>
-            </section> */}
             <ChatSection
               chatId={auctions?.chat?.id}
               showState={showChatSection}

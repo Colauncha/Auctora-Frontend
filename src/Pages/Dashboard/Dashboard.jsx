@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronUp,
   ChartArea,
+  MessageCircleMore,
 } from 'lucide-react';
 import Loader from '../../assets/loader2';
 import useAuthStore from '../../Store/AuthStore';
@@ -28,6 +29,8 @@ import MainModal from '../../Components/modals/MainModal';
 import ReferralView from '../../Components/modals/ReferralView';
 import FundingWallet from '../../Components/modals/FundingWallet';
 import Withdrawal from '../../Components/modals/Withdrawal';
+import Conversations from '../../Components/Chat/Conversations';
+import ChatSection from '../../Components/Chat/ChatSection';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
@@ -44,6 +47,8 @@ const Dashboard = () => {
 
   // Modals
   const [modalIsOpen, setModalIsOpen] = useState({ state: false, type: '' });
+  // const [showChat, setShowChat] = useState(false);
+  const [chatId, setChatId] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -275,6 +280,22 @@ const Dashboard = () => {
           </MainModal>
         )}
 
+        {modalIsOpen.state && modalIsOpen.type === 'convo' && (
+          <Conversations setChatId={setChatId} showModal={showModal} />
+        )}
+        {modalIsOpen.state && modalIsOpen.type === 'chat' && (
+          <ChatSection
+            chatId={chatId}
+            showState={modalIsOpen.state && modalIsOpen.type === 'chat'}
+            showFunc={
+              modalIsOpen.state && modalIsOpen.type === 'chat'
+                ? handleCloseModal
+                : () => showModal('chat')
+            }
+            profileImage={user?.image_link ? user.image_link.link : null}
+          />
+        )}
+
         {/* Main Layout */}
         <div className="flex flex-col lg:flex-row min-h-screen">
           {/* Sidebar */}
@@ -348,6 +369,17 @@ const Dashboard = () => {
                   className="w-full justify-start"
                   label="Wallet History"
                   onClick={() => WalletHistory()}
+                  variant="outline"
+                />
+                <CustomButton
+                  icon={MessageCircleMore}
+                  className="w-full justify-start"
+                  label="Conversations"
+                  onClick={() => {
+                    modalIsOpen.state === false
+                      ? showModal('convo')
+                      : handleCloseModal();
+                  }}
                   variant="outline"
                 />
                 {user?.role === 'admin' && (
