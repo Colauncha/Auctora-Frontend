@@ -118,17 +118,25 @@ const Nav = () => {
   }, [setModeBasedOnScreenSize]);
 
   useEffect(() => {
-    setTimeout(() => {
-      toast.info(<NotifToast />, {
-        data: {
-          title: 'Welcome to Biddius!',
-          message: 'Explore and enjoy seamless auction experiences.',
-          id: 'welcome-notification',
-        },
-        autoClose: 10000,
-        position: 'bottom-right',
-      });
-    }, [3000]);
+    const dailyVisit = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('dailyVisit='));
+
+    if (dailyVisit) {
+      return;
+    } else {
+      setTimeout(() => {
+        toast.info(<NotifToast />, {
+          data: {
+            title: 'Welcome to Biddius!',
+            message: 'Explore and enjoy seamless auction experiences.',
+            id: 'welcome-notification',
+          },
+          autoClose: 10000,
+          position: 'bottom-right',
+        });
+      }, [3000]);
+    }
   }, []);
 
   useEffect(() => {

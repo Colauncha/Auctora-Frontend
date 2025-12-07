@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { PropTypes } from "prop-types";
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { PropTypes } from 'prop-types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiClock, FiUser, FiCheck, FiEye } from 'react-icons/fi';
 import { FaNairaSign, FaLink } from 'react-icons/fa6';
@@ -66,43 +66,42 @@ const ProductAuctionDetails = () => {
     cancelled: 'bg-red-100 text-red-800',
   };
 
-  const runFetch = async ({
-    data = null,
-    method = 'GET',
-    endpoint = endpoint,
-  }) => {
-    try {
-      const response = await fetch(endpoint, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: data ? JSON.stringify(data) : null,
-      });
-      if (!response.ok) {
-        let error = await response.json();
-        showAlert(
-          'fail',
-          error.message || 'An error occurred while fetching data.',
-          error.detail || 'Please try again later.',
-        );
-        // alert(`Error: ${error.message}`);
+  const runFetch = useCallback(
+    async ({ data = null, method = 'GET', endpoint = endpoint }) => {
+      try {
+        const response = await fetch(endpoint, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: data ? JSON.stringify(data) : null,
+        });
+        if (!response.ok) {
+          let error = await response.json();
+          showAlert(
+            'fail',
+            error.message || 'An error occurred while fetching data.',
+            error.detail || 'Please try again later.',
+          );
+          // alert(`Error: ${error.message}`);
+          setLoading(false);
+          setBuyNowLoading(false);
+          setPlaceBidLoading(false);
+          throw new Error(`Unable to fetch auction data: ${error}`);
+        }
+        const resp = await response.json();
+        return resp.data;
+      } catch (error) {
         setLoading(false);
         setBuyNowLoading(false);
         setPlaceBidLoading(false);
-        throw new Error(`Unable to fetch auction data: ${error}`);
+        console.error('Error fetching data:', error);
+        return null;
       }
-      const resp = await response.json();
-      return resp.data;
-    } catch (error) {
-      setLoading(false);
-      setBuyNowLoading(false);
-      setPlaceBidLoading(false);
-      console.error('Error fetching data:', error);
-      return null;
-    }
-  };
+    },
+    [],
+  );
 
   // Auction effects
   useEffect(() => {
@@ -139,7 +138,7 @@ const ProductAuctionDetails = () => {
       // await fetchSellerData(data.users_id);
     };
     fetchAuctionData();
-  }, [endpoint, id]);
+  }, [endpoint, id, runFetch]);
 
   // Optimized countdown timer
   useEffect(() => {
@@ -471,7 +470,7 @@ const ProductAuctionDetails = () => {
                             href={`/product/finalize/${auction?.id}`}
                             className="ml-1 text-blue-400 hover:underline transition-colors duration-300 ease-in-out"
                             aria-label="View auction details"
-                            target="_blank"
+                            // target="_blank"
                             rel="noopener noreferrer"
                           >
                             View Details
