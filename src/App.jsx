@@ -22,6 +22,7 @@ import Notification from './Pages/Notification/Notification';
 import ProtectedRoute from './Pages/ProtectedRoute/ProtectedRoute';
 // import GetStarted from "./Pages/Dashboard/GetStarted";
 import Dashboard from './Pages/Dashboard/Dashboard';
+import RewardHistory from './Components/Rewards/RewardHistory';
 
 //Sell Routes
 import SellAccount from './Pages/Sell/SellAccount';
@@ -181,6 +182,14 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="rewards"
+                element={
+                  <ProtectedRoute>
+                    <RewardHistory />
                   </ProtectedRoute>
                 }
               />
