@@ -14,6 +14,19 @@ const TABS = {
   REVERSE: 'reverse',
 };
 
+const currencyFormatIcon = (num) => {
+  const kobo = (num % 1).toFixed(2).substring(2);
+  const naira = Math.floor(num)
+    .toString()
+    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  return (
+    <>
+      <img src={BidCredit} alt="BidCredit" className="w-6 h-6 inline mr-3" />
+      {naira}.{kobo}
+    </>
+  );
+};
+
 const FundWithdrawable = ({ data }) => {
   const [activeTab, setActiveTab] = useState(TABS.FUND);
   const [amount, setAmount] = useState('');
@@ -150,7 +163,11 @@ const FundWithdrawable = ({ data }) => {
 
         <p className="text-xs text-gray-500">
           Available to transfer:{' '}
-          <span className="font-medium">{currencyFormat(sourceBalance)}</span>
+          <span className="font-medium">
+            {isReverse
+              ? currencyFormat(sourceBalance)
+              : currencyFormatIcon(sourceBalance)}
+          </span>
         </p>
       </div>
 

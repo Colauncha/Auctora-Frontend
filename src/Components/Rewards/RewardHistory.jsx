@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
-import { RefreshCw, Filter, X } from 'lucide-react';
+import { RefreshCw, Filter, X, HelpCircle } from 'lucide-react';
 import { current } from '../../utils';
 import BidPoint from '../../assets/svg/bidPoint.svg';
 import BidCredit from '../../assets/svg/bidCredit.svg';
 import Fetch from '../../utils/Fetch';
 import { toast } from 'react-toastify';
+import RewardToolTip from '../ToolTips/RewardToolTip';
 
 const RewardHistory = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -159,11 +160,13 @@ const RewardHistory = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="relative group">
               <h1 className="text-3xl font-bold text-gray-900">
-                Reward History
+                Reward History{' '}
+                <HelpCircle className="w-6 h-6 inline-block ml-2 text-gray-400" />
               </h1>
               <p className="text-gray-600 mt-1">Track all your Rewards</p>
+              <RewardToolTip position={'top'} />
             </div>
             <div className="flex gap-3">
               <button

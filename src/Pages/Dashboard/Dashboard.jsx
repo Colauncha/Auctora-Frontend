@@ -34,6 +34,7 @@ import Withdrawal from '../../Components/modals/Withdrawal';
 import FundWithdrawable from '../../Components/modals/FundWithdrawable';
 import Conversations from '../../Components/Chat/Conversations';
 import ChatSection from '../../Components/Chat/ChatSection';
+import RewardToolTip from '../../Components/ToolTips/RewardToolTip';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
@@ -331,10 +332,11 @@ const Dashboard = () => {
             {/* User Profile Section */}
             <div className="p-6 border-b border-gray-200">
               <div className="flex flex-col items-center text-center">
-                <div className="relative mb-4">
+                <div className="relative group mb-4">
                   <Avatar
                     imageUrl={user?.image_link ? user?.image_link?.link : null}
                     username={user.username ? user.username : user.email}
+                    otherStyles="group-hover:opacity-40 transition-opacity"
                   />
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
@@ -609,7 +611,7 @@ const Dashboard = () => {
                                   className="text-sm font-medium mb-1"
                                   style={{ color: '#7a2837' }}
                                 >
-                                  Bid Credit
+                                  Bid Points
                                 </p>
                                 <p
                                   className="text-2xl font-bold"
@@ -625,9 +627,7 @@ const Dashboard = () => {
                                   {user.bid_point ? user.bid_point : 0}
                                 </p>
                               </div>
-                              <span className="absolute left-0 bottom-full mb-2 hidden w-max bg-gray-900 text-white text-xs rounded py-2 px-3 group-hover:block z-10">
-                                Total points earned in rewards
-                              </span>
+                              <RewardToolTip position={'bottom'} />
                             </div>
                             {/* Withdrawable funds */}
                             <div className="relative group">
@@ -648,9 +648,8 @@ const Dashboard = () => {
                                   className="text-2xl font-bold"
                                   style={{ color: '#9f3247' }}
                                 >
-                                  {user.wallet
-                                    ? currencyFormat(user.withdrawable_amount)
-                                    : currencyFormat('0.00')}
+                                  {currencyFormat(user.withdrawable_amount) ||
+                                    '₦0.00'}
                                 </p>
                               </div>
                               <span className="absolute left-0 bottom-full mb-2 hidden w-max bg-gray-900 text-white text-xs rounded py-2 px-3 group-hover:block z-10">
