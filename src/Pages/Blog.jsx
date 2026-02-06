@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import imageOne from '../assets/images/blog images/blog 1.png';
@@ -26,43 +26,42 @@ const Blog = () => {
     { name: 'Case Studies', count: 0 },
   ];
 
-  const fallbackPosts = useMemo(() => {
-    [
-      {
-        id: 1,
-        title: 'Bidding Strategies for 2025',
-        category: 'Auction Strategy',
-        date: 'Oct 15, 2025',
-        readTime: '8 min read',
-        description:
-          'Discover the latest techniques and strategies to maximize your success in online auctions. Learn from industry experts and real-world case studies.',
-        image: imageTwo,
-        content: 'Full content here...',
-      },
-      {
-        id: 2,
-        title: 'Mastering Bid Timing for Success',
-        category: 'Best Practices',
-        date: 'Oct 20, 2025',
-        readTime: '6 min read',
-        description:
-          "Timing your bids perfectly can make a big difference in auctions. Here's how to plan your strategy for maximum efficiency.",
-        image: imageTwo,
-        content: 'Full content here...',
-      },
-      {
-        id: 3,
-        title: 'Understanding Platform Fees',
-        category: 'Platform Updates',
-        date: 'Oct 25, 2025',
-        readTime: '5 min read',
-        description:
-          'Stay informed about the latest changes in auction platform fees and how to make them work to your advantage.',
-        image: imageTwo,
-        content: 'Full content here...',
-      },
-    ];
-  }, []);
+  const fallbackPosts = [
+    {
+      id: 1,
+      title: 'Bidding Strategies for 2025',
+      category: 'Auction Strategy',
+      created_at: 'Oct 15, 2025',
+      estimated_reading_time: '8 min read',
+      description:
+        'Discover the latest techniques and strategies to maximize your success in online auctions. Learn from industry experts and real-world case studies.',
+      main_image: imageTwo,
+      content: 'Full content here...',
+    },
+    {
+      id: 2,
+      title: 'Mastering Bid Timing for Success',
+      category: 'Best Practices',
+      created_at: 'Oct 20, 2025',
+      estimated_reading_time: '6 min read',
+      description:
+        "Timing your bids perfectly can make a big difference in auctions. Here's how to plan your strategy for maximum efficiency.",
+      main_image: imageTwo,
+      content: 'Full content here...',
+    },
+    {
+      id: 3,
+      title: 'Understanding Platform Fees',
+      category: 'Platform Updates',
+      created_at: 'Oct 25, 2025',
+      estimated_reading_time: '5 min read',
+      description:
+        'Stay informed about the latest changes in auction platform fees and how to make them work to your advantage.',
+      main_image: imageTwo,
+      content: 'Full content here...',
+    },
+  ];
+  // }, []);
 
   const getSafePosts = () => {
     if (Array.isArray(blogs) && blogs.length > 0) {
@@ -88,6 +87,41 @@ const Blog = () => {
   };
 
   useEffect(() => {
+    const fallbackpost = [
+      {
+        id: 1,
+        title: 'Bidding Strategies for 2025',
+        category: 'Auction Strategy',
+        created_at: 'Oct 15, 2025',
+        estimated_reading_time: '8 min read',
+        description:
+          'Discover the latest techniques and strategies to maximize your success in online auctions. Learn from industry experts and real-world case studies.',
+        main_image: imageTwo,
+        content: 'Full content here...',
+      },
+      {
+        id: 2,
+        title: 'Mastering Bid Timing for Success',
+        category: 'Best Practices',
+        created_at: 'Oct 20, 2025',
+        estimated_reading_time: '6 min read',
+        description:
+          "Timing your bids perfectly can make a big difference in auctions. Here's how to plan your strategy for maximum efficiency.",
+        main_image: imageTwo,
+        content: 'Full content here...',
+      },
+      {
+        id: 3,
+        title: 'Understanding Platform Fees',
+        category: 'Platform Updates',
+        created_at: 'Oct 25, 2025',
+        estimated_reading_time: '5 min read',
+        description:
+          'Stay informed about the latest changes in auction platform fees and how to make them work to your advantage.',
+        main_image: imageTwo,
+        content: 'Full content here...',
+      },
+    ];
     const fetchBlogs = async () => {
       try {
         setLoading(true);
@@ -114,9 +148,9 @@ const Blog = () => {
           blogsArray = data.data.blogs;
         } else {
           console.warn(
-            'Unexpected API response structure, using fallback data',
+            'Unexpected API response structure, using fallback data'
           );
-          blogsArray = fallbackPosts;
+          blogsArray = fallbackpost;
         }
 
         setBlogs(blogsArray);
@@ -124,21 +158,22 @@ const Blog = () => {
         if (blogsArray.length > 0) {
           setFeaturedPost(blogsArray[blogsArray.length - 1]);
         } else {
-          setFeaturedPost(fallbackPosts[0]);
+          // console.log(fallbackPosts);
+          setFeaturedPost(fallbackpost[0]);
         }
       } catch (err) {
         console.error('Error fetching blogs:', err);
         setError(err.message);
 
-        setBlogs(fallbackPosts);
-        setFeaturedPost(fallbackPosts[0]);
+        setBlogs(fallbackpost);
+        setFeaturedPost(fallbackpost[0]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchBlogs();
-  }, [fallbackPosts]);
+  }, []);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Date not available';
@@ -254,8 +289,7 @@ const Blog = () => {
                   <Calendar className="w-4 h-4" />
                   <span>
                     {formatDate(
-                      currentFeaturedPost.created_at ||
-                        currentFeaturedPost.date,
+                      currentFeaturedPost.created_at || currentFeaturedPost.date
                     )}
                   </span>
                 </div>

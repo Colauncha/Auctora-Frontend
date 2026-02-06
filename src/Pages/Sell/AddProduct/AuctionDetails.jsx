@@ -5,7 +5,6 @@ import { capitalize, currencyFormat, formatDateTime } from '../../../utils';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiChevronLeft, FiChevronRight, FiUser } from 'react-icons/fi';
-import { API_BASE_URL } from '../../Sell/AddProduct/config';
 import { current } from '../../../utils';
 import useAuthStore from '../../../Store/AuthStore';
 import Loader from '../../../assets/loaderWhite';
@@ -231,7 +230,7 @@ const AuctionDetails = () => {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/auctions/${id}`, {
+      const response = await fetch(`${current}auctions/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -250,7 +249,7 @@ const AuctionDetails = () => {
         JSON.stringify({
           ...userData,
           auctions: updatedAuctions,
-        }),
+        })
       );
 
       toast.success('Auction deleted successfully');
@@ -464,7 +463,7 @@ const AuctionDetails = () => {
     if (auction.status !== 'active') {
       setPLoading(false);
       toast.warn(
-        'You cannot update the images of and Auction that is not active',
+        'You cannot update the images of and Auction that is not active'
       );
       return;
     }
