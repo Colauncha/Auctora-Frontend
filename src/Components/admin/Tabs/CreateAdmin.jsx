@@ -76,14 +76,17 @@ const CreateAdmin = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4 w-[60%]">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 w-[95%] md:w-[70%] text-sm"
+      >
         <input
           type="text"
           name="first_name"
           placeholder="First Name"
           value={formData.first_name}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="border rounded-md px-3 py-2 w-full"
           required
         />
 
@@ -93,7 +96,7 @@ const CreateAdmin = () => {
           placeholder="Last Name"
           value={formData.last_name}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="border rounded-md px-3 py-2 w-full"
           required
         />
 
@@ -103,7 +106,7 @@ const CreateAdmin = () => {
           placeholder="Email Address"
           value={formData.email}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="border rounded-md px-3 py-2 w-full"
           required
         />
 
@@ -113,7 +116,7 @@ const CreateAdmin = () => {
           placeholder="Phone Number"
           value={formData.phone_number}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="border rounded-md px-3 py-2 w-full"
         />
 
         <input
@@ -122,7 +125,7 @@ const CreateAdmin = () => {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
+          className="border rounded-md px-3 py-2 w-full"
           required
         />
 
@@ -132,14 +135,14 @@ const CreateAdmin = () => {
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="border rounded px-3 py-2 w-full"
+          className="border rounded-md px-3 py-2 w-full"
           required
         />
 
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#9f3248] shadow-sm hover:bg-[#b93f57] cursor-pointer text-white px-4 py-2 rounded w-full"
+          className="bg-[#9f3248] shadow-sm hover:bg-[#b93f57] cursor-pointer text-white px-4 py-2 rounded-md w-full"
         >
           {loading ? 'Creating...' : 'Create Admin'}
         </button>

@@ -195,7 +195,7 @@ const CampaignSubs = () => {
 
         {loadingClient ? (
           <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-[#9f3248]"></div>
             <p className="mt-2 text-gray-600">Loading client details...</p>
           </div>
         ) : clientDetails ? (
@@ -263,7 +263,7 @@ const CampaignSubs = () => {
           <button
             onClick={handleRenewToken}
             disabled={renewingToken}
-            className="bg-[#9f3248] cursor-pointer text-white px-6 py-2 rounded hover:bg-[#ba3852] disabled:opacity-50"
+            className="bg-[#9f3248] cursor-pointer text-white px-4 md:px-6 py-2 text-sm rounded-md hover:bg-[#ba3852] disabled:opacity-50"
           >
             {renewingToken ? 'Renewing Token...' : 'Renew Token'}
           </button>
@@ -271,17 +271,17 @@ const CampaignSubs = () => {
       </section>
 
       {/* Subscribers Section */}
-      <section className="bg-gray-50 p-6 rounded-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">
+      <section className="bg-gray-50 p-3 md:p-6 rounded-lg">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-start md:items-center mb-4">
+          <h3 className="text-md md:text-lg font-semibold text-gray-800">
             Subscribers List ({totalSubscribers})
           </h3>
-          <div className="flex gap-2">
+          <div className="flex w-full md:w-[20%] items-center flex-row-reverse md:flex-row justify-between md:justify-end gap-2">
             <button
               onClick={() => setShowExportModal(true)}
-              className="bg-[#9f3248] hover:bg-[#c03d57] text-white px-3 py-2 rounded "
+              className="bg-[#9f3248] hover:bg-[#c03d57] text-xs md:text-sm rounded-md text-white px-5 py-2"
             >
-              Export CSV
+              Export
             </button>
             <button
               onClick={fetchSubscribers}
@@ -295,7 +295,7 @@ const CampaignSubs = () => {
 
         {loadingSubscribers ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#9f3248]"></div>
             <p className="mt-2 text-gray-600">Loading subscribers...</p>
           </div>
         ) : (
@@ -437,7 +437,7 @@ const CampaignSubs = () => {
                           onClick={() => goToPage(page)}
                           className={`px-3 py-1 rounded border ${
                             currentPage === page
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-[#9f3248] text-white'
                               : 'hover:bg-gray-100'
                           }`}
                         >
@@ -489,7 +489,7 @@ const CampaignSubs = () => {
                   value={emailExtension}
                   onChange={(e) => setEmailExtension(e.target.value)}
                   placeholder="e.g., @gmail.com"
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#9f3248]"
                 />
               </div>
 
@@ -514,7 +514,7 @@ const CampaignSubs = () => {
                 <select
                   value={campaignType}
                   onChange={(e) => setCampaignType(e.target.value)}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#9f3248]"
                 >
                   <option value="">All campaigns</option>
                   {campaignTypes.map((type) => (
@@ -544,7 +544,7 @@ const CampaignSubs = () => {
               <button
                 onClick={handleExportCSV}
                 disabled={exportingCSV}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                className="bg-[#9f3248] text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
               >
                 {exportingCSV ? 'Exporting...' : 'Export'}
               </button>

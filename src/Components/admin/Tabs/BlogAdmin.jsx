@@ -158,13 +158,13 @@ const BlogAdmin = () => {
   // RENDER
   // -------------------------------
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-1 md:p-6 bg-gray-50 min-h-screen">
       {/* Tabs */}
       <div className="flex space-x-3 mb-6">
         {tabs.map((tab) => (
           <button
             key={tab.label}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm rounded-md transition-all ${
               activeTab.label === tab.label
                 ? 'bg-[#9f3248] text-white'
                 : 'bg-white border text-gray-600 hover:bg-blue-50'
@@ -182,7 +182,7 @@ const BlogAdmin = () => {
 
       {/* ADD BLOG */}
       {activeTab.label === 'Add' && (
-        <section className="w-full bg-white shadow-xl rounded-lg p-6">
+        <section className="w-full bg-white shadow-none md:shadow-xl rounded-lg p-1 md:p-6">
           {/* Banner Upload */}
           <div className="mb-6">
             {bannerImage ? (
@@ -261,7 +261,7 @@ const BlogAdmin = () => {
               </label>
               <textarea
                 rows={8}
-                className="border rounded-md p-3 font-mono"
+                className="border rounded-md p-3 text-xs md:text-sm font-mono"
                 value={content}
                 onChange={(e) => {
                   setContent(e.target.value);
@@ -273,9 +273,9 @@ const BlogAdmin = () => {
 
             <button
               type="submit"
-              className="bg-[#9f3248] text-white py-2 px-4 rounded-md hover:bg-[#9f3248d3] self-start"
+              className="bg-[#9f3248] text-white py-2 px-4 text-xs md:text-sm rounded-md hover:bg-[#9f3248d3] self-start"
             >
-              {loading ? <Loader /> : 'Publish Blog'}
+              {loading ? <Loader otherStyles={'w-5 h-5'} /> : 'Publish Blog'}
             </button>
           </form>
 
@@ -296,7 +296,7 @@ const BlogAdmin = () => {
 
       {/* LIST BLOGS */}
       {activeTab.label === 'List' && (
-        <section className="bg-white shadow-xl rounded-lg p-6">
+        <section className="bg-white shadow-none md:shadow-xl rounded-lg p-1 md:p-6">
           <h2 className="text-xl font-semibold mb-4">Blog List</h2>
 
           {loading ? (
@@ -326,21 +326,21 @@ const BlogAdmin = () => {
                         {blog.author?.first_name} •{' '}
                         {blog.estimated_reading_time}s
                       </p>
-                      <div className="flex gap-3">
+                      <div className="flex text-xs md:text-sm gap-3">
                         <button
                           className="flex items-center gap-1 text-blue-600"
                           onClick={() => handlePreview(blog)}
                         >
-                          <Eye size={16} /> View
+                          <Eye size={14} /> View
                         </button>
                         <button className="flex items-center gap-1 text-green-600">
-                          <Edit3 size={16} /> Edit
+                          <Edit3 size={14} /> Edit
                         </button>
                         <button
                           className="flex items-center gap-1 text-red-600"
                           onClick={() => handleDelete(blog.id)}
                         >
-                          <Trash2 size={16} /> Delete
+                          <Trash2 size={14} /> Delete
                         </button>
                       </div>
                     </div>
@@ -353,7 +353,7 @@ const BlogAdmin = () => {
                 <button
                   onClick={handlePrev}
                   disabled={page === 1}
-                  className={`px-4 py-2 rounded-md border ${
+                  className={`px-4 py-2 rounded-md border text-xs md:text-sm ${
                     page === 1
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : 'hover:bg-gray-100'
@@ -362,14 +362,14 @@ const BlogAdmin = () => {
                   Previous
                 </button>
 
-                <p className="text-sm text-gray-600">
+                <p className="text-xs md:text-sm text-gray-600">
                   Page {page} of {totalPages} ({totalCount} blogs)
                 </p>
 
                 <button
                   onClick={handleNext}
                   disabled={page === totalPages}
-                  className={`px-4 py-2 rounded-md border ${
+                  className={`px-4 py-2 rounded-md border text-xs md:text-sm ${
                     page === totalPages
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : 'hover:bg-gray-100'

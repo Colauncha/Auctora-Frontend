@@ -29,7 +29,9 @@ const Conversations = ({ setChatId, showModal }) => {
   }, []);
 
   useEffect(() => {
-    fetchConversations();
+      setInterval(() => {
+        fetchConversations();
+      }, 30000);
   }, [fetchConversations, conversations]);
 
   const getLastMessage = (conversation) => {
