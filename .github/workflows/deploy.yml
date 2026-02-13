@@ -21,6 +21,7 @@ jobs:
         key: ${{ secrets.BIDDIUS_AWS_SERVER_KEY }}
         script: |
 
+          sudo systemctl stop biddiusApi
           cd /var/www/biddius/Auctora-Frontend || exit 1
           git reset --hard HEAD
           git clean -fd
@@ -39,7 +40,8 @@ jobs:
           add_header Link "</assets/$css>; rel=preload; as=style" always;
           add_header Link "</assets/$js>; rel=preload; as=script" always;
           EOF
-          
+
+          sudo systemctl start biddiusApi
           sudo systemctl reload nginx
           
         shell: bash -l {0}
