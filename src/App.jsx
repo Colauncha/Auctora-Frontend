@@ -1,73 +1,61 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
+
+// Eagerly loaded — rendered on every page
 import Ads from '../src/Pages/Home/Ads';
 import Nav from '../src/Pages/Home/Nav';
-import Layout from '../src/Pages/Home/Layout/Layout';
-import AboutUs from '../src/Pages/About/About';
-// import List from "./Pages/Sell/List";
 import Footer from './Pages/Home/Footer';
-import SignUp from './Pages/Auth/SignUp';
-import SignIn from './Pages/Auth/SignIn';
-import ForgotPassword from './Pages/Auth/ForgotPassword';
-// import ResetPassword from "./Pages/Auth/ResetPassword";
-
-import ViewAll from './Pages/Views/ViewAll';
-import CategoryResult from './Pages/Category/CategoryResult';
-import DetailPage from './Pages/Detail/Detail';
-
-import Notification from './Pages/Notification/Notification';
-
-// protected route
-import ProtectedRoute from './Pages/ProtectedRoute/ProtectedRoute';
-// import GetStarted from "./Pages/Dashboard/GetStarted";
-import Dashboard from './Pages/Dashboard/Dashboard';
-import RewardHistory from './Components/Rewards/RewardHistory';
-
-//Sell Routes
-import SellAccount from './Pages/Sell/SellAccount';
-import CreateAccount from './Pages/Sell/CreateAccount';
-import AddressForm from './Pages/Sell/AddressForm';
-import AccountForm from './Pages/Sell/AccountForm';
-import Verification from './Pages/Sell/Verification';
-import GetStarted from './Pages/Sell/GetStarted';
-
-// Progress Routes
-import ProgressTracker from './Pages/Sell/AddProduct/ProgressTracker';
-
-// Payment Routes
-import ProductAuctionDetails from './Pages/Home/ProductAuctionDetails';
-import YourProduct from './Pages/Sell/AddProduct/YourProduct';
-import AuctionDetails from './Pages/Sell/AddProduct/AuctionDetails';
-import ProductSuccess from './Pages/Sell/AddProduct/ProductSuccess';
-import ReviewPage from './Pages/Sell/ReviewPage';
-
-//privacy policy and terms and conditions
-import PrivacyPolicy from './Pages/Terms & Privacy Policy/PrivacyPolicy';
-import TermsCondition from './Pages/Terms & Privacy Policy/TermsCondition';
-import NotFound from './Components/NotFound';
-import Construction from './Pages/misc/Construction';
-import ContactUs from './Pages/misc/ContactUs';
-import Blog from './Pages/Blog.jsx';
-import BlogSection from './Pages/BlogSection.jsx';
-
-// For all pages to start from top
 import ScrollToTop from './Components/ScrollToTop';
+import Tracking from './Components/Tracking';
+import ProtectedRoute from './Pages/ProtectedRoute/ProtectedRoute';
 
 import useAuthStore from './Store/AuthStore';
 import { NotifContext } from './Store/notifContex.jsx';
 
-// ToastContainer
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// Admin
-import AdminPage from './Pages/Admin/AdminPage';
-import AdminAuth from './Components/admin/Auth';
+// Lazily loaded page components
+const Layout = lazy(() => import('../src/Pages/Home/Layout/Layout'));
+const AboutUs = lazy(() => import('../src/Pages/About/About'));
+const SignUp = lazy(() => import('./Pages/Auth/SignUp'));
+const SignIn = lazy(() => import('./Pages/Auth/SignIn'));
+const ForgotPassword = lazy(() => import('./Pages/Auth/ForgotPassword'));
+const ViewAll = lazy(() => import('./Pages/Views/ViewAll'));
+const CategoryResult = lazy(() => import('./Pages/Category/CategoryResult'));
+const DetailPage = lazy(() => import('./Pages/Detail/Detail'));
+const Notification = lazy(() => import('./Pages/Notification/Notification'));
+const Dashboard = lazy(() => import('./Pages/Dashboard/Dashboard'));
+const RewardHistory = lazy(() => import('./Components/Rewards/RewardHistory'));
+const WalletHistory = lazy(() => import('./Pages/Dashboard/WalletHistory'));
+const SellAccount = lazy(() => import('./Pages/Sell/SellAccount'));
+const CreateAccount = lazy(() => import('./Pages/Sell/CreateAccount'));
+const AddressForm = lazy(() => import('./Pages/Sell/AddressForm'));
+const AccountForm = lazy(() => import('./Pages/Sell/AccountForm'));
+const Verification = lazy(() => import('./Pages/Sell/Verification'));
+const GetStarted = lazy(() => import('./Pages/Sell/GetStarted'));
+const ProgressTracker = lazy(() => import('./Pages/Sell/AddProduct/ProgressTracker'));
+const ProductAuctionDetails = lazy(() => import('./Pages/Home/ProductAuctionDetails'));
+const YourProduct = lazy(() => import('./Pages/Sell/AddProduct/YourProduct'));
+const AuctionDetails = lazy(() => import('./Pages/Sell/AddProduct/AuctionDetails'));
+const ProductSuccess = lazy(() => import('./Pages/Sell/AddProduct/ProductSuccess'));
+const ReviewPage = lazy(() => import('./Pages/Sell/ReviewPage'));
+const PrivacyPolicy = lazy(() => import('./Pages/Terms & Privacy Policy/PrivacyPolicy'));
+const TermsCondition = lazy(() => import('./Pages/Terms & Privacy Policy/TermsCondition'));
+const NotFound = lazy(() => import('./Components/NotFound'));
+const Construction = lazy(() => import('./Pages/misc/Construction'));
+const ContactUs = lazy(() => import('./Pages/misc/ContactUs'));
+const Blog = lazy(() => import('./Pages/Blog.jsx'));
+const BlogSection = lazy(() => import('./Pages/BlogSection.jsx'));
+const AdminPage = lazy(() => import('./Pages/Admin/AdminPage'));
+const AdminAuth = lazy(() => import('./Components/admin/Auth'));
 
-// Misc
-import Tracking from './Components/Tracking';
-import WalletHistory from './Pages/Dashboard/WalletHistory';
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="w-8 h-8 border-4 border-[#9f3248] border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 // Entry point
 // App function component
@@ -96,6 +84,7 @@ const App = () => {
         <Ads />
         <Nav />
         <Tracking>
+          <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Layout />} />
             <Route path="/about-us" element={<AboutUs />} />
@@ -219,6 +208,7 @@ const App = () => {
               />
             </Route>
           </Routes>
+          </Suspense>
 
           {/* Add ToastContainer here */}
           <ToastContainer

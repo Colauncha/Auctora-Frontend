@@ -40,6 +40,7 @@ const ProductAuctionDetails = () => {
   const [live, setLive] = useState(false);
   const [watchers, setWatchers] = useState(0);
   const [socket, setSocket] = useState(null);
+  const [wsStatus, setWsStatus] = useState('idle'); // 'idle' | 'connecting' | 'connected' | 'error'
 
   // misc
   const [alertT, setAlert] = useState({
@@ -176,45 +177,44 @@ const ProductAuctionDetails = () => {
   useEffect(() => {
     let socket_;
 
-    if (live) {
-      const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
-      socket_ = new WebSocket(
-        `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`,
-      );
-      // socket_ = new WebSocket(
-      //   `ws://localhost:8000/api/auctions/bids/ws/${id}/${token}`,
-      // );
-      setSocket(socket_);
-
-      socket_.onopen = () => {
-        console.log('WebSocket connected');
-      };
-
-      socket_.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data?.type === 'bids') {
-            setBids(data?.payload.sort((a, b) => b.amount - a.amount));
-          } else if (data?.type === 'count') {
-            setWatchers(data?.Watchers);
-          } else if (data?.type === 'new_bid') {
-            setBids(data?.payload.sort((a, b) => b.amount - a.amount));
-          }
-        } catch (error) {
-          showAlert('fail', 'Error parsing WebSocket message', error.message);
-          console.error('Error parsing WebSocket message:', error);
-        }
-      };
-
-      socket_.onerror = (error) => {
-        showAlert('fail', 'WebSocket error', error);
-        console.error('WebSocket error:', error);
-      };
-
-      socket_.onclose = () => {
-        console.log('WebSocket closed');
-      };
+    if (!live) {
+      setWsStatus('idle');
+      return;
     }
+
+    setWsStatus('connecting');
+    const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
+    socket_ = new WebSocket(
+      `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`,
+    );
+    setSocket(socket_);
+
+    socket_.onopen = () => {
+      setWsStatus('connected');
+    };
+
+    socket_.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data?.type === 'bids' || data?.type === 'new_bid') {
+          setBids(data?.payload.sort((a, b) => b.amount - a.amount));
+        } else if (data?.type === 'count') {
+          setWatchers(data?.Watchers);
+        }
+      } catch (error) {
+        showAlert('fail', 'Error parsing live data', error.message);
+      }
+    };
+
+    socket_.onerror = () => {
+      setWsStatus('error');
+      showAlert('fail', 'Connection failed', 'Could not connect to live auction. Try again.');
+      setLive(false);
+    };
+
+    socket_.onclose = () => {
+      setWsStatus('idle');
+    };
 
     return () => {
       if (socket_ && socket_.readyState === WebSocket.OPEN) {
@@ -565,38 +565,44 @@ const ProductAuctionDetails = () => {
             <div className="bg-white rounded-xl shadow-md p-3 sticky">
               {/* Active Bids */}
               <div className={`${style.container} mb-6 border-gray-200`}>
-                <div className="flex items-center justify-between w-full sticky top-0 bg-white border-b border-gray-200">
-                  <div className="flex items-center gap-2 ">
-                    <h2 className="text-xl mb-4 text-maroon">Active Bids</h2>
-                    <span className="rounded-md mb-4 bg-blue-100 text-sm w-5 text-center text-blue-800 font-medium">
+                <div className="flex items-center justify-between w-full sticky top-0 bg-white border-b border-gray-200 pb-3 mb-2">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-semibold text-maroon">Active Bids</h2>
+                    <span className="rounded-md bg-blue-100 text-xs w-5 py-0.5 text-center text-blue-800 font-medium">
                       {bids?.length || 0}
                     </span>
-                    <span
-                      className={`flex items-center text-sm mb-4 text-gray-500 ${
-                        live ? '' : 'hidden'
-                      }`}
-                    >
-                      <FiEye className="text-gray-500" size={20} />
-                      <span className="text-sm ml-1 text-gray-500">
-                        {watchers} viewers
+                    {wsStatus === 'connected' && watchers > 0 && (
+                      <span className="flex items-center gap-1 text-xs text-gray-400">
+                        <FiEye size={12} />
+                        {watchers}
                       </span>
-                    </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm mb-4 text-gray-500">
-                      {live ? 'Live' : 'Static'}
-                    </span>
-                    <label className="relative mb-4 pr-2 inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        onChange={(e) => setLive(e.target.checked)}
-                        checked={live}
-                        aria-label="Toggle live auction"
-                        defaultValue
-                      />
-                      <div className="group peer bg-white rounded-full duration-300 w-10 h-5 ring-1 ring-gray-500 after:duration-300 after:bg-gray-500 peer-checked:after:bg-green-500 peer-checked:ring-green-500 after:rounded-full after:absolute after:h-3 after:w-3 after:top-1 after:left-1 after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-hover:after:scale-95" />
-                    </label>
+                    {wsStatus === 'connecting' && (
+                      <span className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                        Connecting
+                      </span>
+                    )}
+                    {wsStatus === 'connected' && (
+                      <span className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Live
+                      </span>
+                    )}
+                    <button
+                      onClick={() => setLive((prev) => !prev)}
+                      disabled={wsStatus === 'connecting'}
+                      className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                        live
+                          ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                          : 'bg-maroon text-white hover:opacity-90'
+                      }`}
+                    >
+                      <BsLightningCharge size={11} />
+                      {live ? 'Disconnect' : 'Go Live'}
+                    </button>
                   </div>
                 </div>
                 {!bids || bids.length <= 0 ? ( // Check if `bids` is undefined or empty
@@ -608,13 +614,8 @@ const ProductAuctionDetails = () => {
                     <Loading />
                   </div>
                 ) : (
-                  [...(bids || [])] // Fallback to empty array if `bids` is undefined
-                    .sort((a, b) => {
-                      // Handle null or invalid dates
-                      const dateA = a.amount ? new Date(a.amount) : 0;
-                      const dateB = b.amount ? new Date(b.amount) : 0;
-                      return dateB - dateA; // Newest first
-                    })
+                  [...(bids || [])]
+                    .sort((a, b) => b.amount - a.amount)
                     .map((bid_) => (
                       <div
                         key={bid_?.id || Math.random()} // Fallback key if `id` is missing

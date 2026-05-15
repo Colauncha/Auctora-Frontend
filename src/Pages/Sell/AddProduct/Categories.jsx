@@ -784,7 +784,7 @@ const Categories = ({
 
                 <div className="flex items-center gap-2">
                   <PlusSquare
-                    onClick={() => setAddSubCat(true)}
+                    onClick={() => setAddSubCat(!addSubCat)}
                     className="cursor-pointer"
                   />
 
