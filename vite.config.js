@@ -19,7 +19,7 @@ export default defineConfig({
             'rehype-highlight',
             'highlight.js',
           ],
-          carousel: ['react-slick', 'slick-carousel'],
+          carousel: ['react-slick'],
           ui: ['react-toastify', 'zustand'],
         },
       },
@@ -41,6 +41,8 @@ export default defineConfig({
       ],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
+        navigateFallback: 'index.html',
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/(api\.biddius\.com)\/.*/i,
