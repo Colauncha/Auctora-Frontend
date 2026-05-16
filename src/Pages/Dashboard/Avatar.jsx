@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import { Plus } from 'lucide-react';
 
-
-const Avatar = ({ imageUrl, username, otherStyles }) => {
+const Avatar = ({ imageUrl, username, otherStyles, onClick }) => {
   return (
     <>
       <div>
         {imageUrl ? (
           <img
-            className="flex h-[150px] w-[150px] rounded-full"
+            className="flex h-[150px] w-[150px] rounded-full object-cover"
             src={imageUrl}
             alt="avatar"
           />
@@ -20,7 +19,10 @@ const Avatar = ({ imageUrl, username, otherStyles }) => {
           </div>
         )}
       </div>
-      <div className="absolute cursor-pointer flex items-center justify-center top-0 left-0 w-full h-full bg-gray-50 opacity-0 transition-opacity rounded-full group-hover:opacity-50">
+      <div
+        onClick={onClick}
+        className="absolute cursor-pointer flex items-center justify-center top-0 left-0 w-full h-full bg-gray-50 opacity-0 transition-opacity rounded-full group-hover:opacity-50"
+      >
         <Plus size={40} />
       </div>
     </>
@@ -31,6 +33,7 @@ Avatar.propTypes = {
   imageUrl: PropTypes.string,
   username: PropTypes.string,
   otherStyles: PropTypes.string,
+  onClick: PropTypes.func,
 };
 
 export default Avatar;

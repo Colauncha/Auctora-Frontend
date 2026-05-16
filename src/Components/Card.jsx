@@ -83,16 +83,16 @@ const Card = ({
   return (
     <Link
       to={to}
-      className="relative flex flex-col items-center gap-2 transition-transform hover:scale-[1.02]"
+      className="relative flex flex-col items-center gap-2 w-full transition-transform hover:scale-[1.02]"
     >
       <img
         src={imgUrl}
         alt={itemName}
-        className="w-[200px] h-[161px] md:w-[210px] md:h-[249px] rounded-xl bg-slate-300 object-cover shadow-md"
+        className="w-full h-[160px] sm:h-[190px] md:h-[220px] rounded-xl bg-slate-300 object-cover shadow-md"
       />
 
-      <div className="w-full px-2 md:w-[210px]">
-        <h3 className="text-[#9F3247] text-sm md:text-base font-bold truncate">
+      <div className="w-full px-1">
+        <h3 className="text-[#9F3247] text-sm font-bold truncate">
           {itemName}
         </h3>
 
@@ -103,20 +103,20 @@ const Card = ({
           </p>
         </div>
 
-        <div className="absolute top-[55%] left-3 lg:top-[70%] flex items-center justify-center bg-[#9f3248cc] hover:bg-[#9f3247] text-white text-[10px] px-2 py-1 rounded-md shadow cursor-pointer">
+        <div className="absolute bottom-[52px] left-2 flex items-center justify-center bg-[#9f3248cc] hover:bg-[#9f3247] text-white text-[10px] px-2 py-1 rounded-md shadow cursor-pointer">
           <p className="font-bold">Time Left:</p>
           <span className="ml-1">{timeLeft}</span>
         </div>
         <div
-          className={`absolute top-[5%] left-3 lg:top-[5%] flex items-center justify-center opacity-80 hover:opacity-90 ${statusColorScheme[status]} text-[11px] font-semibold px-2 py-1 rounded-md shadow cursor-pointer transition-all duration-300`}
+          className={`absolute top-2 left-2 flex items-center justify-center opacity-80 hover:opacity-90 ${statusColorScheme[status]} text-[10px] font-semibold px-2 py-1 rounded-md shadow cursor-pointer transition-all duration-300`}
         >
-          <span className="ml-1">{capitalize(status)}</span>
+          <span>{capitalize(status)}</span>
         </div>
         {timeDesc.value && (
           <div
-            className={`absolute top-[5%] right-3 lg:top-[5%] flex items-center justify-center opacity-80 hover:opacity-90 ${timeDesc.style} text-[8px] animate-ping font-semibold px-2 py-1 rounded-md shadow cursor-pointer transition-all duration-300`}
+            className={`absolute top-2 right-2 flex items-center justify-center opacity-90 ${timeDesc.style} text-[10px] font-semibold px-2 py-1 rounded-md shadow`}
           >
-            <span className="ml-1">{capitalize(timeDesc.value)}</span>
+            <span>{capitalize(timeDesc.value)}</span>
           </div>
         )}
       </div>

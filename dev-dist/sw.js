@@ -79,11 +79,12 @@ define(['./workbox-bbf79a78'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "index.html",
-    "revision": "0.5d1hv0tf03g"
+    "revision": "0.47mb6pcadsg"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
-    allowlist: [/^\/$/]
+    allowlist: [/^\/$/],
+    denylist: [/^\/api\//]
   }));
   workbox.registerRoute(/^https:\/\/(api\.biddius\.com)\/.*/i, new workbox.NetworkFirst({
     "cacheName": "api-cache",

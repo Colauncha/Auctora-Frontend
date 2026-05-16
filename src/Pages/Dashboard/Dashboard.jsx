@@ -1,5 +1,5 @@
 import BreadCrumb from '../../Components/Breadcrumbs';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Plus,
@@ -24,7 +24,7 @@ import BidPoint from '../../assets/svg/bidPoint.svg';
 import BidCredit from '../../assets/svg/bidCredit.svg';
 import useAuthStore from '../../Store/AuthStore';
 import { ctaContext } from '../../Store/ContextStore';
-import { capitalize, currencyFormat, charLimit, current } from '../../utils';
+import { capitalize, currencyFormat, charLimit, current, Fetch } from '../../utils';
 import Avatar from './Avatar';
 import PropTypes from 'prop-types';
 import MainModal from '../../Components/modals/MainModal';
@@ -48,6 +48,10 @@ const Dashboard = () => {
   const offCta = ctaContext((state) => state.turnOff);
   const [quickActionsExpanded, setQuickActionsExpanded] = useState(false);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef(null);
+  const token = useAuthStore((state) => state.token);
+  const updateAuthData = useAuthStore((state) => state.updateData);
 
   // Modals
   const [modalIsOpen, setModalIsOpen] = useState({ state: false, type: '' });
@@ -143,6 +147,25 @@ const Dashboard = () => {
       setLoading(false);
       console.log(error);
     }
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    const { data, success } = await Fetch({
+      url: `${current}users/upload_profile_picture`,
+      method: 'PUT',
+      contentType: 'multipart/form-data',
+      requestData: { image: file },
+      token,
+    });
+    if (success && data?.data) {
+      setUser((prev) => ({ ...prev, image_link: data.data.image_link }));
+      updateAuthData({ image_link: data.data.image_link });
+    }
+    setUploadingAvatar(false);
+    e.target.value = '';
   };
 
   const viewAuction = async (id) => {
@@ -333,12 +356,25 @@ const Dashboard = () => {
             <div className="p-6 border-b border-gray-200">
               <div className="flex flex-col items-center text-center">
                 <div className="relative group mb-4">
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
                   <Avatar
                     imageUrl={user?.image_link ? user?.image_link?.link : null}
                     username={user.username ? user.username : user.email}
-                    otherStyles="group-hover:opacity-40 transition-opacity"
+                    otherStyles={`group-hover:opacity-40 transition-opacity ${uploadingAvatar ? 'opacity-40' : ''}`}
+                    onClick={() => avatarInputRef.current?.click()}
                   />
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+                  {uploadingAvatar && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30">
+                      <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
                   {charLimit(displayName, 20)}

@@ -379,20 +379,20 @@ const ViewAll = () => {
         </div>
 
         {/* Pagination */}
-        <div className="w-full flex flex-col lg:flex-row gap-4 justify-between items-center mt-10 px-4">
-          <div className="lg:flex w-[50%] justify-end items-center gap-2">
+        <div className="w-full flex flex-col sm:flex-row gap-4 justify-between items-center mt-10 px-2">
+          <div className="flex justify-center items-center gap-2">
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}
               onPageChange={handlePageChange}
             />
           </div>
-          <div className="flex w-[30%] items-center justify-end gap-3">
-            <p className="text-[#a5a5a5] text-[14px] text-center min-w-20">
-              Per page:{' '}
+          <div className="flex items-center justify-center sm:justify-end gap-3">
+            <p className="text-[#a5a5a5] text-sm whitespace-nowrap">
+              Per page:
             </p>
             <select
-              className="w-[100px] h-[35px] px-2 border rounded-md text-sm text-[#333] focus:outline-none"
+              className="w-20 h-9 px-2 border rounded-md text-sm text-[#333] focus:outline-none"
               onChange={(e) => {
                 handlePageChange(currentPage);
                 setItemsPerPage(e.target.value);
@@ -401,7 +401,7 @@ const ViewAll = () => {
               <option value="8">8</option>
               <option value="12">12</option>
               <option value="16">16</option>
-              <option selected value="20">
+              <option defaultValue value="20">
                 20
               </option>
               <option value="24">24</option>

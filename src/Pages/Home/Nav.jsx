@@ -76,9 +76,45 @@ const dockItems = [
   { label: 'Profile', icon: FiUser, to: '/dashboard' },
 ];
 
+const NavAvatar = ({ imageUrl, username, email, size = 'sm', onClick, className = '' }) => {
+  const initial = (username || email || '?')[0].toUpperCase();
+  const sizeClasses = size === 'sm' ? 'h-7 w-7 text-xs' : 'h-8 w-8 text-sm';
+
+  if (imageUrl) {
+    return (
+      <img
+        src={imageUrl}
+        alt="Profile"
+        onClick={onClick}
+        className={`${sizeClasses} rounded-full object-cover cursor-pointer ring-2 ring-[#9f3247]/30 hover:ring-[#9f3247] transition-all ${className}`}
+      />
+    );
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      className={`${sizeClasses} rounded-full bg-[#9f3247] text-white flex items-center justify-center font-bold cursor-pointer hover:bg-[#7a2837] transition-colors ${className}`}
+    >
+      {initial}
+    </div>
+  );
+};
+
+NavAvatar.propTypes = {
+  imageUrl: PropTypes.string,
+  username: PropTypes.string,
+  email: PropTypes.string,
+  size: PropTypes.oneOf(['sm', 'md']),
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+};
+
 const BottomDock = ({ notifTotal }) => {
   const location = useLocation();
   const path = location.pathname;
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const userData = useAuthStore((state) => state.data);
 
   return (
     <nav
@@ -89,6 +125,7 @@ const BottomDock = ({ notifTotal }) => {
         {dockItems.map((item) => {
           const isActive =
             item.to === '/' ? path === '/' : path.startsWith(item.to);
+          const isProfile = item.to === '/dashboard';
           return (
             <NavLink
               key={item.to}
@@ -97,10 +134,17 @@ const BottomDock = ({ notifTotal }) => {
                 isActive ? 'text-[#9f3248]' : 'text-gray-400 active:text-gray-600'
               }`}
             >
-              <item.icon
-                size={22}
-                strokeWidth={isActive ? 2.2 : 1.5}
-              />
+              {isProfile && isAuthenticated ? (
+                <NavAvatar
+                  imageUrl={userData?.image_link?.link}
+                  username={userData?.username}
+                  email={userData?.email}
+                  size="sm"
+                  className={isActive ? 'ring-[#9f3247]' : ''}
+                />
+              ) : (
+                <item.icon size={22} strokeWidth={isActive ? 2.2 : 1.5} />
+              )}
               <span className="text-[10px] font-medium">{item.label}</span>
               {item.to === '/notification' && notifTotal > 0 && (
                 <span className="absolute top-2 right-[calc(50%-16px)] h-4 min-w-4 rounded-full bg-red-600 text-white text-[9px] flex items-center justify-center font-bold px-0.5">
@@ -132,17 +176,24 @@ const Nav = () => {
 
   const { isMobile, isPWA, setModeBasedOnScreenSize } = useModeStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const navRef = useRef(null);
   const [navHeight, setNavHeight] = useState(70);
   const [shouldBlur, setShouldBlur] = useState(false);
 
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const userData = useAuthStore((state) => state.data);
   const logoutUser = useAuthStore((state) => state.logout);
 
   const location = useLocation();
   const path = location.pathname;
   const canGoBack = isPWA && path !== '/';
+
+  useEffect(() => {
+    setMobileSearchOpen(false);
+    setIsMenuOpen(false);
+  }, [path]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -274,11 +325,13 @@ const Nav = () => {
                   <img src={logo} alt="logo" className="w-20 h-10" />
                 </Link>
               </div>
-              <img
-                src={search_glass}
-                alt="Search"
-                className="h-4 w-4 cursor-pointer"
-              />
+              <button
+                onClick={() => setMobileSearchOpen((p) => !p)}
+                className={`p-1.5 rounded-full transition-colors ${mobileSearchOpen ? 'bg-[#9f3248] text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                aria-label="Search"
+              >
+                <img src={search_glass} alt="Search" className="h-4 w-4" />
+              </button>
             </div>
           ) : (
             /* ── Mobile browser: hamburger menu ── */
@@ -302,24 +355,35 @@ const Nav = () => {
                 </Link>
               </div>
 
-              <div className="flex items-center gap-4">
-                <img
-                  src={search_glass}
-                  alt=""
-                  className="h-4 w-4 cursor-pointer"
-                />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setMobileSearchOpen((p) => !p)}
+                  className={`p-1.5 rounded-full transition-colors ${mobileSearchOpen ? 'bg-[#9f3248] text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                  aria-label="Search"
+                >
+                  <img src={search_glass} alt="" className="h-4 w-4" />
+                </button>
                 <img
                   src={notification}
                   alt=""
                   onClick={handleNotification}
                   className="h-4 w-4 cursor-pointer"
                 />
-                <img
-                  src={user}
-                  alt=""
-                  onClick={() => navigate('/dashboard')}
-                  className="h-4 w-4 cursor-pointer"
-                />
+                {isAuthenticated ? (
+                  <NavAvatar
+                    imageUrl={userData?.image_link?.link}
+                    username={userData?.username}
+                    email={userData?.email}
+                    onClick={() => navigate('/dashboard')}
+                  />
+                ) : (
+                  <img
+                    src={user}
+                    alt=""
+                    onClick={() => navigate('/dashboard')}
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                )}
               </div>
 
               {isMenuOpen && (
@@ -437,16 +501,41 @@ const Nav = () => {
                 className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
                 onClick={() => navigate('/dashboard')}
               />
-              <img
-                src={user}
-                alt=""
-                className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
-                onClick={() => navigate('/dashboard')}
-              />
+              {isAuthenticated ? (
+                <NavAvatar
+                  imageUrl={userData?.image_link?.link}
+                  username={userData?.username}
+                  email={userData?.email}
+                  size="sm"
+                  onClick={() => navigate('/dashboard')}
+                />
+              ) : (
+                <img
+                  src={user}
+                  alt=""
+                  className="h-4 w-4 cursor-pointer transition-transform duration-200 hover:scale-110 hover:bg-gray-100 rounded"
+                  onClick={() => navigate('/dashboard')}
+                />
+              )}
             </div>
           </div>
         )}
       </div>
+
+      {/* Mobile search panel — slides in below the nav bar */}
+      {isMobile && mobileSearchOpen && (
+        <div
+          className="fixed left-0 right-0 z-40 bg-white border-b border-gray-200 px-4 py-3 shadow-lg animate-scaleIn"
+          style={{ top: `${navHeight + (isScrolled ? 0 : 48)}px` }}
+        >
+          <Search
+            img={search_glass}
+            placeholder="Search products..."
+            onClick={handleSearch}
+            className="w-full"
+          />
+        </div>
+      )}
 
       {/* Dynamic Spacer */}
       <div

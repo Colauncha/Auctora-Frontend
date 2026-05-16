@@ -6,7 +6,7 @@ import Loader from '../assets/loader2';
 import { PlaceHolderImage } from '../Constants';
 import { X } from 'lucide-react';
 
-const Search = ({ className, onClick, img, placeholder, setParent }) => {
+const Search = ({ className, onClick, img, placeholder, setParent = () => {} }) => {
   const [searchValue, setSearchValue] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -123,12 +123,12 @@ const Search = ({ className, onClick, img, placeholder, setParent }) => {
         </button>
       </div>
       {loading && (
-        <div className="absolute top-full mt-1 w-full max-w-xl bg-white border rounded-md shadow-lg flex justify-center items-center p-4">
+        <div className="absolute top-full mt-1 w-full bg-white border rounded-md shadow-lg flex justify-center items-center p-4 z-50">
           <Loader />
         </div>
       )}
       {isDropdownVisible && !loading && (
-        <div className="absolute top-full mt-1 w-full max-w-xl bg-white border rounded-md shadow-lg">
+        <div className="absolute top-full mt-1 w-full bg-white border rounded-md shadow-lg z-50">
           <ul className="list-none p-2">
             {searchResults.length > 0 ? (
               searchResults.map((result, index) => (
@@ -172,6 +172,7 @@ Search.propTypes = {
   img: PropTypes.string,
   placeholder: PropTypes.string,
   setParent: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 export default Search;
