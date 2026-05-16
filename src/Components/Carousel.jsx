@@ -78,7 +78,7 @@ const Carousel = () => {
               src={src}
               alt={`carousel image ${i + 1}`}
               className="w-full h-auto max-w-[600px] object-contain"
-              loading="lazy"
+              fetchPriority={i === 0 ? 'high' : 'auto'}
             />
           </div>
         ))}

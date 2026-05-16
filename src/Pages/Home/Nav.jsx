@@ -1,8 +1,15 @@
-
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef, useContext } from 'react';
 import { LuAlignJustify } from 'react-icons/lu';
 import { RiCloseLargeFill } from 'react-icons/ri';
+import {
+  FiHome,
+  FiShoppingBag,
+  FiPlusCircle,
+  FiBell,
+  FiUser,
+  FiArrowLeft,
+} from 'react-icons/fi';
 import Search from '../../Components/Search';
 import { likee, logo, search_glass, user, notification } from '../../Constants';
 import useModeStore from '../../Store/Store';
@@ -61,6 +68,57 @@ NotifToast.propTypes = {
   }).isRequired,
 };
 
+const dockItems = [
+  { label: 'Home', icon: FiHome, to: '/' },
+  { label: 'Auctions', icon: FiShoppingBag, to: '/Ongoing-Auction' },
+  { label: 'Sell', icon: FiPlusCircle, to: '/Add-Product' },
+  { label: 'Alerts', icon: FiBell, to: '/notification' },
+  { label: 'Profile', icon: FiUser, to: '/dashboard' },
+];
+
+const BottomDock = ({ notifTotal }) => {
+  const location = useLocation();
+  const path = location.pathname;
+
+  return (
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-1px_10px_rgba(0,0,0,0.07)]"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      <div className="flex justify-around items-stretch h-16">
+        {dockItems.map((item) => {
+          const isActive =
+            item.to === '/' ? path === '/' : path.startsWith(item.to);
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={`relative flex flex-col items-center justify-center flex-1 gap-0.5 transition-colors ${
+                isActive ? 'text-[#9f3248]' : 'text-gray-400 active:text-gray-600'
+              }`}
+            >
+              <item.icon
+                size={22}
+                strokeWidth={isActive ? 2.2 : 1.5}
+              />
+              <span className="text-[10px] font-medium">{item.label}</span>
+              {item.to === '/notification' && notifTotal > 0 && (
+                <span className="absolute top-2 right-[calc(50%-16px)] h-4 min-w-4 rounded-full bg-red-600 text-white text-[9px] flex items-center justify-center font-bold px-0.5">
+                  {notifTotal > 9 ? '9+' : notifTotal}
+                </span>
+              )}
+            </NavLink>
+          );
+        })}
+      </div>
+    </nav>
+  );
+};
+
+BottomDock.propTypes = {
+  notifTotal: PropTypes.number,
+};
+
 const Nav = () => {
   const menuArr = [
     { _id: 1, label: 'Home', link: '/' },
@@ -72,7 +130,7 @@ const Nav = () => {
 
   const { notifTotal, setNotifTotal } = useContext(NotifContext);
 
-  const { isMobile, setModeBasedOnScreenSize } = useModeStore();
+  const { isMobile, isPWA, setModeBasedOnScreenSize } = useModeStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const navRef = useRef(null);
@@ -84,6 +142,7 @@ const Nav = () => {
 
   const location = useLocation();
   const path = location.pathname;
+  const canGoBack = isPWA && path !== '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -196,91 +255,128 @@ const Nav = () => {
         } ${shouldBlur ? 'backdrop-blur-md' : 'backdrop-blur-none'}`}
       >
         {isMobile ? (
-          <div className="flex justify-between items-center w-full px-3 py-3">
-            <div className="flex items-center gap-3">
-              {isMenuOpen ? (
-                <RiCloseLargeFill
-                  size={26}
-                  onClick={toggleMenu}
-                  className="cursor-pointer text-gray-700"
-                />
-              ) : (
-                <LuAlignJustify
-                  size={26}
-                  onClick={toggleMenu}
-                  className="cursor-pointer text-gray-700"
-                />
-              )}
-              <Link to={`/`}>
-                <img src={logo} alt="logo" className="w-20 h-10" />
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-4">
+          isPWA ? (
+            /* ── Mobile PWA: back arrow + logo + search only; dock handles nav ── */
+            <div className="flex justify-between items-center w-full px-3 py-3">
+              <div className="flex items-center gap-2">
+                {canGoBack ? (
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="p-1.5 -ml-1 rounded-full text-gray-700 active:bg-gray-100"
+                    aria-label="Go back"
+                  >
+                    <FiArrowLeft size={22} />
+                  </button>
+                ) : (
+                  <div className="w-7" />
+                )}
+                <Link to="/">
+                  <img src={logo} alt="logo" className="w-20 h-10" />
+                </Link>
+              </div>
               <img
                 src={search_glass}
-                alt=""
-                className="h-4 w-4 cursor-pointer"
-              />
-              <img
-                src={notification}
-                alt=""
-                onClick={handleNotification}
-                className="h-4 w-4 cursor-pointer"
-              />
-              <img
-                src={user}
-                alt=""
-                onClick={() => navigate('/dashboard')}
+                alt="Search"
                 className="h-4 w-4 cursor-pointer"
               />
             </div>
-
-            {isMenuOpen && (
-              <nav className="absolute z-10 top-0 left-0 w-full h-screen bg-gradient-to-r from-[#7B2334] to-[#9F3247] text-white p-6">
-                <div className="flex justify-between items-center bg-white p-3 rounded-lg">
-                  <Link to={`/`} onClick={toggleMenu}>
-                    <img src={logo} alt="logo" className="w-20 h-10" />
-                  </Link>
+          ) : (
+            /* ── Mobile browser: hamburger menu ── */
+            <div className="flex justify-between items-center w-full px-3 py-3">
+              <div className="flex items-center gap-3">
+                {isMenuOpen ? (
                   <RiCloseLargeFill
                     size={26}
                     onClick={toggleMenu}
                     className="cursor-pointer text-gray-700"
                   />
-                </div>
-
-                <ul className="flex flex-col gap-8 mt-12 text-lg font-medium">
-                  {menuArr.map((item) => (
-                    <NavLink
-                      key={item._id}
-                      to={item.link}
-                      onClick={toggleMenu}
-                      className={({ isActive }) =>
-                        `transition-colors duration-200 hover:text-yellow-200 ${
-                          isActive ? 'text-yellow-300' : ''
-                        }`
-                      }
-                    >
-                      {item.label}
-                    </NavLink>
-                  ))}
-                </ul>
-
-                <div className="mt-8">
-                  <Search
-                    img={search_glass}
-                    placeholder="Search products..."
-                    onClick={handleSearch}
-                    className="w-full"
+                ) : (
+                  <LuAlignJustify
+                    size={26}
+                    onClick={toggleMenu}
+                    className="cursor-pointer text-gray-700"
                   />
-                </div>
-              </nav>
-            )}
-          </div>
+                )}
+                <Link to="/">
+                  <img src={logo} alt="logo" className="w-20 h-10" />
+                </Link>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <img
+                  src={search_glass}
+                  alt=""
+                  className="h-4 w-4 cursor-pointer"
+                />
+                <img
+                  src={notification}
+                  alt=""
+                  onClick={handleNotification}
+                  className="h-4 w-4 cursor-pointer"
+                />
+                <img
+                  src={user}
+                  alt=""
+                  onClick={() => navigate('/dashboard')}
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </div>
+
+              {isMenuOpen && (
+                <nav className="absolute z-10 top-0 left-0 w-full h-screen bg-gradient-to-r from-[#7B2334] to-[#9F3247] text-white p-6">
+                  <div className="flex justify-between items-center bg-white p-3 rounded-lg">
+                    <Link to="/" onClick={toggleMenu}>
+                      <img src={logo} alt="logo" className="w-20 h-10" />
+                    </Link>
+                    <RiCloseLargeFill
+                      size={26}
+                      onClick={toggleMenu}
+                      className="cursor-pointer text-gray-700"
+                    />
+                  </div>
+
+                  <ul className="flex flex-col gap-8 mt-12 text-lg font-medium">
+                    {menuArr.map((item) => (
+                      <NavLink
+                        key={item._id}
+                        to={item.link}
+                        onClick={toggleMenu}
+                        className={({ isActive }) =>
+                          `transition-colors duration-200 hover:text-yellow-200 ${
+                            isActive ? 'text-yellow-300' : ''
+                          }`
+                        }
+                      >
+                        {item.label}
+                      </NavLink>
+                    ))}
+                  </ul>
+
+                  <div className="mt-8">
+                    <Search
+                      img={search_glass}
+                      placeholder="Search products..."
+                      onClick={handleSearch}
+                      className="w-full"
+                    />
+                  </div>
+                </nav>
+              )}
+            </div>
+          )
         ) : (
           <div className="max-w-screen-xl mx-auto flex justify-between items-center px-4 py-2 h-[70px]">
-            <div className="flex items-center gap-4">
-              <Link to={`/`}>
+            <div className="flex items-center gap-2">
+              {canGoBack && (
+                <button
+                  onClick={() => navigate(-1)}
+                  className="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+                  aria-label="Go back"
+                >
+                  <FiArrowLeft size={20} />
+                </button>
+              )}
+              <Link to="/">
                 <img src={logo} alt="logo" className="w-[120px] h-[40px]" />
               </Link>
             </div>
@@ -356,7 +452,10 @@ const Nav = () => {
       <div
         style={{ height: `${isScrolled ? 0 : 60}px` }}
         className="w-full"
-      ></div>
+      />
+
+      {/* Bottom dock — mobile PWA only */}
+      {isMobile && isPWA && <BottomDock notifTotal={notifTotal} />}
     </>
   );
 };

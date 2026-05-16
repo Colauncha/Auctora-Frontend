@@ -11,6 +11,7 @@ import Tracking from './Components/Tracking';
 import ProtectedRoute from './Pages/ProtectedRoute/ProtectedRoute';
 
 import useAuthStore from './Store/AuthStore';
+import useModeStore from './Store/Store';
 import { NotifContext } from './Store/notifContex.jsx';
 
 import { ToastContainer } from 'react-toastify';
@@ -63,6 +64,7 @@ const App = () => {
   const [notifTotal, setNotifTotal] = useState(0);
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const { isMobile, isPWA } = useModeStore();
 
   useEffect(() => {
     const handleMessage = (event) => {
@@ -78,7 +80,7 @@ const App = () => {
   }, [navigate, login]);
 
   return (
-    <div>
+    <div className={isMobile && isPWA ? 'pb-24' : ''}>
       <NotifContext.Provider value={{ notifTotal, setNotifTotal }}>
         <ScrollToTop />
         <Ads />
