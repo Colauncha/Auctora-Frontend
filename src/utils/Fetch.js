@@ -59,6 +59,32 @@ const buildBody = (requestData, contentType) => {
   return JSON.stringify(requestData);
 };
 
+// Drop-in replacement for native fetch — intercepts 401, refreshes, retries.
+export const authFetch = async (url, options = {}) => {
+  let res = await fetch(url, { credentials: 'include', ...options });
+
+  if (res.status === 401) {
+    let newToken;
+    if (isRefreshing) {
+      newToken = await new Promise((resolve) => refreshQueue.push(resolve));
+    } else {
+      isRefreshing = true;
+      newToken = await runRefresh();
+      isRefreshing = false;
+      refreshQueue.forEach((resolve) => resolve(newToken));
+      refreshQueue = [];
+    }
+
+    if (newToken) {
+      const headers = { ...(options.headers || {}) };
+      headers['Authorization'] = `Bearer ${newToken}`;
+      res = await fetch(url, { credentials: 'include', ...options, headers });
+    }
+  }
+
+  return res;
+};
+
 const Fetch = async ({
   url,
   requestData,

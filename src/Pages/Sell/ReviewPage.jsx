@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Alerts from '../../Components/alerts/Alerts';
 import Loader from '../../assets/loader2';
 import LoaderW from '../../assets/loaderWhite';
-import { current, currencyFormat, capitalize } from '../../utils';
+import { current, currencyFormat, capitalize, authFetch } from '../../utils';
 import { CiWarning, CiCircleCheck } from 'react-icons/ci';
 import { HiOutlineReceiptRefund } from 'react-icons/hi2';
 import { TbClockHour4 } from 'react-icons/tb';
@@ -41,12 +41,9 @@ const ReviewPage = () => {
     const endpoint = `${current}auctions/${id}`;
     const fetchAuctionDetails = async () => {
       try {
-        const response = await fetch(endpoint, {
+        const response = await authFetch(endpoint, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
         });
         if (!response.ok) {
           throw new Error('Unable to fetch auction details');
@@ -91,12 +88,9 @@ const ReviewPage = () => {
 
   const runFetch = async ({ endpoint, method }) => {
     try {
-      const response = await fetch(endpoint, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+      const response = await authFetch(endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');

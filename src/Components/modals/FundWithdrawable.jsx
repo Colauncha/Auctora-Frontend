@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import Loader from '../../assets/loaderWhite';
-import { current } from '../../utils';
+import { current, authFetch } from '../../utils';
 import { Wallet, ArrowLeftRight } from 'lucide-react';
 import BidCredit from '../../assets/svg/bidCredit.svg';
 import { currencyFormat } from '../../utils';
@@ -51,12 +51,9 @@ const FundWithdrawable = ({ data }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${endpoint}?amount=${amount}`, {
+      const response = await authFetch(`${endpoint}?amount=${amount}`, {
         method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       const resp = await response.json();

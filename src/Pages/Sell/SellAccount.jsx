@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import Loader from '../../assets/loader2';
-import { current } from '../../utils';
+import { current, authFetch } from '../../utils';
 import Alerts from '../../Components/alerts/Alerts';
 
 const SellAccount = () => {
@@ -34,13 +34,10 @@ const SellAccount = () => {
     const endpoint = `${current}users/verify_otp`;
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method: 'POST',
         body: JSON.stringify(cred),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         setLoading(false);

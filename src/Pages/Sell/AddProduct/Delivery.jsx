@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import LoaderW from '../../../assets/loaderWhite';
-import { current } from '../../../utils';
+import { current, authFetch } from '../../../utils';
 import Alerts from '../../../Components/alerts/Alerts';
 
 const Delivery = ({
@@ -166,12 +166,7 @@ const Delivery = ({
     const runFetch = async ({ endpoint, method, data, isFormData = false }) => {
       const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
 
-      const response = await fetch(endpoint, {
-        method,
-        headers,
-        body: data,
-        credentials: 'include',
-      });
+      const response = await authFetch(endpoint, { method, headers, body: data });
 
       const result = await response.json();
 

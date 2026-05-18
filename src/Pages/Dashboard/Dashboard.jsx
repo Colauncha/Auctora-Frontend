@@ -24,7 +24,7 @@ import BidPoint from '../../assets/svg/bidPoint.svg';
 import BidCredit from '../../assets/svg/bidCredit.svg';
 import useAuthStore from '../../Store/AuthStore';
 import { ctaContext } from '../../Store/ContextStore';
-import { capitalize, currencyFormat, charLimit, current, Fetch } from '../../utils';
+import { capitalize, currencyFormat, charLimit, current, Fetch, authFetch } from '../../utils';
 import Avatar from './Avatar';
 import PropTypes from 'prop-types';
 import MainModal from '../../Components/modals/MainModal';
@@ -67,10 +67,7 @@ const Dashboard = () => {
     const getUser = async () => {
       const endpoint = `${current}users/profile`;
       try {
-        const response = await fetch(endpoint, {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const response = await authFetch(endpoint, { method: 'GET' });
 
         if (response.ok) {
           const result = await response.json();
@@ -123,10 +120,7 @@ const Dashboard = () => {
     let endpoint = `${current}users/logout`;
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      const response = await authFetch(endpoint, { method: 'POST' });
       if (response.ok) {
         let data = await response.json();
         console.log(data);

@@ -131,7 +131,9 @@ const BottomDock = ({ notifTotal }) => {
               key={item.to}
               to={item.to}
               className={`relative flex flex-col items-center justify-center flex-1 gap-0.5 transition-colors ${
-                isActive ? 'text-[#9f3248]' : 'text-gray-400 active:text-gray-600'
+                isActive
+                  ? 'text-[#bd6476]'
+                  : 'text-gray-400 active:text-gray-600'
               }`}
             >
               {isProfile && isAuthenticated ? (

@@ -117,6 +117,7 @@ import Alerts from '../alerts/Alerts';
 import Loader from '../../assets/loaderWhite';
 import { current } from '../../utils';
 import { PayStacklogo } from '../../Constants';
+import { authFetch } from '../../utils';
 
 const FundingWallet = () => {
   const [amount, setAmount] = useState('');
@@ -147,9 +148,8 @@ const FundingWallet = () => {
     const endpoint = `${current}users/transactions/init?amount=${amount}`;
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method: 'GET',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       });
 

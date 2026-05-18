@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
-import { current } from '../../utils'
+import { current, authFetch } from '../../utils'
 import Loader from '../../assets/loader2';
 import Alerts from '../../Components/alerts/Alerts';
 
@@ -38,13 +38,10 @@ const AddressForm = () => {
     }
     console.log(endpoint);
     try {
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method,
         body: data ? JSON.stringify(data) : null,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         const error = await response.json();

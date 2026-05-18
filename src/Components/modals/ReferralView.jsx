@@ -3,7 +3,7 @@ import style from './css/ReferralView.module.css';
 import Button from '../../Components/Button';
 import { AddIcon } from '../../Constants';
 import Loader from '../../assets/loader2';
-import { current, currencyFormat } from '../../utils';
+import { current, currencyFormat, authFetch } from '../../utils';
 import Alerts from '../alerts/Alerts';
 import { FaEarthAfrica, FaCode } from 'react-icons/fa6';
 
@@ -50,10 +50,7 @@ const ReferralView = () => {
     const endpoint = `${current}users/referral_code`;
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        credentials: 'include',
-      });
+      const response = await authFetch(endpoint, { method: 'GET' });
       if (response.ok) {
         const resp = await response.json();
         setCode(resp.data.referral_code);

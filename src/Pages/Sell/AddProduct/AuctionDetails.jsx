@@ -5,7 +5,7 @@ import { capitalize, currencyFormat, formatDateTime } from '../../../utils';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiChevronLeft, FiChevronRight, FiUser } from 'react-icons/fi';
-import { current } from '../../../utils';
+import { current, authFetch } from '../../../utils';
 import useAuthStore from '../../../Store/AuthStore';
 import Loader from '../../../assets/loaderWhite';
 import LoaderM from '../../../assets/loader2';
@@ -108,9 +108,7 @@ const AuctionDetails = () => {
     setIsRestartingLoading(true);
 
     try {
-      const response = await fetch(`${current}auctions/${id}`, {
-        credentials: 'include',
-      });
+      const response = await authFetch(`${current}auctions/${id}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -332,12 +330,9 @@ const AuctionDetails = () => {
     const cleanedUdata = removeFalsyValues(udata);
     console.log('Cleaned Udata:', cleanedUdata);
 
-    const response = await fetch(endpoint, {
+    const response = await authFetch(endpoint, {
       method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(cleanedUdata),
     });
     const data = await response.json();
@@ -369,12 +364,9 @@ const AuctionDetails = () => {
     const cleanedIData = removeFalsyValues(idata);
     console.log('Cleaned Idata:', cleanedIData);
 
-    const response = await fetch(endpoint, {
+    const response = await authFetch(endpoint, {
       method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(cleanedIData),
     });
     const data = await response.json();
@@ -401,12 +393,9 @@ const AuctionDetails = () => {
     };
     console.log(validData);
 
-    const response = await fetch(endpoint, {
+    const response = await authFetch(endpoint, {
       method: 'PATCH',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(validData),
     });
     const data = await response.json();
@@ -479,11 +468,7 @@ const AuctionDetails = () => {
     }
 
     try {
-      const resp = await fetch(endpoint, {
-        method: 'PUT',
-        credentials: 'include',
-        body: formData_,
-      });
+      const resp = await authFetch(endpoint, { method: 'PUT', body: formData_ });
 
       const response = await resp.json();
 
@@ -506,12 +491,9 @@ const AuctionDetails = () => {
     setRLoading(true);
     const endpoint = `${current}auctions/complete_refund/${payment.auction_id}`;
     try {
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {

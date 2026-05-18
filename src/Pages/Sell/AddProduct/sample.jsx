@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { PropTypes } from 'prop-types';
 import arrowright from "../../../assets/svg/arrow-right.svg";
 import x from "../../../assets/svg/x.svg";
-import { current } from "../../../utils";
+import { current, authFetch } from "../../../utils";
 import Loader from '../../../assets/loader2';
 
 const Categories = ({ 
@@ -69,8 +69,8 @@ const Categories = ({
       ...formData,
       item: {
         ...formData.item,
-        category_id: '',
-        sub_category_id: ''
+        category_ids: [],
+        sub_category_ids: [],
       }
     });
   };
@@ -78,21 +78,17 @@ const Categories = ({
   const submit = async () => {
     const endpoint = `${current}auctions/`;
     let data = JSON.parse(sessionStorage.getItem('product')) || formData;
-    data.item.category_id = selectedCategories[0]?.category_id;
-    data.item.sub_category_id = selectedCategories[0]?.id;
+    data.item.category_ids = selectedCategories.map((c) => c.category_id);
+    data.item.sub_category_ids = selectedCategories.map((c) => c.id);
 
     // Update form data in parent component
     updateFormData(data);
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-        credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();

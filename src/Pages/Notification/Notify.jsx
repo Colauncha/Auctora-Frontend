@@ -4,7 +4,7 @@ import { useEffect, useState, useContext } from 'react';
 import { NotifContext } from '../../Store/notifContex';
 import Loader from '../../assets/loader2';
 import PropTypes from 'prop-types';
-import { current } from '../../utils';
+import { current, authFetch } from '../../utils';
 
 const formatDateTime = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
@@ -86,12 +86,9 @@ const Notify = () => {
     const inboxEndpoint = `${current}users/notifications?page=${currentPage}&per_page=10&order=desc`;
     const fetchNotifications = async (endpoint, func, func2) => {
       try {
-        const response = await fetch(endpoint, {
+        const response = await authFetch(endpoint, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
         });
         if (!response.ok) {
           setLoading(false);
@@ -123,13 +120,10 @@ const Notify = () => {
 
     try {
       const endpoint = `${current}users/notifications/${id}`;
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method: 'PUT',
         body: JSON.stringify({ read: true }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {

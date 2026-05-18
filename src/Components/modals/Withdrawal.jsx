@@ -165,6 +165,7 @@ import Loader from '../../assets/loaderWhite';
 import { PayStacklogo } from '../../Constants';
 import { current, currencyFormat } from '../../utils';
 import { Eye, EyeOff } from 'lucide-react';
+import { authFetch } from '../../utils';
 
 const Withdrawal = () => {
   const [amount, setAmount] = useState('');
@@ -206,9 +207,8 @@ const Withdrawal = () => {
     const identifier = JSON.parse(sessionStorage.getItem('_user')).email;
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier, password }),
       });
