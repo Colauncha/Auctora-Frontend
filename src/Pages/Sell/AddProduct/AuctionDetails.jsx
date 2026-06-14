@@ -158,11 +158,11 @@ const AuctionDetails = () => {
   }, [id]);
 
   useEffect(() => {
-    const userData = JSON.parse(sessionStorage.getItem('_user'));
-    if (!userData) {
+    const auctionData = JSON.parse(sessionStorage.getItem('_auctions'));
+    if (!auctionData) {
       navigate('/sign-in');
     } else {
-      const auction = userData.auctions.find((auction) => auction.id === id);
+      const auction = auctionData.find((auction) => auction.id === id);
       setAuction(auction);
       setPayment(auction?.payment);
       setImages((prev) => ({
