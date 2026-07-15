@@ -13,6 +13,7 @@ import ProtectedRoute from './Pages/ProtectedRoute/ProtectedRoute';
 import useAuthStore from './Store/AuthStore';
 import useModeStore from './Store/Store';
 import { NotifContext } from './Store/notifContex.jsx';
+import { current } from './utils/links';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -67,12 +68,23 @@ const App = () => {
   const { isMobile, isPWA } = useModeStore();
 
   useEffect(() => {
+    const backendOrigin = new URL(current).origin;
+
     const handleMessage = (event) => {
-      if (event.data?.type === 'GOOGLE_AUTH_SUCCESS') {
-        console.log('✅ Google login successful (from popup)');
-        login(true);
-        navigate('/dashboard');
+      if (event.origin !== backendOrigin) return;
+      if (event.data?.type !== 'GOOGLE_AUTH_SUCCESS') return;
+
+      const { access_token, refresh_token, user } = event.data;
+      if (!access_token || !refresh_token) {
+        console.error(
+          'Google login popup reported success but did not include tokens.',
+        );
+        return;
       }
+
+      console.log('✅ Google login successful (from popup)');
+      login(true, access_token, refresh_token, user);
+      navigate('/dashboard');
     };
 
     window.addEventListener('message', handleMessage);

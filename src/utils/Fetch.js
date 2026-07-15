@@ -9,7 +9,6 @@ const runRefresh = async () => {
 
   if (!refreshToken) {
     logout();
-    window.location.href = '/sign-in';
     return null;
   }
 
@@ -32,8 +31,22 @@ const runRefresh = async () => {
   }
 
   logout();
-  window.location.href = '/sign-in';
   return null;
+};
+
+// Ensures at most one refresh request is ever in flight — concurrent callers
+// (parallel 401s, or a route guard checking session validity) share the same
+// in-flight refresh instead of each racing the rotating refresh token.
+export const ensureFreshToken = async () => {
+  if (isRefreshing) {
+    return new Promise((resolve) => refreshQueue.push(resolve));
+  }
+  isRefreshing = true;
+  const newToken = await runRefresh();
+  isRefreshing = false;
+  refreshQueue.forEach((resolve) => resolve(newToken));
+  refreshQueue = [];
+  return newToken;
 };
 
 const buildHeaders = (token, contentType) => {
@@ -64,16 +77,7 @@ export const authFetch = async (url, options = {}) => {
   let res = await fetch(url, { credentials: 'include', ...options });
 
   if (res.status === 401) {
-    let newToken;
-    if (isRefreshing) {
-      newToken = await new Promise((resolve) => refreshQueue.push(resolve));
-    } else {
-      isRefreshing = true;
-      newToken = await runRefresh();
-      isRefreshing = false;
-      refreshQueue.forEach((resolve) => resolve(newToken));
-      refreshQueue = [];
-    }
+    const newToken = await ensureFreshToken();
 
     if (newToken) {
       const headers = { ...(options.headers || {}) };
@@ -107,17 +111,7 @@ const Fetch = async ({
   });
 
   if (res.status === 401) {
-    let newToken;
-
-    if (isRefreshing) {
-      newToken = await new Promise((resolve) => refreshQueue.push(resolve));
-    } else {
-      isRefreshing = true;
-      newToken = await runRefresh();
-      isRefreshing = false;
-      refreshQueue.forEach((resolve) => resolve(newToken));
-      refreshQueue = [];
-    }
+    const newToken = await ensureFreshToken();
 
     if (newToken) {
       res = await fetch(url, {

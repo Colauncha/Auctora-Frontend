@@ -1,25 +1,53 @@
 import { create } from 'zustand';
 
+// access_token / refresh_token / loggedIn live in localStorage (not
+// sessionStorage) so a valid session survives opening a new tab or
+// restarting the browser, and so refresh-token rotation in one tab is
+// visible to others via the 'storage' event below. `_user` stays in
+// sessionStorage — it's just a display cache, refetched from the API
+// when absent, so it doesn't need to affect auth state.
+const readStoredAuth = () => ({
+  loggedIn: localStorage.getItem('loggedIn') === 'true',
+  accessToken: localStorage.getItem('access_token') || '',
+  refreshToken: localStorage.getItem('refresh_token') || '',
+});
+
 const useAuthStore = create((set) => {
-  const storedLoggedIn = localStorage.getItem('loggedIn') === 'true';
-  const accessToken = sessionStorage.getItem('access_token') || '';
-  const refreshToken = sessionStorage.getItem('refresh_token') || '';
+  const stored = readStoredAuth();
   const dataFromStorage = sessionStorage.getItem('_user')
     ? JSON.parse(sessionStorage.getItem('_user'))
     : {};
 
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', (event) => {
+      if (
+        event.key !== 'loggedIn' &&
+        event.key !== 'access_token' &&
+        event.key !== 'refresh_token'
+      ) {
+        return;
+      }
+      const next = readStoredAuth();
+      set({
+        isAuthenticated: next.loggedIn && !!next.accessToken,
+        token: next.accessToken,
+        refreshToken: next.refreshToken,
+      });
+    });
+  }
+
   return {
-    isAuthenticated: storedLoggedIn && !!accessToken,
-    token: accessToken,
-    refreshToken,
+    isAuthenticated: stored.loggedIn && !!stored.accessToken,
+    token: stored.accessToken,
+    refreshToken: stored.refreshToken,
     data: dataFromStorage,
 
     login: (bool, accessToken, refreshToken, data) => {
       set(() => {
         if (bool) {
           localStorage.setItem('loggedIn', 'true');
-          sessionStorage.setItem('access_token', accessToken || '');
-          sessionStorage.setItem('refresh_token', refreshToken || '');
+          localStorage.setItem('access_token', accessToken || '');
+          localStorage.setItem('refresh_token', refreshToken || '');
           sessionStorage.setItem('_user', JSON.stringify(data || {}));
           return {
             isAuthenticated: true,
@@ -29,17 +57,24 @@ const useAuthStore = create((set) => {
           };
         }
         localStorage.removeItem('loggedIn');
-        sessionStorage.removeItem('access_token');
-        sessionStorage.removeItem('refresh_token');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         sessionStorage.removeItem('_user');
         return { isAuthenticated: false, token: '', refreshToken: '', data: {} };
       });
     },
 
     updateTokens: (accessToken, refreshToken) => {
-      sessionStorage.setItem('access_token', accessToken || '');
-      sessionStorage.setItem('refresh_token', refreshToken || '');
-      set({ token: accessToken || '', refreshToken: refreshToken || '' });
+      localStorage.setItem('access_token', accessToken || '');
+      localStorage.setItem('refresh_token', refreshToken || '');
+      if (accessToken) {
+        localStorage.setItem('loggedIn', 'true');
+      }
+      set({
+        token: accessToken || '',
+        refreshToken: refreshToken || '',
+        isAuthenticated: !!accessToken,
+      });
     },
 
     updateData: (partialData) => {
@@ -52,8 +87,8 @@ const useAuthStore = create((set) => {
 
     logout: () => {
       localStorage.removeItem('loggedIn');
-      sessionStorage.removeItem('access_token');
-      sessionStorage.removeItem('refresh_token');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       sessionStorage.removeItem('_user');
       set({ isAuthenticated: false, token: '', refreshToken: '', data: {} });
     },

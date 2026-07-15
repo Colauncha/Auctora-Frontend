@@ -40,7 +40,12 @@ const Auth = () => {
         return;
       }
       console.log(data);
-      login(true, data?.data?.token?.token, data?.data?.user);
+      login(
+        true,
+        data?.data?.token?.access_token,
+        data?.data?.token?.refresh_token,
+        data?.data?.user,
+      );
 
       const role = data.data.user.role;
       if (role === 'client') {
