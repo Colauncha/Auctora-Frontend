@@ -5,7 +5,7 @@ import { FaTrash } from "react-icons/fa";
 import Loader from '../../../assets/loader2';
 import LoaderW from '../../../assets/loaderWhite';
 // import { current } from '../../../utils';
-import Alerts from '../../../Components/alerts/Alerts';
+import { toastWarn } from '../../../utils/toast';
 
 const Photos = ({
   activeStep,
@@ -18,19 +18,6 @@ const Photos = ({
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const prevImagesRef = useRef(images);
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 5000);
-  };
 
   // Update form data and validate when images change
   useEffect(() => {
@@ -59,8 +46,7 @@ const Photos = ({
 
     // Check maximum 5 images total
     if (files.length + images.length > 5) {
-      showAlert('warn', 'Maximum 5 photos allowed');
-      // alert('Maximum 5 photos allowed');
+      toastWarn('Maximum 5 photos allowed');
       setLoading(false);
       return;
     }
@@ -69,8 +55,7 @@ const Photos = ({
     const fileReaders = files.map((file) => {
       return new Promise((resolve) => {
         if (file.size > 5 * 1024 * 1024) {
-          showAlert('warn', `${file.name} exceeds 5MB limit`);
-          // alert(`${file.name} exceeds 5MB limit`);
+          toastWarn(`${file.name} exceeds 5MB limit`);
           resolve();
           return;
         }
@@ -107,7 +92,7 @@ const Photos = ({
 
     if (images.length === 0) {
       setUploading(false);
-      showAlert('warn', 'Please add at least one photo');
+      toastWarn('Please add at least one photo');
       return;
     }
 
@@ -170,14 +155,6 @@ const Photos = ({
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full">
-      {alertT.isAlert && (
-        <Alerts
-          key={`${alertT.level}-${alertT.message}`}
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       <div className="formatter">
         <div className="bg-white rounded-lg p-10 mb-4 mt-4">
           <h2 className="text-xl font-bold mb-4">Add product photos (max 5)</h2>

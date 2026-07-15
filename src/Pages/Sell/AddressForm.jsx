@@ -3,7 +3,7 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { current, authFetch } from '../../utils'
 import Loader from '../../assets/loader2';
-import Alerts from '../../Components/alerts/Alerts';
+import { toastSuccess, toastError } from '../../utils/toast';
 
 const AddressForm = () => {
   const [loading, setLoading] = useState(false);
@@ -14,20 +14,7 @@ const AddressForm = () => {
   const [areas, setAreas] = useState([]);
   const [selectedArea, setSelectedArea] = useState('');
   const [address, setAddress] = useState('');
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
   const navigate = useNavigate();
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 5000);
-  };
 
   const runFetch = async ({ state = null, data = null, method = 'GET' }) => {
     let endpoint = `${current}misc/states`;
@@ -45,11 +32,7 @@ const AddressForm = () => {
       });
       if (!response.ok) {
         const error = await response.json();
-        showAlert(
-          'fail',
-          error.message || 'An error occurred',
-          error.detail || '',
-        );
+        toastError(error.message || 'An error occurred', error.detail);
         console.error('Error response: ', error);
         throw new Error(error.message || 'An error occurred');
       }
@@ -91,7 +74,7 @@ const AddressForm = () => {
     });
 
     if (result) {
-      showAlert('success', 'Address updated successfully!');
+      toastSuccess('Address updated successfully!');
       setTimeout(() => {
         !JSON.parse(sessionStorage.getItem('newAccount'))
           ? navigate('/dashboard')
@@ -101,7 +84,6 @@ const AddressForm = () => {
     } else {
       setTimeout(() => {
         setNextLoading(false);
-        // alert('Address details not saved.');
       }, 500);
     }
   };
@@ -137,14 +119,6 @@ const AddressForm = () => {
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
-      {alertT.isAlert && (
-        <Alerts
-          key={`${alertT.level}-${alertT.message}`}
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       <div className="formatter">
         <div className="py-6">
           {' '}

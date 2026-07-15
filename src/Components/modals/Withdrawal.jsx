@@ -160,7 +160,7 @@
 // export default Withdrawal;
 import { useState } from 'react';
 import style from './css/Withdrawal.module.css';
-import Alerts from '../alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 import Loader from '../../assets/loaderWhite';
 import { PayStacklogo } from '../../Constants';
 import { current, currencyFormat } from '../../utils';
@@ -174,31 +174,17 @@ const Withdrawal = () => {
   const [loading, setLoading] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: 'warn',
-    message: '',
-    detail: '',
-  });
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 10000);
-  };
-
   const handleSubmit = async () => {
     setLoading(true);
 
     if (!amount) {
-      showAlert('warn', 'Please enter an amount');
+      toastWarn('Please enter an amount');
       setLoading(false);
       return;
     }
 
     if (!password) {
-      showAlert('warn', 'Please enter your password');
+      toastWarn('Please enter your password');
       setLoading(false);
       return;
     }
@@ -216,19 +202,16 @@ const Withdrawal = () => {
       const resp = await response.json();
 
       if (!response.ok) {
-        showAlert('error', resp.message || 'Withdrawal failed', resp.detail);
+        toastError(resp.message || 'Withdrawal failed', resp.detail);
         return;
       }
 
-      showAlert(
-        'success',
+      toastSuccess(
         resp.message || 'Withdrawal initialized',
-        `Withdrawal of ${currencyFormat(resp.data.amount)} is ${
-          resp.data.status
-        }`
+        `Withdrawal of ${currencyFormat(resp.data.amount)} is ${resp.data.status}`,
       );
     } catch (error) {
-      showAlert('error', 'Unexpected error', error.message);
+      toastError('Unexpected error', error.message);
     } finally {
       setLoading(false);
     }
@@ -236,14 +219,6 @@ const Withdrawal = () => {
 
   return (
     <div className={style.container}>
-      {alertT.isAlert && (
-        <Alerts
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
-
       <div className="max-w-md mx-auto bg-white rounded-2xl shadow-md p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col items-center gap-2">

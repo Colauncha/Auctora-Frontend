@@ -4,6 +4,7 @@ import arrowright from "../../../assets/svg/arrow-right.svg";
 import x from "../../../assets/svg/x.svg";
 import { current, authFetch } from "../../../utils";
 import Loader from '../../../assets/loader2';
+import { toast } from 'react-toastify';
 
 const Categories = ({ 
   handleStepChange, 
@@ -45,7 +46,7 @@ const Categories = ({
         return prevSelected.filter((category) => category.name !== item.name);
       } else {
         if (prevSelected.length >= 1) {
-          alert('You can only select up to 1 categories.');
+          toast.warn('You can only select up to 1 categories.');
           return prevSelected;
         }
         setCheckedItems((prev) => ({ ...prev, [item.name]: true }));

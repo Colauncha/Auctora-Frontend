@@ -3,7 +3,7 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import Loader from '../../assets/loader2';
 import { current, authFetch } from '../../utils';
-import Alerts from '../../Components/alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 
 const SellAccount = () => {
   const [otp, setOtp] = useState([]);
@@ -14,19 +14,6 @@ const SellAccount = () => {
   const refBox4 = useRef();
   const refBox5 = useRef();
   const [loading, setLoading] = useState(false);
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 10000);
-  };
 
   const navigate = useNavigate();
 
@@ -42,21 +29,12 @@ const SellAccount = () => {
       if (!response.ok) {
         setLoading(false);
         const errorData = await response.json();
-        showAlert(
-          'fail',
-          errorData.message || 'Error',
-          errorData.detail || 'An error occurred',
-        );
-        // alert(`${errorData.message}: ${errorData.detail}`);
+        toastError(errorData.message || 'Error', errorData.detail);
         throw new Error(await response.json());
       }
       const resp = await response.json();
       console.log('Success: ', resp.success);
-      showAlert(
-        'success',
-        resp.message || 'Success',
-        resp.detail || 'OTP verified successfully',
-      );
+      toastSuccess(resp.message || 'Success', resp.detail || 'OTP verified successfully');
       return resp.success;
     } catch (error) {
       console.error('Error: ', error);
@@ -72,12 +50,7 @@ const SellAccount = () => {
       email: sessionStorage.getItem('email-otp'),
     };
     if (otp_.length < 6) {
-      // alert('OTP must be six characters');
-      showAlert(
-        'warn',
-        'OTP must be six characters',
-        'Please enter a valid OTP',
-      );
+      toastWarn('OTP must be six characters', 'Please enter a valid OTP');
       setLoading(false);
       return;
     } else {
@@ -98,8 +71,7 @@ const SellAccount = () => {
 
     const email = sessionStorage.getItem('email-otp');
     if (!email) {
-      // alert('Email not found. Please log in again.');
-      showAlert('fail', 'Email not found', 'Please log in again to resend OTP');
+      toastError('Email not found', 'Please log in again to resend OTP');
       return;
     }
 
@@ -118,30 +90,18 @@ const SellAccount = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('OTP Resent Successfully:', data);
-        // alert('OTP has been resent to your email.');
-        showAlert(
-          'success',
+        toastSuccess(
           'OTP Resent Successfully',
           data.data.detail || 'Please check your email for the new OTP.',
         );
       } else {
         const errorData = await response.json();
         console.error('Failed to Resend OTP:', errorData);
-        showAlert(
-          'fail',
-          errorData.message || 'Error',
-          errorData.detail || 'Could not resend OTP.',
-        );
-        // alert(
-        //   `${errorData.message || 'Error'}: ${
-        //     errorData.detail || 'Could not resend OTP.'
-        //   }`,
-        // );
+        toastError(errorData.message || 'Error', errorData.detail || 'Could not resend OTP.');
       }
     } catch (error) {
       console.error('Unexpected Error:', error);
-      showAlert('fail', 'An unexpected error occurred while resending OTP.');
-      // alert('An unexpected error occurred while resending OTP.');
+      toastError('An unexpected error occurred while resending OTP.');
     } finally {
       setResending(false);
     }
@@ -164,14 +124,6 @@ const SellAccount = () => {
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
       <div className="formatter">
-        {alertT.isAlert && (
-          <Alerts
-            key={`${alertT.level}-${alertT.message}`}
-            message={alertT.message}
-            detail={alertT.detail}
-            type={alertT.level}
-          />
-        )}
         <div className="py-6">
           <Breadcrumbs />
           <div className="min-h-screen flex items-center justify-center bg-[#F0F0F0]">
@@ -258,45 +210,6 @@ const SellAccount = () => {
 
                   <p className="text-gray-500 mt-4">
                     Didn’t receive the code?{' '}
-                    {/* <button
-    onClick={async () => {
-      const email = sessionStorage.getItem('email-otp'); 
-      
-      if (!email) {
-        alert("Email not found. Please log in again.");
-        return;
-      }
-
-      try {
-        const endpoint = `${current}users/resend_otp`; 
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }), 
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('OTP Resent Successfully:', data);
-          alert("OTP has been resent to your email.");
-        } else {
-          const errorData = await response.json();
-          console.error('Failed to Resend OTP:', errorData);
-          alert(`${errorData.message || "Error"}: ${
-            errorData.detail || "Could not resend OTP."
-          }`);
-        }
-      } catch (error) {
-        console.error("Unexpected Error:", error);
-        alert("An unexpected error occurred while resending OTP.");
-      }
-    }}
-    className="text-red-600 hover:underline"
-  >
-    Resend OTP
-  </button> */}
                     <button
                       onClick={resendOtp}
                       className="text-red-600 hover:underline"

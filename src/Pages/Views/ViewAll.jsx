@@ -11,6 +11,7 @@ import PriceRange from '../../Components/PriceRange';
 import CategoryFilter from '../../Components/CaregoryFilter';
 import RadioButtonFilter from '../../Components/RadioButtonFilter';
 import Button from '../../Components/Button';
+import { toast } from 'react-toastify';
 
 const ViewAll = () => {
   const { isMobile } = useModeStore();
@@ -59,7 +60,7 @@ const ViewAll = () => {
     if (!response.ok) {
       // setLoading(false);
       const errorData = await response.json();
-      alert(`Error ${errorData.message}`);
+      toast.error(`Error ${errorData.message}`);
       throw new Error(`Error ${errorData.message}`);
     }
 

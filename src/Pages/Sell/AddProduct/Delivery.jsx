@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import LoaderW from '../../../assets/loaderWhite';
 import { current, authFetch } from '../../../utils';
-import Alerts from '../../../Components/alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../../utils/toast';
 
 const Delivery = ({
   activeStep,
@@ -29,19 +29,6 @@ const Delivery = ({
   );
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: 'warn',
-    message: '',
-    detail: '',
-  });
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 10000);
-  };
 
   const reverseGeocode = async (lat, lon) => {
     setLoading(true);
@@ -74,8 +61,7 @@ const Delivery = ({
     }
 
     if (!navigator.geolocation) {
-      showAlert(
-        'fail',
+      toastError(
         'Geolocation not supported',
         'Please enable location services in your browser settings',
       );
@@ -92,16 +78,12 @@ const Delivery = ({
             const address = await reverseGeocode(latitude, longitude);
             setPickupAddress(address);
           } catch (err) {
-            showAlert('warn', 'Could not get address', err.message);
+            toastWarn('Could not get address', err.message);
           }
         }
       },
       (error) => {
-        showAlert(
-          'fail',
-          'Error',
-          error.message || 'Unable to retrieve your location',
-        );
+        toastError('Error', error.message || 'Unable to retrieve your location');
       },
     );
   };
@@ -142,11 +124,7 @@ const Delivery = ({
 
   const handleNext = async () => {
     if (selectedOptions.length === 0) {
-      showAlert(
-        'warn',
-        'Please select at least one delivery option',
-        'This field is required',
-      );
+      toastWarn('Please select at least one delivery option', 'This field is required');
       return;
     }
 
@@ -185,11 +163,7 @@ const Delivery = ({
         data: payload,
       });
 
-      showAlert(
-        'success',
-        'Product Submitted successfully',
-        'Uploading product images',
-      );
+      toastSuccess('Product Submitted successfully', 'Uploading product images');
       console.log('Product created:', created);
 
       const itemId = created?.data.item?.[0]?.id;
@@ -210,8 +184,7 @@ const Delivery = ({
 
       console.log('Image upload response:', uploadResp);
 
-      showAlert(
-        'success',
+      toastSuccess(
         'Product images uploaded successfully',
         'Your product images have been uploaded successfully',
       );
@@ -220,11 +193,7 @@ const Delivery = ({
       navigate('/product-success');
     } catch (error) {
       console.error(error);
-      showAlert(
-        'fail',
-        'Submission Failed',
-        error.message || 'An error occurred during submission',
-      );
+      toastError('Submission Failed', error.message || 'An error occurred during submission');
       setLoading(false);
     }
   };
@@ -245,13 +214,6 @@ const Delivery = ({
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full">
-      {alertT.isAlert && (
-        <Alerts
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       <div className="formatter">
         <div className="bg-white rounded-lg p-6 md:p-10 mb-4 mt-4">
           <h4 className="w-full text-xl font-bold mb-4 md:mb-6">

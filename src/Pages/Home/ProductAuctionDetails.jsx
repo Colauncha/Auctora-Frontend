@@ -9,7 +9,7 @@ import { RiRefund2Line } from 'react-icons/ri';
 import { capitalize, currencyFormat, current } from '../../utils';
 import style from './css/ProductAuctionDetails.module.css';
 import Loading from '../../assets/loader2';
-import Alerts from '../../Components/alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 import { shipping, delivery } from '../../Constants';
 
 const ProductAuctionDetails = () => {
@@ -43,21 +43,9 @@ const ProductAuctionDetails = () => {
   const [wsStatus, setWsStatus] = useState('idle'); // 'idle' | 'connecting' | 'connected' | 'error'
 
   // misc
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
   const navigate = useNavigate();
   const id = useLocation().pathname.split('/').pop();
   const endpoint = current;
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 5000);
-  };
 
   // Status tag color scheme
   const statusTagColor = {
@@ -80,12 +68,10 @@ const ProductAuctionDetails = () => {
         });
         if (!response.ok) {
           let error = await response.json();
-          showAlert(
-            'fail',
+          toastError(
             error.message || 'An error occurred while fetching data.',
             error.detail || 'Please try again later.',
           );
-          // alert(`Error: ${error.message}`);
           setLoading(false);
           setBuyNowLoading(false);
           setPlaceBidLoading(false);
@@ -101,7 +87,7 @@ const ProductAuctionDetails = () => {
         return null;
       }
     },
-    [],
+    []
   );
 
   // Auction effects
@@ -126,7 +112,7 @@ const ProductAuctionDetails = () => {
           data?.item[0]?.image_link_2?.link || null,
           data?.item[0]?.image_link_3?.link || null,
           data?.item[0]?.image_link_4?.link || null,
-        ].filter((val) => val !== null),
+        ].filter((val) => val !== null)
       );
       // setTimeString(data?.end_date);
       setLoading(false);
@@ -150,7 +136,7 @@ const ProductAuctionDetails = () => {
       const distance = endDate - now;
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
       );
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
@@ -185,7 +171,7 @@ const ProductAuctionDetails = () => {
     setWsStatus('connecting');
     const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
     socket_ = new WebSocket(
-      `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`,
+      `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`
     );
     setSocket(socket_);
 
@@ -202,13 +188,13 @@ const ProductAuctionDetails = () => {
           setWatchers(data?.Watchers);
         }
       } catch (error) {
-        showAlert('fail', 'Error parsing live data', error.message);
+        toastError('Error parsing live data', error.message);
       }
     };
 
     socket_.onerror = () => {
       setWsStatus('error');
-      showAlert('fail', 'Connection failed', 'Could not connect to live auction. Try again.');
+      toastError('Connection failed', 'Could not connect to live auction. Try again.');
       setLive(false);
     };
 
@@ -254,23 +240,19 @@ const ProductAuctionDetails = () => {
     if (live) {
       setPlaceBidLoading(true);
       if (!socket || socket.readyState !== WebSocket.OPEN) {
-        showAlert('fail', 'WebSocket Error', 'WebSocket is not connected.');
-        // alert('WebSocket is not connected. Please try again later.');
+        toastError('WebSocket Error', 'WebSocket is not connected.');
         setPlaceBidLoading(false);
         return;
       } else if (!amount) {
-        showAlert('warn', 'Invalid Bid', 'Please enter a bid amount.');
-        // alert('Please enter a bid amount');
+        toastWarn('Invalid Bid', 'Please enter a bid amount.');
         setPlaceBidLoading(false);
         return;
       } else if (amount < bids[0]?.amount) {
         setPlaceBidLoading(false);
-        showAlert(
-          'warn',
+        toastWarn(
           'Invalid Bid',
           'Bid amount must be greater than the current price.',
         );
-        // alert('Bid amount must be greater than the current price');
         return;
       }
 
@@ -286,18 +268,15 @@ const ProductAuctionDetails = () => {
 
     // Static
     if (!amount) {
-      // alert('Please enter a bid amount');
-      showAlert('warn', 'Invalid Bid', 'Please enter a bid amount.');
+      toastWarn('Invalid Bid', 'Please enter a bid amount.');
       setPlaceBidLoading(false);
       return;
     } else if (amount < auction?.current_price) {
       setPlaceBidLoading(false);
-      showAlert(
-        'warn',
+      toastWarn(
         'Invalid Bid',
         'Bid amount must be greater than the current price.',
       );
-      // alert('Bid amount must be greater than the current price');
       return;
     }
     try {
@@ -322,12 +301,10 @@ const ProductAuctionDetails = () => {
           ...prevAuction,
           current_price: resp.amount,
         }));
-        showAlert('success', 'Bid Successfully Placed');
-        // alert('Bid placed successfully');
+        toastSuccess('Bid Successfully Placed');
       }
     } catch (error) {
       setPlaceBidLoading(false);
-      // alert('An error occurred while processing your request.');
       console.error('An error occured: ', error);
       return;
     }
@@ -358,22 +335,16 @@ const ProductAuctionDetails = () => {
           current_price: resp.amount,
           status: 'Completed',
         }));
-        showAlert(
-          'success',
-          'Bid successful',
-          'You have successfully placed your bid.',
-        );
+        toastSuccess('Bid successful', 'You have successfully placed your bid.');
         navigate(`/product/finalize/${auction_id}`);
       }
     } catch (error) {
       setBuyNowLoading(false);
       setBiddersPrice(0);
-      showAlert(
-        'fail',
+      toastError(
         'Bid failed',
-        'An error occurred while processing your request.',
+        error.message || 'An error occurred while processing your request.',
       );
-      // alert('An error occurred while processing your request.');
       console.error('An error occurred: ', error);
       return;
     }
@@ -381,14 +352,6 @@ const ProductAuctionDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 mb-40" id="Top">
-      {alertT.isAlert && (
-        <Alerts
-          key={`${alertT.level}-${alertT.message}`}
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -567,7 +530,9 @@ const ProductAuctionDetails = () => {
               <div className={`${style.container} mb-6 border-gray-200`}>
                 <div className="flex items-center justify-between w-full sticky top-0 bg-white border-b border-gray-200 pb-3 mb-2">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-base font-semibold text-maroon">Active Bids</h2>
+                    <h2 className="text-base font-semibold text-maroon">
+                      Active Bids
+                    </h2>
                     <span className="rounded-md bg-blue-100 text-xs w-5 py-0.5 text-center text-blue-800 font-medium">
                       {bids?.length || 0}
                     </span>
@@ -740,6 +705,6 @@ const ProductAuctionDetails = () => {
       </main>
     </div>
   );
-};
+};;
 
 export default ProductAuctionDetails;

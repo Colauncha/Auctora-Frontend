@@ -3,7 +3,7 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { current, authFetch } from "../../utils";
 import Loader from '../../assets/loader2';
-import Alerts from '../../Components/alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 
 const AccountForm = () => {
   const [banks, setBanks] = useState([]);
@@ -12,20 +12,7 @@ const AccountForm = () => {
   const [acctName, setAcctName] = useState('');
   const [loading, setLoading] = useState(false);
   const [nextLoading, setNextLoading] = useState(false);
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
   const navigate = useNavigate();
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 5000);
-  };
 
   const fetchData = async ({
     data = null,
@@ -53,11 +40,7 @@ const AccountForm = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        showAlert(
-          'fail',
-          error.message || 'An error occured',
-          error.detail || '',
-        );
+        toastError(error.message || 'An error occured', error.detail);
         throw new Error(error);
       }
 
@@ -111,8 +94,7 @@ const AccountForm = () => {
   const resolveRecipient = async () => {
     setLoading(true);
     if (!acctNumber || !selectedBank) {
-      showAlert('warn', 'Please enter account number and select a bank.');
-      // alert('Please enter account number and select a bank.');
+      toastWarn('Please enter account number and select a bank.');
       setLoading(false);
       return;
     }
@@ -123,11 +105,10 @@ const AccountForm = () => {
     });
 
     if (result?.account_name) {
-      showAlert('success', 'Account name resolved.');
+      toastSuccess('Account name resolved.');
       setAcctName(result.account_name);
     } else {
-      showAlert('fail', 'Account name could not be resolved.');
-      // alert('Account name could not be resolved.');
+      toastError('Account name could not be resolved.');
     }
     setLoading(false);
   };
@@ -135,8 +116,7 @@ const AccountForm = () => {
   const goToNextPage = async () => {
     setNextLoading(true);
     if (!acctNumber || !selectedBank) {
-      showAlert('warn', 'Please enter account number and select a bank.');
-      // alert('Please enter account number and select a bank.');
+      toastWarn('Please enter account number and select a bank.');
       setNextLoading(false);
       return;
     }
@@ -147,30 +127,18 @@ const AccountForm = () => {
     });
 
     if (result) {
-      showAlert('success', 'Bank account saved.');
+      toastSuccess('Bank account saved.');
       !JSON.parse(sessionStorage.getItem('newAccount'))
         ? setTimeout(() => navigate('/dashboard'), 1000)
         : setTimeout(() => navigate('/Verification'), 1000);
       setNextLoading(false);
     } else {
-      // showAlert(
-      //   'fail', 'Account details not saved.'
-      // )
-      // alert('Account details not saved.');
       setNextLoading(false);
     }
   };
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
-      {alertT.isAlert && (
-        <Alerts
-          key={`${alertT.level}-${alertT.message}`}
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       <div className="formatter">
         <div className="py-6">
           <Breadcrumbs />

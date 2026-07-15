@@ -4,7 +4,7 @@ import Button from '../../Components/Button';
 import { AddIcon } from '../../Constants';
 import Loader from '../../assets/loader2';
 import { current, currencyFormat, authFetch } from '../../utils';
-import Alerts from '../alerts/Alerts';
+import { toastSuccess, toastError } from '../../utils/toast';
 import { FaEarthAfrica, FaCode } from 'react-icons/fa6';
 
 const ReferralView = () => {
@@ -14,12 +14,6 @@ const ReferralView = () => {
   const [referredUsers, setReferredUsers] = useState(null);
   const [copied, setCopied] = useState(false);
   const [viewBox, setViewBox] = useState({ state: 'code', value: code });
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: 'warn',
-    message: '',
-    detail: '',
-  });
 
   useEffect(() => {
     setTimeout(() => {
@@ -38,13 +32,6 @@ const ReferralView = () => {
     }, 1500);
   }, []);
 
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 10000);
-  };
-
   const generateCode = async () => {
     setLoading(true);
     const endpoint = `${current}users/referral_code`;
@@ -56,17 +43,15 @@ const ReferralView = () => {
         setCode(resp.data.referral_code);
         setUrl(resp.data.referral_url);
         setViewBox({ state: 'code', value: resp.data.referral_code });
-        showAlert(
-          'success',
+        toastSuccess(
           'Referral code generated successfully',
           'You can now share your referral code with others.',
         );
       } else {
         const errorData = await response.json();
-        showAlert(
-          'fail',
-          errorData.message,
-          errorData.detail || 'An error occurred while generating the code.',
+        toastError(
+          errorData.message || 'An error occurred while generating the code.',
+          errorData.detail,
         );
       }
     } catch (error) {
@@ -95,13 +80,6 @@ const ReferralView = () => {
 
   return (
     <div className={style.container}>
-      {alertT.isAlert && (
-        <Alerts
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       <div className={style.main}>
         <div className="flex w-full shadow-sm">
           <input

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Check, X } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const CampaignSubs = () => {
   // App Client States
@@ -83,7 +84,7 @@ const CampaignSubs = () => {
         },
       });
       if (!res.ok) throw new Error('Failed to renew token');
-      alert('Token renewed successfully!');
+      toast.success('Token renewed successfully!');
       await fetchClientDetails();
     } catch (err) {
       setError(err.message);

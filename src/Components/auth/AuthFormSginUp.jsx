@@ -8,7 +8,7 @@ import { useState } from 'react';
 import Loader from '../../assets/loader';
 import { current } from '../../utils';
 import { FaEyeSlash, FaEye } from 'react-icons/fa';
-import Alerts from '../alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 
 const AuthFormSginUp = ({ heading }) => {
   const { isMobile } = useModeStore();
@@ -18,12 +18,6 @@ const AuthFormSginUp = ({ heading }) => {
   const [confirmPass, setConfirmPass] = useState('');
   const [isHarshed, setIsHarshed] = useState(false);
   const [isHarshedC, setIsHarshedC] = useState(false); // for confirm password
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -31,27 +25,19 @@ const AuthFormSginUp = ({ heading }) => {
   const referralParam = searchParams.get('referral_code') || '';
   const [referral_code, setReferralCode] = useState(referralParam);
 
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 5000);
-  };
-
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
     let endpoint = `${current}users/register`;
 
     if (!checked) {
-      showAlert('warn', 'Privacy Policy/Terms and Conditions must be agreed!');
+      toastWarn('Privacy Policy/Terms and Conditions must be agreed!');
       setLoading(false);
       return;
     }
 
     if (!validatePassword(password)) {
-      showAlert(
-        'warn',
+      toastWarn(
         'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
       );
       setLoading(false);
@@ -59,7 +45,7 @@ const AuthFormSginUp = ({ heading }) => {
     }
 
     if (password !== confirmPass) {
-      showAlert('fail', 'Passwords do not match');
+      toastError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -79,7 +65,7 @@ const AuthFormSginUp = ({ heading }) => {
       if (response.status === 200 || response.status === 201) {
         const data = await response.json();
         console.log('Sign Up Successful', data);
-        showAlert('success', 'Sign Up Successful');
+        toastSuccess('Sign Up Successful');
         setTimeout(() => {
           sessionStorage.setItem('email-otp', email);
           sessionStorage.setItem('newAccount', JSON.stringify(true));
@@ -89,12 +75,12 @@ const AuthFormSginUp = ({ heading }) => {
       } else {
         const errorData = await response.json();
         console.error('sign up failed: ', errorData);
-        showAlert('fail', `${errorData.message}`, `${errorData.detail}`);
+        toastError(errorData.message, errorData.detail);
         setLoading(false);
       }
     } catch (error) {
       console.error('Error during sign up', error);
-      showAlert('fail', 'An unexpected error occurred.');
+      toastError('An unexpected error occurred.');
       setLoading(false);
     }
   };
@@ -113,7 +99,7 @@ const AuthFormSginUp = ({ heading }) => {
       window.open(data.data.url, '_blank');
     } else {
       const errorData = await response.json();
-      showAlert('fail', errorData.message, errorData.detail);
+      toastError(errorData.message, errorData.detail);
     }
   };
 
@@ -128,14 +114,6 @@ const AuthFormSginUp = ({ heading }) => {
 
   return (
     <div className="w-[900px] h-[590px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
-      {alertT.isAlert && (
-        <Alerts
-          key={`${alertT.level}-${alertT.message}`}
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       <form action="">
         {loading && <Loader />}
         <fieldset className="flex flex-col gap-3">

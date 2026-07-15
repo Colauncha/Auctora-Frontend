@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Alerts from '../../Components/alerts/Alerts';
+import { toastSuccess, toastError } from '../../utils/toast';
 import Loader from '../../assets/loader2';
 import LoaderW from '../../assets/loaderWhite';
 import { current, currencyFormat, capitalize, authFetch } from '../../utils';
@@ -21,21 +21,8 @@ const ReviewPage = () => {
   const [iLoading, setILoading] = useState(false);
   const [rLoading, setRLoading] = useState(false);
   const [showChatSection, setShowChatSection] = useState(false);
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
   const navigate = useNavigate();
   const id = useLocation().pathname.split('/').pop();
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 5000);
-  };
 
   useEffect(() => {
     const endpoint = `${current}auctions/${id}`;
@@ -53,8 +40,7 @@ const ReviewPage = () => {
         if (data?.data?.status !== 'completed') {
           // 'active' is for demonstration, change this to 'completed'
           console.log(data?.data?.status);
-          showAlert(
-            'fail',
+          toastError(
             'Auction not completed',
             'Please check the auction status, Redirecting to auction page',
           );
@@ -66,7 +52,7 @@ const ReviewPage = () => {
         setUserImages(data?.data?.user?.image_link?.link || '');
         setLoading(false);
       } catch (error) {
-        showAlert('fail', error.message, 'Failed to fetch auction details');
+        toastError(error.message || 'Failed to fetch auction details');
         setLoading(false);
       }
     };
@@ -99,7 +85,7 @@ const ReviewPage = () => {
       return data.success;
     } catch (error) {
       console.error('Error:', error);
-      showAlert('fail', 'Error', error.message);
+      toastError('Error', error.message);
       return false;
     }
   };
@@ -112,15 +98,11 @@ const ReviewPage = () => {
     let resp = await runFetch({ endpoint, method });
     if (resp.success) {
       setILoading(false);
-      showAlert(
-        'success',
-        'Inspection mode activated',
-        'Product is being inspected',
-      );
+      toastSuccess('Inspection mode activated', 'Product is being inspected');
       // navigate(`/product-details/${id}`);
     } else {
       setILoading(false);
-      showAlert('fail', 'Unable to start inspection', 'Please try again');
+      toastError('Unable to start inspection', 'Please try again');
     }
   };
 
@@ -132,11 +114,11 @@ const ReviewPage = () => {
     let resp = await runFetch({ endpoint, method });
     if (resp.success) {
       setFLoading(false);
-      showAlert('success', 'Auction finalized', 'Auction has been finalized');
+      toastSuccess('Auction finalized', 'Auction has been finalized');
       // navigate(`/product-details/${id}`);
     } else {
       setFLoading(false);
-      showAlert('fail', 'Unable to finalize auction', 'Please try again');
+      toastError('Unable to finalize auction', 'Please try again');
     }
   };
 
@@ -148,10 +130,10 @@ const ReviewPage = () => {
     let resp = await runFetch({ endpoint, method });
     if (resp.success) {
       setRLoading(false);
-      showAlert('success', 'Refund requested', 'Refund request has been sent');
+      toastSuccess('Refund requested', 'Refund request has been sent');
     } else {
       setRLoading(false);
-      showAlert('fail', 'Unable to request refund', 'Please try again');
+      toastError('Unable to request refund', 'Please try again');
     }
     // navigate(`/product-details/${id}`);
   };
@@ -165,13 +147,6 @@ const ReviewPage = () => {
           </div>
         ) : (
           <>
-            {alertT.isAlert && (
-              <Alerts
-                level={alertT.level}
-                message={alertT.message}
-                detail={alertT.detail}
-              />
-            )}
             <div className="bg-white rounded-lg shadow-sm p-6 md:p-10 mb-8 text-center">
               <h1 className="text-3xl md:text-4xl font-bold text-[#9F3247] mb-4">
                 Congrat<span className="text-[#7B2334]">ulations</span>

@@ -9,7 +9,7 @@ import { useState } from 'react';
 import useAuthStore from '../../Store/AuthStore';
 import { current } from '../../utils';
 import { FaEyeSlash, FaEye } from 'react-icons/fa';
-import Alerts from '../alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 
 const AuthFormSignIn = ({ heading }) => {
   const { isMobile } = useModeStore();
@@ -20,22 +20,9 @@ const AuthFormSignIn = ({ heading }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isHarshed, setIsHarshed] = useState(false);
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
   const [loading, setLoading] = useState(false);
 
   const login = useAuthStore((state) => state.login);
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 5000);
-  };
 
   const signUp = () => navigate('/sign-up');
   const forgotPassword = () => navigate('/forgot-password');
@@ -52,7 +39,7 @@ const AuthFormSignIn = ({ heading }) => {
       window.open(data.data.url, '_blank');
     } else {
       const errorData = await response.json();
-      showAlert('fail', errorData.message, errorData.detail);
+      toastError(errorData.message, errorData.detail);
     }
   };
 
@@ -69,8 +56,7 @@ const AuthFormSignIn = ({ heading }) => {
     setLoading(true);
 
     if (!validatePassword(password)) {
-      showAlert(
-        'warn',
+      toastWarn(
         'Password must start with a capital letter, be at least 8 characters, include a number and a special character.',
       );
       setLoading(false);
@@ -92,7 +78,7 @@ const AuthFormSignIn = ({ heading }) => {
 
       if (response.ok) {
         const data = await response.json();
-        showAlert('success', data.message, 'Log In Successful');
+        toastSuccess(data.message || 'Log In Successful');
         const { access_token, refresh_token } = data.data.token;
         sessionStorage.setItem(
           'websocket-allowance',
@@ -117,11 +103,11 @@ const AuthFormSignIn = ({ heading }) => {
         }, 1000);
       } else {
         const errorData = await response.json();
-        showAlert('fail', errorData.message, errorData.detail);
+        toastError(errorData.message, errorData.detail);
         setLoading(false);
       }
     } catch (error) {
-      showAlert('fail', error.message || 'An error occurred');
+      toastError(error.message || 'An error occurred');
       setLoading(false);
     }
   };
@@ -130,14 +116,6 @@ const AuthFormSignIn = ({ heading }) => {
     <div className="w-[620px] h-[560px] mb-40 p-10 bg-white rounded-tl-md rounded-bl-md">
       <form onSubmit={submit}>
         {loading && <Loader />}
-        {alertT.isAlert && (
-          <Alerts
-            key={`${alertT.level}-${alertT.message}`}
-            message={alertT.message}
-            detail={alertT.detail}
-            type={alertT.level}
-          />
-        )}
 
         <fieldset className="flex flex-col gap-3">
           <legend className="text-[30px] font-[700] text-[#9f3247]">
@@ -165,10 +143,7 @@ const AuthFormSignIn = ({ heading }) => {
             value={email}
             htmlFor="email"
             className="focus:outline-[#9f3248]"
-            onChange={(e) => {
-              setAlert({ isAlert: false, level: '', message: '', detail: '' });
-              setEmail(e.target.value);
-            }}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <div className="relative w-full">
@@ -179,15 +154,7 @@ const AuthFormSignIn = ({ heading }) => {
               value={password}
               htmlFor="password"
               className="focus:outline-[#9f3248] w-full"
-              onChange={(e) => {
-                setAlert({
-                  isAlert: false,
-                  level: '',
-                  message: '',
-                  detail: '',
-                });
-                setPassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
             />
             {isHarshed ? (
               <FaEye

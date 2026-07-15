@@ -113,7 +113,7 @@
 // export default FundingWallet;
 
 import { useState } from 'react';
-import Alerts from '../alerts/Alerts';
+import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 import Loader from '../../assets/loaderWhite';
 import { current } from '../../utils';
 import { PayStacklogo } from '../../Constants';
@@ -122,25 +122,12 @@ import { authFetch } from '../../utils';
 const FundingWallet = () => {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: 'warn',
-    message: '',
-    detail: '',
-  });
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 10000);
-  };
 
   const handleSubmit = async () => {
     setLoading(true);
 
     if (!amount) {
-      showAlert('warn', 'Please enter an amount');
+      toastWarn('Please enter an amount');
       setLoading(false);
       return;
     }
@@ -156,25 +143,20 @@ const FundingWallet = () => {
       const resp = await response.json();
 
       if (!response.ok) {
-        showAlert(
-          'error',
-          resp.message || 'Funding failed',
-          resp.detail || 'Please try again'
-        );
+        toastError(resp.message || 'Funding failed', resp.detail || 'Please try again');
         return;
       }
 
-      showAlert(
-        'success',
+      toastSuccess(
         'Funding initialized successfully',
-        'Redirecting you to payment portal'
+        'Redirecting you to payment portal',
       );
 
       setTimeout(() => {
         window.open(resp.data.authorization_url, '_blank');
       }, 1000);
     } catch (error) {
-      showAlert('error', 'An error occurred', error.message);
+      toastError('An error occurred', error.message);
     } finally {
       setLoading(false);
     }
@@ -182,14 +164,6 @@ const FundingWallet = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      {alertT.isAlert && (
-        <Alerts
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
-
       <div className="bg-white rounded-2xl shadow-md p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col items-center gap-2">

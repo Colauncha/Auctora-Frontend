@@ -3,7 +3,7 @@ import Breadcrumbs from "../../Components/Breadcrumbs";
 import { current } from "../../utils";
 import { useNavigate } from "react-router-dom";
 import Loading from '../../assets/loader2';
-import Alerts from '../../Components/alerts/Alerts';
+import { toastSuccess, toastError } from '../../utils/toast';
 
 const CreateAccount = () => {
   const [loading, setLoading] = useState(false);
@@ -13,21 +13,8 @@ const CreateAccount = () => {
     username: '',
     phone_number: '',
   });
-  const [alertT, setAlert] = useState({
-    isAlert: false,
-    level: '',
-    message: '',
-    detail: '',
-  });
   const navigate = useNavigate();
   const endpoint = `${current}users/update`;
-
-  const showAlert = (level, message, detail = '') => {
-    setAlert({ isAlert: true, level, message, detail });
-    setTimeout(() => {
-      setAlert({ isAlert: false, level: '', message: '', detail: '' });
-    }, 10000);
-  };
 
   const runFetch = async (data) => {
     console.log(data);
@@ -43,15 +30,14 @@ const CreateAccount = () => {
       if (!response.ok) {
         setLoading(false);
         const errorData = await response.json();
-        showAlert(
-          'fail',
+        toastError(
           errorData.message || 'Failed to update profile',
           errorData.detail || 'Please try again later',
         );
         throw new Error(errorData);
       }
       const resp = await response.json();
-      showAlert('success', resp.message || 'Profile updated successfully');
+      toastSuccess(resp.message || 'Profile updated successfully');
       console.log('Success: ', resp);
       return resp.success;
     } catch (error) {
@@ -100,14 +86,6 @@ const CreateAccount = () => {
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen">
-      {alertT.isAlert && (
-        <Alerts
-          key={`${alertT.level}-${alertT.message}`}
-          message={alertT.message}
-          detail={alertT.detail}
-          type={alertT.level}
-        />
-      )}
       <div className="formatter">
         <div className="py-6">
           {' '}

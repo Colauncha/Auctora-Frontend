@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import 'highlight.js/styles/github.css';
+import { toast } from 'react-toastify';
 
 const BlogAdmin = () => {
   const tabs = [
@@ -85,11 +86,11 @@ const BlogAdmin = () => {
       const json = await res.json();
       if (json.success) {
         setBlogs((prev) => prev.filter((b) => b.id !== id));
-        alert('Blog deleted successfully');
-      } else alert('Delete failed');
+        toast.success('Blog deleted successfully');
+      } else toast.error('Delete failed');
     } catch (err) {
       console.error(err);
-      alert('Error deleting blog');
+      toast.error('Error deleting blog');
     }
   };
 
@@ -122,14 +123,14 @@ const BlogAdmin = () => {
       if (!json.success)
         throw new Error(json.message || 'Failed to create blog');
 
-      alert('Blog created successfully');
+      toast.success('Blog created successfully');
       setTitle('');
       setContent('');
       setReadTime('');
       setBannerImage(null);
     } catch (error) {
       console.error(error);
-      alert('Error creating blog');
+      toast.error('Error creating blog');
     } finally {
       setLoading(false);
     }
