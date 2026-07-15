@@ -154,9 +154,11 @@ import { Plus, Link, ChevronLeft, ChevronRight } from 'lucide-react';
 import { currencyFormat } from '../../../utils';
 import Loader from '../../../assets/loader2';
 import { toast } from 'react-toastify';
+import useAuthStore from '../../../Store/AuthStore';
 
 const YourProduct = () => {
   const navigate = useNavigate();
+  const token = useAuthStore((state) => state.token);
 
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -172,6 +174,7 @@ const YourProduct = () => {
       const { data, error } = await Fetch({
         url: `${current}users/auctions?page=${page}&limit=${itemsPerPage}`,
         method: 'GET',
+        token,
       });
 
       if (error) {
@@ -187,7 +190,7 @@ const YourProduct = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const tabs = [
     { name: 'All', filter: () => auctions },

@@ -15,8 +15,10 @@ import {
 import { PropTypes } from 'prop-types';
 import { current } from '../../../utils';
 import Fetch from '../../../utils/Fetch';
+import useAuthStore from '../../../Store/AuthStore';
 
 const ManageUsers = () => {
+  const token = useAuthStore((state) => state.token);
   const [activeTab, setActiveTab] = useState('search');
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState([]);
@@ -39,6 +41,7 @@ const ManageUsers = () => {
     try {
       const { data: response, error } = await Fetch({
         url: `${current}users?order=${sortOrder}&page=${page}&per_page=${perPage}`,
+        token,
       });
       if (error) throw new Error('Failed to fetch users');
       setUsers(response?.data || []);
@@ -51,7 +54,7 @@ const ManageUsers = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [sortOrder, page, perPage]);
+  }, [sortOrder, page, perPage, token]);
 
   const searchUsers = useCallback(async () => {
     if (!searchTerm.trim()) {
@@ -63,6 +66,7 @@ const ManageUsers = () => {
     try {
       const { data: response, error } = await Fetch({
         url: `${current}landing/search?q=${encodeURIComponent(searchTerm)}&model=User`,
+        token,
       });
       if (error) throw new Error('Failed to search users');
       setUsers(response?.data || []);
@@ -72,7 +76,7 @@ const ManageUsers = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm]);
+  }, [searchTerm, token]);
 
   useEffect(() => {
     if (activeTab === 'list') fetchAllUsers();
@@ -96,6 +100,7 @@ const ManageUsers = () => {
         url: `${current}users/update/?id=${editingUser.id}`,
         method: 'PUT',
         requestData: editingUser,
+        token,
       });
       if (error) throw new Error('Failed to update user');
       setUsers((prev) =>
@@ -112,6 +117,7 @@ const ManageUsers = () => {
       const { error } = await Fetch({
         url: `${current}users/${userId}`,
         method: 'DELETE',
+        token,
       });
       if (error) throw new Error('Failed to delete user');
       setUsers((prev) => prev.filter((u) => u.id !== userId));

@@ -9,6 +9,7 @@ const Conversations = ({ setChatId, showModal }) => {
   const ConvoRef = useRef(null);
 
   const identity = useAuthStore((state) => state.data);
+  const token = useAuthStore((state) => state.token);
   const [conversations, setConversations] = useState([]);
 
   const fetchConversations = useCallback(async () => {
@@ -16,6 +17,7 @@ const Conversations = ({ setChatId, showModal }) => {
       const { data, error } = await Fetch({
         url: `${current}users/chats`,
         method: 'GET',
+        token,
       });
 
       if (error) {
@@ -26,7 +28,7 @@ const Conversations = ({ setChatId, showModal }) => {
       console.error('Error fetching conversations:', error);
       toast.error('Failed to load conversations. Please try again later.');
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
       setInterval(() => {

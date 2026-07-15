@@ -35,6 +35,7 @@ import { useNavigate } from 'react-router-dom';
 const Overview = () => {
   const navigate = useNavigate();
   const identity = useAuthStore((state) => state.data);
+  const token = useAuthStore((state) => state.token);
   const [stats, setStats] = useState({
     visitors: null,
     nuVisitors: null,
@@ -111,6 +112,7 @@ const Overview = () => {
       const { data, error, success } = await Fetch({
         url: current + 'users/stats/count',
         method: 'GET',
+        token,
       });
       if (!success) throw new Error(error || 'Failed to fetch users count');
       setStats((prev) => ({ ...prev, users: data?.data?.user_count || 0 }));
@@ -127,6 +129,7 @@ const Overview = () => {
     try {
       const { data, error, success } = await Fetch({
         url: current + 'auctions/stats/count',
+        token,
       });
       if (!success) throw new Error(error || 'Failed to fetch auctions count');
       setStats((prev) => ({ ...prev, auctions: data?.data?.total || 0 }));
@@ -143,6 +146,7 @@ const Overview = () => {
     try {
       const { data, error, success } = await Fetch({
         url: current + 'auctions/bids/stats/count',
+        token,
       });
       if (!success) throw new Error(error || 'Failed to fetch bids count');
       setStats((prev) => ({ ...prev, bids: data?.data?.result || 0 }));
@@ -159,6 +163,7 @@ const Overview = () => {
     try {
       const { data, error, success } = await Fetch({
         url: current + 'categories/stats/count',
+        token,
       });
       if (!success) throw new Error(error || 'Failed to fetch Category count');
       setStats((prev) => ({

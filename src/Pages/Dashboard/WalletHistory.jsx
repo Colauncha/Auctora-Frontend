@@ -10,8 +10,10 @@ import {
 } from 'lucide-react';
 import { current } from '../../utils';
 import Fetch from '../../utils/Fetch';
+import useAuthStore from '../../Store/AuthStore';
 
 const WalletHistory = () => {
+  const token = useAuthStore((state) => state.token);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(new Set());
@@ -70,6 +72,7 @@ const WalletHistory = () => {
         const { data: resp, error } = await Fetch({
           method: 'GET',
           url: `${current}users/transactions/history?${queryString}`,
+          token,
         });
 
         if (error) {
@@ -86,7 +89,7 @@ const WalletHistory = () => {
         setLoading(false);
       }
     },
-    [page, perPage, filters, buildQueryString],
+    [page, perPage, filters, buildQueryString, token],
   );
 
   const verifyTransactionStatus = async (transactionId, referenceId) => {
@@ -97,6 +100,7 @@ const WalletHistory = () => {
         method: 'POST',
         url: `${current}users/transactions/verify`,
         requestData: { reference_id: referenceId },
+        token,
       });
       if (error) {
         throw new Error(error);

@@ -6,8 +6,10 @@ import BidCredit from '../../assets/svg/bidCredit.svg';
 import Fetch from '../../utils/Fetch';
 import { toast } from 'react-toastify';
 import RewardToolTip from '../ToolTips/RewardToolTip';
+import useAuthStore from '../../Store/AuthStore';
 
 const RewardHistory = () => {
+  const token = useAuthStore((state) => state.token);
   const [showFilters, setShowFilters] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
 
@@ -68,6 +70,7 @@ const RewardHistory = () => {
         const { data: resp, error } = await Fetch({
           method: 'GET',
           url: `${current}users/rewards/history?${queryString}`,
+          token,
         });
 
         if (error) {
@@ -84,7 +87,7 @@ const RewardHistory = () => {
         setLoading(false);
       }
     },
-    [page, perPage, filters, buildQueryString]
+    [page, perPage, filters, buildQueryString, token]
   );
 
   const handleFilterChange = (filterKey, value) => {
@@ -111,12 +114,13 @@ const RewardHistory = () => {
   );
 
   // Redeem reward points
-  const handleRedeem = () => {
+  const handleRedeem = async () => {
     setRedeemLoading(true);
     try {
-      const { data: resp, error } = Fetch({
+      const { data: resp, error } = await Fetch({
         method: 'POST',
         url: `${current}users/rewards/redeem?points=${redeemPoint}`,
+        token,
       });
 
       if (error) {

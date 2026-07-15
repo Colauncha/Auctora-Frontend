@@ -103,7 +103,7 @@ const Dashboard = () => {
     const getAuctions = async () => {
       const endpoint = `${current}users/auctions`;
       try {
-        const response = await Fetch({ url: endpoint, method: 'GET' });
+        const response = await Fetch({ url: endpoint, method: 'GET', token });
 
         if (response.success) {
           setTimeout(() => {
@@ -128,7 +128,7 @@ const Dashboard = () => {
     const getBids = async () => {
       const endpoint = `${current}users/bids`;
       try {
-        const response = await Fetch({ url: endpoint, method: 'GET' });
+        const response = await Fetch({ url: endpoint, method: 'GET', token });
 
         if (response.success) {
           setTimeout(() => {
@@ -167,7 +167,7 @@ const Dashboard = () => {
       setRating(data.rating);
       setLoading(false);
     }
-  }, [navigate, offCta]);
+  }, [navigate, offCta, token]);
 
   const logout = async () => {
     setLoading(true);
