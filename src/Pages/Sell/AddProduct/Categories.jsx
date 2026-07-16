@@ -249,7 +249,6 @@ const Categories = ({
     <div className="bg-[#F2F0F1] min-h-screen w-full py-8">
       <div className="formatter mx-auto max-w-7xl px-4">
         <div className="bg-white rounded-lg shadow-md overflow-hidden md:grid md:grid-cols-3">
-
           {/* ---- Left: category list with checkboxes ---- */}
           <div className="p-6 border-r flex flex-col gap-3">
             <h2 className="font-semibold">Select Categories</h2>
@@ -323,7 +322,8 @@ const Categories = ({
 
             {!catLoading && !selectedCategoryObj && (
               <p className="text-gray-400 text-sm mt-4">
-                Click the → arrow next to a category to browse its subcategories.
+                Click the → arrow next to a category to browse its
+                subcategories.
               </p>
             )}
 
@@ -340,20 +340,21 @@ const Categories = ({
                   <p className="text-gray-400 text-sm">No subcategories yet.</p>
                 ) : (
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                    {selectedCategoryObj.subcategories.map((item) => (
-                      <label
-                        key={item.id}
-                        className="flex items-center gap-2 cursor-pointer text-sm"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedSubCategoryIds.includes(item.id)}
-                          onChange={() => handleSubCategoryToggle(item)}
-                          className="accent-[#9f3247]"
-                        />
-                        {item.name}
-                      </label>
-                    ))}
+                    {selectedCategoryObj.subcategories &&
+                      selectedCategoryObj.subcategories.map((item) => (
+                        <label
+                          key={item.id}
+                          className="flex items-center gap-2 cursor-pointer text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedSubCategoryIds.includes(item.id)}
+                            onChange={() => handleSubCategoryToggle(item)}
+                            className="accent-[#9f3247]"
+                          />
+                          {item.name}
+                        </label>
+                      ))}
                   </div>
                 )}
 
@@ -415,7 +416,8 @@ const Categories = ({
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            {(selectedCategoryIds.length > 0 || selectedSubCategoryIds.length > 0) && (
+            {(selectedCategoryIds.length > 0 ||
+              selectedSubCategoryIds.length > 0) && (
               <button
                 onClick={handleReset}
                 className="text-sm text-gray-500 hover:text-gray-700 underline"

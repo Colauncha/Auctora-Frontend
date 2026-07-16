@@ -33,12 +33,13 @@ const Delivery = ({
   const reverseGeocode = async (lat, lon) => {
     setLoading(true);
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+      // `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+      `https://us1.locationiq.com/v1/reverse?key=pk.2f7cb5d6898c4aa19064c20c1d3f64cf&lat=${lat}&lon=${lon}&format=json`,
       {
         headers: {
           'User-Agent': 'Biddius/1.0 (https://biddius.com)',
         },
-      },
+      }
     );
     const data = await response.json();
     setLoading(false);
@@ -69,12 +70,18 @@ const Delivery = ({
     }
 
     navigator.geolocation.getCurrentPosition(
-      async ({ coords: { latitude, longitude } }) => {
+      async ({ coords: { latitude, longitude, accuracy } }) => {
         setPickupLatitude(latitude);
         setPickupLongitude(longitude);
-        setCurrentLocation(true);
         if (enable) {
           try {
+            console.log('Accuracy: ', accuracy);
+            if (accuracy > 150) {
+              throw new Error(
+                `Location accuracy <${accuracy}> is too low, input your address`
+              );
+            }
+            setCurrentLocation(true);
             const address = await reverseGeocode(latitude, longitude);
             setPickupAddress(address);
           } catch (err) {
@@ -83,8 +90,16 @@ const Delivery = ({
         }
       },
       (error) => {
-        toastError('Error', error.message || 'Unable to retrieve your location');
+        toastError(
+          'Error',
+          error.message || 'Unable to retrieve your location'
+        );
       },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
     );
   };
 
@@ -94,16 +109,25 @@ const Delivery = ({
     updateFormValidity(activeStep, isValid);
 
     // Update parent form data
-    updateFormData({
-      ...formData,
+    updateFormData((prev) => ({
+      ...prev,
       delivery: {
         options: selectedOptions,
         address: pickupAddress,
         pickup_longitude: pickupLongitude,
         pickup_latitude: pickupLatitude,
       },
-    });
-  }, [selectedOptions, pickupAddress, pickupLatitude, pickupLongitude]);
+    }));
+    // updateFormData/updateFormValidity are recreated every parent render and
+    // must stay out of this array, or this effect loops forever with the parent re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selectedOptions,
+    pickupAddress,
+    pickupLatitude,
+    pickupLongitude,
+    activeStep,
+  ]);
 
   const handleReset = () => {
     setSelectedOptions([]);
@@ -139,8 +163,6 @@ const Delivery = ({
       ...delivery,
     });
 
-    console.log('Submitting data:', payload, photos);
-
     const runFetch = async ({ endpoint, method, data, isFormData = false }) => {
       const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
 
@@ -163,8 +185,10 @@ const Delivery = ({
         data: payload,
       });
 
-      toastSuccess('Product Submitted successfully', 'Uploading product images');
-      console.log('Product created:', created);
+      toastSuccess(
+        'Product Submitted successfully',
+        'Uploading product images'
+      );
 
       const itemId = created?.data.item?.[0]?.id;
       if (!itemId) throw new Error('Missing item ID from response');
@@ -175,25 +199,26 @@ const Delivery = ({
         if (image) formData_.append(`image${index + 1}`, image);
       });
 
-      const uploadResp = await runFetch({
+      await runFetch({
         endpoint: imgEndpoint,
         method: 'PUT',
         data: formData_,
         isFormData: true,
       });
 
-      console.log('Image upload response:', uploadResp);
-
       toastSuccess(
         'Product images uploaded successfully',
-        'Your product images have been uploaded successfully',
+        'Your product images have been uploaded successfully'
       );
 
-      setLoading(false);
       navigate('/product-success');
     } catch (error) {
       console.error(error);
-      toastError('Submission Failed', error.message || 'An error occurred during submission');
+      toastError(
+        'Submission Failed',
+        error.message || 'An error occurred during submission'
+      );
+    } finally {
       setLoading(false);
     }
   };

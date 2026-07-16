@@ -16,6 +16,7 @@ import { HiOutlineReceiptRefund } from 'react-icons/hi2';
 import { TbClockHour4 } from 'react-icons/tb';
 import { MdViewInAr } from 'react-icons/md';
 import ChatSection from '../../../Components/Chat/ChatSection';
+import { Fetch } from '../../../utils';
 import {
   IoChevronDownCircleOutline,
   IoChevronUpCircleOutline,
@@ -228,27 +229,19 @@ const AuctionDetails = () => {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`${current}auctions/${id}`, {
+      const response = await Fetch({
+        url: `${current}auctions/${id}`,
         method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.success) {
+        throw new Error(`HTTP error! status: ${response.error}`);
       }
 
-      const userData = JSON.parse(sessionStorage.getItem('_user'));
-      const updatedAuctions = userData.auctions.filter((a) => a.id !== id);
-      sessionStorage.setItem(
-        '_user',
-        JSON.stringify({
-          ...userData,
-          auctions: updatedAuctions,
-        })
-      );
+      const auctionData = JSON.parse(sessionStorage.getItem('_auctions'));
+      console.log(auctionData);
+      const updatedAuctions = auctionData.filter((a) => a.id !== id);
+      sessionStorage.setItem('_auctions', JSON.stringify([...updatedAuctions]));
 
       toast.success('Auction deleted successfully');
       navigate('/dashboard/products');
