@@ -197,6 +197,10 @@ const Dashboard = () => {
     }
   };
 
+  // useEffect(() => {
+  //   console.log('Bids: ', bids);
+  // }, [bids]);
+
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -857,16 +861,16 @@ const Dashboard = () => {
                                           obj.status === 'active'
                                             ? 'text-green-800'
                                             : obj.status === 'ended'
-                                            ? 'text-gray-800'
-                                            : 'text-yellow-800'
+                                              ? 'text-gray-800'
+                                              : 'text-yellow-800'
                                         }`}
                                         style={{
                                           backgroundColor:
                                             obj.status === 'active'
                                               ? 'rgba(34, 197, 94, 0.1)'
                                               : obj.status === 'ended'
-                                              ? 'rgba(107, 114, 128, 0.1)'
-                                              : 'rgba(245, 158, 11, 0.1)',
+                                                ? 'rgba(107, 114, 128, 0.1)'
+                                                : 'rgba(245, 158, 11, 0.1)',
                                         }}
                                       >
                                         {capitalize(obj.status)}

@@ -6,7 +6,7 @@ import { FaNairaSign, FaLink } from 'react-icons/fa6';
 import { BsLightningCharge, BsStarFill } from 'react-icons/bs';
 import { FaEthereum } from 'react-icons/fa';
 import { RiRefund2Line } from 'react-icons/ri';
-import { capitalize, currencyFormat, current } from '../../utils';
+import { capitalize, currencyFormat, current, Fetch } from '../../utils';
 import style from './css/ProductAuctionDetails.module.css';
 import Loading from '../../assets/loader2';
 import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
@@ -58,27 +58,23 @@ const ProductAuctionDetails = () => {
   const runFetch = useCallback(
     async ({ data = null, method = 'GET', endpoint = endpoint }) => {
       try {
-        const response = await fetch(endpoint, {
+        const response = await Fetch({
+          url: endpoint,
           method: method,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: data ? JSON.stringify(data) : null,
+          requestData: data ? data : null,
         });
-        if (!response.ok) {
-          let error = await response.json();
+        if (!response.success) {
           toastError(
-            error.message || 'An error occurred while fetching data.',
-            error.detail || 'Please try again later.',
+            response.error.message || 'An error occurred while fetching data.',
+            response.error.detail || 'Please try again later.'
           );
           setLoading(false);
           setBuyNowLoading(false);
           setPlaceBidLoading(false);
-          throw new Error(`Unable to fetch auction data: ${error}`);
+          throw new Error(`Unable to fetch auction data: ${response.error}`);
         }
-        const resp = await response.json();
-        return resp.data;
+        // const resp = await response.json();
+        return response.data;
       } catch (error) {
         setLoading(false);
         setBuyNowLoading(false);
@@ -96,35 +92,34 @@ const ProductAuctionDetails = () => {
     setSellerLoading(true);
     setBiddersLoading(true);
 
+    setLoading(true);
+
     const fetchAuctionData = async () => {
-      setLoading(true);
       const data = await runFetch({
         endpoint: `${endpoint}auctions/${id}`,
         method: 'GET',
       });
-      console.log(data);
-      setAuction(data);
+      console.log('Auction data', data);
+      setAuction(data.data);
       setImages(() =>
         [
-          data?.item[0]?.image_link?.link ||
+          data?.data?.item[0]?.image_link?.link ||
             'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg',
-          data?.item[0]?.image_link_1?.link || null,
-          data?.item[0]?.image_link_2?.link || null,
-          data?.item[0]?.image_link_3?.link || null,
-          data?.item[0]?.image_link_4?.link || null,
+          data?.data?.item[0]?.image_link_1?.link || null,
+          data?.data?.item[0]?.image_link_2?.link || null,
+          data?.data?.item[0]?.image_link_3?.link || null,
+          data?.data?.item[0]?.image_link_4?.link || null,
         ].filter((val) => val !== null)
       );
-      // setTimeString(data?.end_date);
-      setLoading(false);
-      setBids(data.bids);
-      setSeller(data.user);
+      setBids(data?.data.bids);
+      setSeller(data?.data.user);
       setSellerLoading(false);
-      setSellerImage(data.user?.image_link?.link || '');
-      setBiddersLoading(false);
-      // await fetchBiddersData(data.id);
-      // await fetchSellerData(data.users_id);
+      setSellerImage(data?.data.user?.image_link?.link || '');
     };
+
     fetchAuctionData();
+    setBiddersLoading(false);
+    setLoading(false);
   }, [endpoint, id, runFetch]);
 
   // Optimized countdown timer
@@ -289,17 +284,28 @@ const ProductAuctionDetails = () => {
         console.log(resp);
         setPlaceBidLoading(false);
         setBiddersPrice(0);
-        setBids((prevBids) => [
-          ...prevBids,
+        // Replace the previous bids where Id == new bid
+        let newBidList = bids.filter((bid) => bid.id !== resp.data.id);
+        setBids([
+          ...newBidList,
           {
-            id: resp.id,
-            username: resp.username,
-            amount: resp.amount,
+            id: resp.data.id,
+            username: resp.data.username,
+            amount: resp.data.amount,
           },
         ]);
+
+        // setBids((newBidList) => [
+        //   ...newBidList,
+        //   {
+        //     id: resp.data.id,
+        //     username: resp.data.username,
+        //     amount: resp.data.amount,
+        //   },
+        // ]);
         setAuction((prevAuction) => ({
           ...prevAuction,
-          current_price: resp.amount,
+          current_price: resp.data.amount,
         }));
         toastSuccess('Bid Successfully Placed');
       }
