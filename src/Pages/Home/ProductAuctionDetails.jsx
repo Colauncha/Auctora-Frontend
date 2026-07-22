@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { PropTypes } from 'prop-types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiClock, FiUser, FiCheck, FiEye } from 'react-icons/fi';
@@ -11,6 +11,8 @@ import style from './css/ProductAuctionDetails.module.css';
 import Loading from '../../assets/loader2';
 import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
 import { shipping, delivery } from '../../Constants';
+import { ensureFreshToken } from '../../utils/Fetch';
+import useAuthStore from '../../Store/AuthStore';
 
 const ProductAuctionDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -41,6 +43,9 @@ const ProductAuctionDetails = () => {
   const [watchers, setWatchers] = useState(0);
   const [socket, setSocket] = useState(null);
   const [wsStatus, setWsStatus] = useState('idle'); // 'idle' | 'connecting' | 'connected' | 'error'
+  const websocketToken = useAuthStore((state) => state.websocketToken);
+  const wsRetriesLeft = useRef(2);
+  const wsRetryTimer = useRef(null);
 
   // misc
   const navigate = useNavigate();
@@ -154,24 +159,22 @@ const ProductAuctionDetails = () => {
     return () => clearInterval(timer);
   }, [auction]);
 
-  // websocket effects
+  // websocket connection effect
   useEffect(() => {
-    let socket_;
-
     if (!live) {
       setWsStatus('idle');
       return;
     }
 
     setWsStatus('connecting');
-    const token =
-      localStorage.getItem('websocket_token') ||
-      localStorage.getItem('access_token');
     let endpoint = current.replace('http', 'ws');
-    socket_ = new WebSocket(`${endpoint}auctions/bids/ws/${id}/${token}`);
+    const socket_ = new WebSocket(
+      `${endpoint}auctions/bids/ws/${id}/${websocketToken}`
+    );
     setSocket(socket_);
 
     socket_.onopen = () => {
+      wsRetriesLeft.current = 2;
       setWsStatus('connected');
     };
 
@@ -190,20 +193,40 @@ const ProductAuctionDetails = () => {
 
     socket_.onerror = () => {
       setWsStatus('error');
-      toastError('Connection failed', 'Could not connect to live auction. Try again.');
       setLive(false);
     };
 
     socket_.onclose = () => {
-      setWsStatus('idle');
+      setWsStatus((prev) => (prev === 'error' ? prev : 'idle'));
     };
 
     return () => {
-      if (socket_ && socket_.readyState === WebSocket.OPEN) {
+      if (socket_.readyState === WebSocket.OPEN) {
         socket_.close();
       }
     };
-  }, [live, id]);
+  }, [live, id, websocketToken]);
+
+  // websocket retry effect - runs whenever a connection attempt errors out
+  useEffect(() => {
+    if (wsStatus !== 'error') return;
+
+    if (wsRetriesLeft.current <= 0) {
+      toastError(
+        'Connection failed',
+        'Could not connect to live auction. Try again.'
+      );
+      return;
+    }
+
+    wsRetriesLeft.current -= 1;
+    wsRetryTimer.current = setTimeout(async () => {
+      await ensureFreshToken();
+      setLive(true);
+    }, 1000);
+
+    return () => clearTimeout(wsRetryTimer.current);
+  }, [wsStatus]);
 
   // Memoized star rating component
   const StarRating = useMemo(() => {
@@ -243,11 +266,18 @@ const ProductAuctionDetails = () => {
         toastWarn('Invalid Bid', 'Please enter a bid amount.');
         setPlaceBidLoading(false);
         return;
-      } else if (amount < bids[0]?.amount) {
+      } else if (amount <= bids[0]?.amount) {
         setPlaceBidLoading(false);
         toastWarn(
           'Invalid Bid',
-          'Bid amount must be greater than the current price.',
+          'Bid amount must be greater than the current price.'
+        );
+        return;
+      } else if (amount <= auction.current_price) {
+        setPlaceBidLoading(false);
+        toastWarn(
+          'Invalid Bid',
+          'Bid amount must be greater than the current price.'
         );
         return;
       }
@@ -271,7 +301,7 @@ const ProductAuctionDetails = () => {
       setPlaceBidLoading(false);
       toastWarn(
         'Invalid Bid',
-        'Bid amount must be greater than the current price.',
+        'Bid amount must be greater than the current price.'
       );
       return;
     }
@@ -317,6 +347,13 @@ const ProductAuctionDetails = () => {
     }
   };
 
+  // const formatCurrency = (amount) => {
+  //   return new Intl.NumberFormat('en-NG', {
+  //     style: 'currency',
+  //     currency: 'NGN',
+  //   }).format(amount);
+  // };
+
   const handleBuyNow = async (auction_id) => {
     setBuyNowLoading(true);
     try {
@@ -342,7 +379,10 @@ const ProductAuctionDetails = () => {
           current_price: resp.amount,
           status: 'Completed',
         }));
-        toastSuccess('Bid successful', 'You have successfully placed your bid.');
+        toastSuccess(
+          'Bid successful',
+          'You have successfully placed your bid.'
+        );
         navigate(`/product/finalize/${auction_id}`);
       }
     } catch (error) {
@@ -350,7 +390,7 @@ const ProductAuctionDetails = () => {
       setBiddersPrice(0);
       toastError(
         'Bid failed',
-        error.message || 'An error occurred while processing your request.',
+        error.message || 'An error occurred while processing your request.'
       );
       console.error('An error occurred: ', error);
       return;

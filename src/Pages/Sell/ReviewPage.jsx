@@ -9,6 +9,7 @@ import { HiOutlineReceiptRefund } from 'react-icons/hi2';
 import { TbClockHour4 } from 'react-icons/tb';
 import { MdViewInAr } from 'react-icons/md';
 import { FiUser } from 'react-icons/fi';
+import useAuthStore from '../../Store/AuthStore';
 import ChatSection from '../../Components/Chat/ChatSection';
 
 const ReviewPage = () => {
@@ -23,6 +24,7 @@ const ReviewPage = () => {
   const [showChatSection, setShowChatSection] = useState(false);
   const navigate = useNavigate();
   const id = useLocation().pathname.split('/').pop();
+  const user = useAuthStore((state) => state.data);
 
   useEffect(() => {
     const endpoint = `${current}auctions/${id}`;
@@ -37,12 +39,20 @@ const ReviewPage = () => {
         }
         const data = await response.json();
         console.log(data);
+        if (data?.data?.payment?.from_id !== user.id) {
+          toastError(
+            'You did not win this auction',
+            'Please check out other auctions, Redirecting to ongoing auction page'
+          );
+          navigate(`/Ongoing-Auction`);
+          return;
+        }
         if (data?.data?.status !== 'completed') {
           // 'active' is for demonstration, change this to 'completed'
           console.log(data?.data?.status);
           toastError(
             'Auction not completed',
-            'Please check the auction status, Redirecting to auction page',
+            'Please check the auction status, Redirecting to auction page'
           );
           navigate(`/product-details/${id}`);
           return;
@@ -57,7 +67,7 @@ const ReviewPage = () => {
       }
     };
     fetchAuctionDetails();
-  }, [id, navigate]);
+  }, [id, navigate, user]);
 
   const paymentStatMap = {
     pending: { cls: 'bg-blue-100 text-blue-800', icon: TbClockHour4 },
