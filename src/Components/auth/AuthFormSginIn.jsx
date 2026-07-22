@@ -80,10 +80,6 @@ const AuthFormSignIn = ({ heading }) => {
         const data = await response.json();
         toastSuccess(data.message || 'Log In Successful');
         const { access_token, refresh_token } = data.data.token;
-        sessionStorage.setItem(
-          'websocket-allowance',
-          JSON.stringify(access_token),
-        );
         setTimeout(() => {
           login(true, access_token, refresh_token, data.data.user);
           setLoading(false);

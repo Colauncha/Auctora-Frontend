@@ -164,10 +164,11 @@ const ProductAuctionDetails = () => {
     }
 
     setWsStatus('connecting');
-    const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
-    socket_ = new WebSocket(
-      `wss://api.biddius.com/api/auctions/bids/ws/${id}/${token}`
-    );
+    const token =
+      localStorage.getItem('websocket_token') ||
+      localStorage.getItem('access_token');
+    let endpoint = current.replace('http', 'ws');
+    socket_ = new WebSocket(`${endpoint}auctions/bids/ws/${id}/${token}`);
     setSocket(socket_);
 
     socket_.onopen = () => {

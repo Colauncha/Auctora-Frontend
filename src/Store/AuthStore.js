@@ -10,6 +10,7 @@ const readStoredAuth = () => ({
   loggedIn: localStorage.getItem('loggedIn') === 'true',
   accessToken: localStorage.getItem('access_token') || '',
   refreshToken: localStorage.getItem('refresh_token') || '',
+  websocketToken: localStorage.getItem('websocket_token') || '',
 });
 
 const useAuthStore = create((set) => {
@@ -23,7 +24,8 @@ const useAuthStore = create((set) => {
       if (
         event.key !== 'loggedIn' &&
         event.key !== 'access_token' &&
-        event.key !== 'refresh_token'
+        event.key !== 'refresh_token' &&
+        event.key !== 'websocket_token'
       ) {
         return;
       }
@@ -32,6 +34,7 @@ const useAuthStore = create((set) => {
         isAuthenticated: next.loggedIn && !!next.accessToken,
         token: next.accessToken,
         refreshToken: next.refreshToken,
+        websocketToken: next.websocketToken,
       });
     });
   }
@@ -40,6 +43,7 @@ const useAuthStore = create((set) => {
     isAuthenticated: stored.loggedIn && !!stored.accessToken,
     token: stored.accessToken,
     refreshToken: stored.refreshToken,
+    websocketToken: stored.websocketToken,
     data: dataFromStorage,
 
     login: (bool, accessToken, refreshToken, data) => {
@@ -47,25 +51,35 @@ const useAuthStore = create((set) => {
         if (bool) {
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('access_token', accessToken || '');
+          localStorage.setItem('websocket_token', accessToken || '');
           localStorage.setItem('refresh_token', refreshToken || '');
           sessionStorage.setItem('_user', JSON.stringify(data || {}));
           return {
             isAuthenticated: true,
             token: accessToken || '',
             refreshToken: refreshToken || '',
+            websocketToken: accessToken || '',
             data: data || {},
           };
         }
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('access_token');
+        localStorage.removeItem('websocket_token');
         localStorage.removeItem('refresh_token');
         sessionStorage.removeItem('_user');
-        return { isAuthenticated: false, token: '', refreshToken: '', data: {} };
+        return {
+          isAuthenticated: false,
+          token: '',
+          refreshToken: '',
+          webscoketToken: '',
+          data: {},
+        };
       });
     },
 
     updateTokens: (accessToken, refreshToken) => {
       localStorage.setItem('access_token', accessToken || '');
+      localStorage.setItem('websocket_token', accessToken || '');
       localStorage.setItem('refresh_token', refreshToken || '');
       if (accessToken) {
         localStorage.setItem('loggedIn', 'true');
@@ -73,6 +87,7 @@ const useAuthStore = create((set) => {
       set({
         token: accessToken || '',
         refreshToken: refreshToken || '',
+        websoketToken: accessToken || '',
         isAuthenticated: !!accessToken,
       });
     },
@@ -88,6 +103,7 @@ const useAuthStore = create((set) => {
     logout: () => {
       localStorage.removeItem('loggedIn');
       localStorage.removeItem('access_token');
+      localStorage.removeItem('websocket_token');
       localStorage.removeItem('refresh_token');
       sessionStorage.removeItem('_user');
       set({ isAuthenticated: false, token: '', refreshToken: '', data: {} });
