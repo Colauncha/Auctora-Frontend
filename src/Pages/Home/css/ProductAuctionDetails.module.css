@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 3px;
     width: 100% !important;
-    height: 40dvh;
+    height: 45dvh;
     overflow-y: auto;
 }
 
@@ -14,4 +14,10 @@
     align-items: center !important;
     justify-content: space-between;
     height: 50px;
+}
+
+@media (max-width: 759px) {
+    .container {
+        height: min-content;
+    }
 }

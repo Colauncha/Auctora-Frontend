@@ -71,7 +71,7 @@ const useAuthStore = create((set) => {
           isAuthenticated: false,
           token: '',
           refreshToken: '',
-          webscoketToken: '',
+          websocketToken: '',
           data: {},
         };
       });
@@ -87,7 +87,7 @@ const useAuthStore = create((set) => {
       set({
         token: accessToken || '',
         refreshToken: refreshToken || '',
-        websoketToken: accessToken || '',
+        websocketToken: accessToken || '',
         isAuthenticated: !!accessToken,
       });
     },
@@ -106,7 +106,13 @@ const useAuthStore = create((set) => {
       localStorage.removeItem('websocket_token');
       localStorage.removeItem('refresh_token');
       sessionStorage.removeItem('_user');
-      set({ isAuthenticated: false, token: '', refreshToken: '', data: {} });
+      set({
+        isAuthenticated: false,
+        token: '',
+        refreshToken: '',
+        websocketToken: '',
+        data: {},
+      });
     },
   };
 });
