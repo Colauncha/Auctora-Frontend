@@ -336,7 +336,7 @@ const ViewAll = () => {
                       countDown={item.end_date}
                       startDate={item.start_date}
                       to={`/product-details/${item.id}`}
-                      className="w-full max-w-xs min-h-[450px] mx-auto"
+                      className="w-full max-w-xs min-h-[300px] mx-auto"
                       status={item.status}
                     />
                   </div>
