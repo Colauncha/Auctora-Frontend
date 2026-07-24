@@ -734,7 +734,7 @@ const ProductAuctionDetails = () => {
                 <div>
                   <h4 className="font-medium">{seller_?.username}</h4>
                   <div className="flex items-center">
-                    <StarRating rating={seller_?.rating} />
+                    <StarRating rating={seller_?.rating || 0} />
                     <span className="text-gray-500 text-sm ml-2">
                       {sellerLoading ? <Loading /> : `${seller_?.rating}`}
                     </span>
@@ -751,10 +751,10 @@ const ProductAuctionDetails = () => {
               <div className={`${style.container} mb-6 border-gray-200`}>
                 <div className="flex items-center justify-between w-full sticky top-0 bg-white border-b border-gray-200 pb-3 mb-2">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-base font-semibold text-maroon">
+                    <h2 className="text-lg font-semibold text-maroon">
                       Active Bids
                     </h2>
-                    <span className="rounded-md bg-blue-100 text-xs w-5 py-0.5 text-center text-blue-800 font-medium">
+                    <span className="rounded-full bg-blue-50 text-[8px] w-5 py-0.5 text-center text-blue-800 font-medium">
                       {bids?.length || 0}
                     </span>
                     {wsStatus === 'connected' && watchers > 0 && (

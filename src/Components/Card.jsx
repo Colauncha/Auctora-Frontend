@@ -1,18 +1,19 @@
 import { Link } from "react-router-dom";
 import { PropTypes } from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
+import { FiClock } from 'react-icons/fi';
 import { capitalize } from '../utils';
 
 const Card = ({
   imgUrl,
   itemName,
   price,
-  sellerName,
   bid,
   countDown,
   to,
   status,
   startDate,
+  className = '',
 }) => {
   const [timeLeft, setTimeLeft] = useState(countDown);
   const [timeDesc, setTimeDesc] = useState({
@@ -52,38 +53,37 @@ const Card = ({
         // change to 10
         setTimeDesc({
           value: 'New',
-          style: 'bg-green-400 text-white hover:bg-green-500',
+          style: 'border border-green-200 bg-green-50 text-green-600',
         });
       } else if ((distance2End / displacement) * 100 < 10) {
         //change 50 to 90
         setTimeDesc({
           value: 'Ending Soon!!',
-          style: 'bg-red-400 text-white hover:bg-red-500',
+          style: 'border border-red-200 bg-red-50 text-red-600',
         });
       }
     }
   }, [countDown, startDate, status]);
 
   useEffect(() => {
-    console.log(sellerName);
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft(countDown));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [countDown, sellerName, calculateTimeLeft]);
+  }, [countDown, calculateTimeLeft]);
 
   const statusColorScheme = {
-    active: 'bg-blue-400 text-white hover:bg-blue-500',
-    completed: 'bg-green-400 text-white hover:bg-green-500',
-    cancled: 'bg-red-400 text-white hover:bg-red-500',
-    pending: 'bg-yellow-300 text-black hover:bg-yellow-500',
+    active: 'border border-blue-200 bg-blue-50 text-blue-600',
+    completed: 'border border-green-200 bg-green-50 text-green-600',
+    cancled: 'border border-red-200 bg-red-50 text-red-600',
+    pending: 'border border-yellow-200 bg-yellow-50 text-yellow-600',
   };
 
   return (
     <Link
       to={to}
-      className="relative flex flex-col items-center gap-2 w-full transition-transform hover:scale-[1.02]"
+      className={`flex flex-col items-center gap-2 w-full transition-transform hover:scale-[1.02] ${className}`}
     >
       <img
         src={imgUrl}
@@ -91,34 +91,36 @@ const Card = ({
         className="w-full h-[160px] sm:h-[190px] md:h-[220px] rounded-xl bg-slate-300 object-cover shadow-md"
       />
 
-      <div className="w-full px-1">
+      <div className="w-full px-1 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-1">
+          <span
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusColorScheme[status]}`}
+          >
+            {capitalize(status)}
+          </span>
+          {timeDesc.value && (
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${timeDesc.style}`}
+            >
+              {capitalize(timeDesc.value)}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold text-gray-600">
+            <FiClock size={10} />
+            {timeLeft}
+          </span>
+        </div>
+
         <h3 className="text-[#9F3247] text-sm font-bold truncate">
           {itemName}
         </h3>
 
-        <div className="flex justify-between items-center mt-1 text-[#9F3247]">
+        <div className="flex justify-between items-center text-[#9F3247]">
           <p className="text-sm font-semibold">{price}</p>
           <p className="text-xs text-right">
             {bid} bid{+bid === 1 ? '' : 's'}
           </p>
         </div>
-
-        <div className="absolute bottom-[52px] left-2 flex items-center justify-center bg-[#9f3248cc] hover:bg-[#9f3247] text-white text-[10px] px-2 py-1 rounded-md shadow cursor-pointer">
-          <p className="font-bold">Time Left:</p>
-          <span className="ml-1">{timeLeft}</span>
-        </div>
-        <div
-          className={`absolute top-2 left-2 flex items-center justify-center opacity-80 hover:opacity-90 ${statusColorScheme[status]} text-[10px] font-semibold px-2 py-1 rounded-md shadow cursor-pointer transition-all duration-300`}
-        >
-          <span>{capitalize(status)}</span>
-        </div>
-        {timeDesc.value && (
-          <div
-            className={`absolute top-2 right-2 flex items-center justify-center opacity-90 ${timeDesc.style} text-[10px] font-semibold px-2 py-1 rounded-md shadow`}
-          >
-            <span>{capitalize(timeDesc.value)}</span>
-          </div>
-        )}
       </div>
     </Link>
   );
@@ -128,12 +130,12 @@ Card.propTypes = {
   imgUrl: PropTypes.string.isRequired,
   itemName: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
-  sellerName: PropTypes.string.isRequired,
   bid: PropTypes.number.isRequired,
   countDown: PropTypes.string.isRequired,
   startDate: PropTypes.string,
   to: PropTypes.string.isRequired,
   status: PropTypes.oneOf(['active', 'completed', 'cancled', 'pending']),
+  className: PropTypes.string,
 };
 
 export default Card;
