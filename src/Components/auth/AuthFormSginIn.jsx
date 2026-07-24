@@ -35,7 +35,6 @@ const AuthFormSignIn = ({ heading }) => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data);
       window.open(data.data.url, '_blank');
     } else {
       const errorData = await response.json();
