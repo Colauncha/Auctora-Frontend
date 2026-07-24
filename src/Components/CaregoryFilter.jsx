@@ -47,7 +47,7 @@ const CategoryFilter = ({ label, func, clear }) => {
   };
 
   return (
-    <div className="flex flex-col justify-center p-3 mb-3 bg-gray-50 rounded-md border border-[#9f324877] w-full">
+    <div className="flex flex-col justify-center p-3 mb-3 border-b border-[#9f324877] w-full">
       {/* Header */}
       <div className={`flex justify-between items-center ${open && 'mb-3'}`}>
         <h3 className="font-semibold text-[#9f3248] text-lg">{label}</h3>
@@ -83,7 +83,7 @@ const CategoryFilter = ({ label, func, clear }) => {
 
       {/* Selected Tags */}
       {Object.keys(selected).length > 0 && (
-        <div className="flex flex-wrap gap-2 my-3">
+        <div className={`flex flex-wrap gap-2 ${!open ? 'my-3' : 'mb-3'}`}>
           {Object.entries(selected).map(([catId, subSet]) => {
             const category = categories.find((cat) => cat.id === catId);
             const categoryName = category?.name || 'Unknown';
@@ -128,8 +128,11 @@ const CategoryFilter = ({ label, func, clear }) => {
             <p className="text-sm text-gray-500">No categories available.</p>
           ) : (
             <ul className="space-y-4">
-              {categories.map((cat) => (
-                <li key={cat.id} className="border-b pb-2">
+              {categories.map((cat, ind, arr) => (
+                <li
+                  key={cat.id}
+                  className={`${ind !== arr.length - 1 && 'border-b'} pb-2`}
+                >
                   <label className="inline-flex items-center space-x-2 cursor-pointer font-medium text-[#9f3248] text-sm">
                     <input
                       type="checkbox"

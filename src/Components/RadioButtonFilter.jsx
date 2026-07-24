@@ -16,7 +16,7 @@ const RadioButtonFilter = ({ label, options, func, clear }) => {
   }, [clear, func]);
 
   return (
-    <div className="flex flex-col p-3 mb-3 bg-gray-50 rounded-md border border-[#9f324877] w-full">
+    <div className="flex flex-col p-3 mb-3 border-b border-[#9f324877] w-full">
       <div
         className={`flex justify-between items-center ${open && !selected && 'mb-3'}`}
       >

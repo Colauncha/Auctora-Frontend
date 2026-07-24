@@ -26,7 +26,7 @@ const PriceRange = ({ label, func, clear }) => {
 
   return (
     <div
-      className={`flex flex-col p-3 mb-3 bg-gray-50 rounded-md border border-[#9f324877] lg:w-full`}
+      className={`flex flex-col p-3 mb-3 border-b border-[#9f324877] lg:w-full`}
     >
       {/* Header with toggle */}
       <div className={`flex justify-between items-center ${open && 'mb-3'}`}>
@@ -39,7 +39,7 @@ const PriceRange = ({ label, func, clear }) => {
               func && func([]);
             }}
           >
-            <FaEraser size={14} color="#9f3248" />
+            <FaEraser size={16} color="#9f3248" />
             <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
               Clear Filter
             </span>
