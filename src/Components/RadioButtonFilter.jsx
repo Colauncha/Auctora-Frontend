@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FaEraser, FaAngleUp, FaAngleDown } from 'react-icons/fa';
-import { capitalize } from '../utils';
 
 const RadioButtonFilter = ({ label, options, func, clear }) => {
   const [selected, setSelected] = useState(null);
@@ -17,43 +16,45 @@ const RadioButtonFilter = ({ label, options, func, clear }) => {
   }, [clear, func]);
 
   return (
-    <div className="flex flex-col p-4 mb-5 bg-gray-50 rounded-md shadow-md w-full">
-      <div className="flex justify-between items-center mb-3">
+    <div className="flex flex-col p-3 mb-3 bg-gray-50 rounded-md border border-[#9f324877] w-full">
+      <div
+        className={`flex justify-between items-center ${open && !selected && 'mb-3'}`}
+      >
         <h3 className="font-semibold text-[#9f3248] text-lg">{label}</h3>
 
-        {/* Clear Button */}
-        <div
-          onClick={() => {
-            setSelected(null);
-            func && func(null);
-          }}
-          className="cursor-pointer relative group"
-        >
-          <FaEraser size={16} className="text-[#9f3248]" />
-          <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block z-50">
-            Clear Filter
-          </span>
-        </div>
+        <div className="flex gap-2 items-center">
+          {/* Clear Button */}
+          <div
+            onClick={() => {
+              setSelected(null);
+              func && func(null);
+            }}
+            className="cursor-pointer relative group"
+          >
+            <FaEraser size={16} className="text-[#9f3248]" />
+            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block z-50">
+              Clear Filter
+            </span>
+          </div>
 
-        {/* Toggle Button */}
-        <div onClick={toggle} className="cursor-pointer relative group">
-          {open ? (
-            <FaAngleUp size={18} className="text-[#9f3248]" />
-          ) : (
-            <FaAngleDown size={18} className="text-[#9f3248]" />
-          )}
-          <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block z-50">
-            {open ? 'Hide Selections' : 'View Selections'}
-          </span>
+          {/* Toggle Button */}
+          <div onClick={toggle} className="cursor-pointer relative group">
+            {open ? (
+              <FaAngleUp size={18} className="text-[#9f3248]" />
+            ) : (
+              <FaAngleDown size={18} className="text-[#9f3248]" />
+            )}
+            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block z-50">
+              {open ? 'Hide Selections' : 'View Selections'}
+            </span>
+          </div>
         </div>
       </div>
 
       {selected && (
-        <div className="mb-3 text-[#9f3248] text-md">
-          <span className="font-semibold mr-2">Selected:</span>
-          <span className="text-sm font-light">
-            {capitalize(String(selected))}
-          </span>
+        <div className="mb-1 text-[#9f3248]">
+          <span className="font-medium text-[10px] mr-2">SELECTED:</span>
+          <span className="text-[10px] font-medium">{String(selected)}</span>
         </div>
       )}
       {open && (
@@ -74,8 +75,8 @@ const RadioButtonFilter = ({ label, options, func, clear }) => {
                   func && func(option.value);
                 }}
               />
-              <div className="w-4 h-4 rounded-full border border-[#9f3248] peer-checked:[#9f3248] peer-checked:ring-2 peer-checked:ring-[#9f3248]"></div>
-              <span>{option.label}</span>
+              <div className="w-3 h-3 rounded-full border border-[#9f3248] peer-checked:[#9f3248] peer-checked:ring-2 peer-checked:ring-[#9f3248]"></div>
+              <span className="text-xs">{option.label}</span>
             </label>
           ))}
         </div>

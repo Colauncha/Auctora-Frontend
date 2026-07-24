@@ -5,11 +5,11 @@ const Button = ({ label, className, onClick, icon, iconClassName }) => {
   return (
     <div>
       <button
-        className={`bg-[#9F3247] text-white px-4 w-full h-[42px] rounded-[62px] ${className}`}
+        className={`bg-[#9F3247] border-2 border-[#8e0f28] text-white px-4 w-full h-[42px] rounded-[62px] ${className}`}
         onClick={onClick}
       >
         {label}
-        {icon ? <img className={iconClassName} src={icon}/> : ""}
+        {icon ? <img className={iconClassName} src={icon} /> : ''}
       </button>
     </div>
   );

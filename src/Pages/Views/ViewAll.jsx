@@ -216,7 +216,7 @@ const ViewAll = () => {
       >
         <div className="w-full flex flex-col justify-start lg:flex-row mx-auto lg:gap-12">
           <div className="flex-col w-full lg:w-[20%] p-2 hidden lg:flex">
-            <h2 className="font-[500] text-start text-[#9f3248] text-[18px]">
+            <h2 className="font-[700] mb-4 text-start text-[#9f3248] text-[18px]">
               Filters
             </h2>
             <CategoryFilter
@@ -261,12 +261,12 @@ const ViewAll = () => {
             />
             <Button
               label="Apply Filter"
-              className="w-full mt-4"
+              className="w-full mt-3"
               onClick={handleFilterChange}
             />
             <Button
               label="Clear Filters"
-              className="w-full mt-4"
+              className="w-full mt-3"
               onClick={() => {
                 setClearFilter(true);
                 handleClearFilter();
@@ -293,7 +293,7 @@ const ViewAll = () => {
                     onChange={(e) => {
                       handleSortChange(e.target.value);
                     }}
-                    className="px-3 py-1 text-sm rounded-md border border-gray-300 focus:outline-none"
+                    className="px-3 py-1 text-sm rounded-md bg-white text-gray-500 border-gray-300 focus:outline-none"
                   >
                     <option className="py-2" value="popular">
                       Most Popular
@@ -393,7 +393,7 @@ const ViewAll = () => {
               Per page:
             </p>
             <select
-              className="w-20 h-9 px-2 border rounded-md text-sm text-[#333] focus:outline-none"
+              className="w-20 h-9 px-2 bg-white rounded-md text-sm text-[#333] focus:outline-none"
               onChange={(e) => {
                 handlePageChange(currentPage);
                 setItemsPerPage(e.target.value);

@@ -47,41 +47,43 @@ const CategoryFilter = ({ label, func, clear }) => {
   };
 
   return (
-    <div className="flex flex-col p-4 mb-5 bg-gray-50 rounded-md shadow-md w-full">
+    <div className="flex flex-col justify-center p-3 mb-3 bg-gray-50 rounded-md border border-[#9f324877] w-full">
       {/* Header */}
-      <div className="flex justify-between items-center mb-3">
+      <div className={`flex justify-between items-center ${open && 'mb-3'}`}>
         <h3 className="font-semibold text-[#9f3248] text-lg">{label}</h3>
 
-        {/* Clear Button */}
-        <div
-          onClick={() => {
-            setSelected({});
-            func && func({});
-          }}
-          className="cursor-pointer relative group"
-        >
-          <FaEraser size={16} className="text-[#9f3248]" />
-          <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-            Clear Filter
-          </span>
-        </div>
+        <div className="flex gap-2 items-center">
+          {/* Clear Button */}
+          <div
+            onClick={() => {
+              setSelected({});
+              func && func({});
+            }}
+            className="cursor-pointer relative group"
+          >
+            <FaEraser size={16} className="text-[#9f3248]" />
+            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
+              Clear Filter
+            </span>
+          </div>
 
-        {/* Toggle Button */}
-        <div onClick={toggle} className="cursor-pointer relative group">
-          {open ? (
-            <FaAngleUp size={18} className="text-[#9f3248]" />
-          ) : (
-            <FaAngleDown size={18} className="text-[#9f3248]" />
-          )}
-          <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-            {open ? 'Hide Selections' : 'View Selections'}
-          </span>
+          {/* Toggle Button */}
+          <div onClick={toggle} className="cursor-pointer relative group">
+            {open ? (
+              <FaAngleUp size={18} className="text-[#9f3248]" />
+            ) : (
+              <FaAngleDown size={18} className="text-[#9f3248]" />
+            )}
+            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
+              {open ? 'Hide Selections' : 'View Selections'}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Selected Tags */}
       {Object.keys(selected).length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-2 my-3">
           {Object.entries(selected).map(([catId, subSet]) => {
             const category = categories.find((cat) => cat.id === catId);
             const categoryName = category?.name || 'Unknown';
@@ -90,7 +92,7 @@ const CategoryFilter = ({ label, func, clear }) => {
               return (
                 <span
                   key={catId}
-                  className="flex items-center bg-[#9f3248] text-white text-sm px-3 py-1 rounded-full cursor-pointer"
+                  className="flex items-center bg-[#9f3248] text-white text-xs px-3 py-1 rounded-full cursor-pointer"
                   onClick={() => {
                     setSelected({});
                     func && func({});

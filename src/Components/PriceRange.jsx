@@ -26,32 +26,34 @@ const PriceRange = ({ label, func, clear }) => {
 
   return (
     <div
-      className={`flex flex-col p-4 mb-5 bg-gray-50 rounded-md shadow-md lg:w-full`}
+      className={`flex flex-col p-3 mb-3 bg-gray-50 rounded-md border border-[#9f324877] lg:w-full`}
     >
       {/* Header with toggle */}
-      <div className="flex justify-between items-center mb-2">
+      <div className={`flex justify-between items-center ${open && 'mb-3'}`}>
         <h3 className="font-bold text-[#9f3248]">{label}</h3>
-        <div
-          className="cursor-pointer relative group"
-          onClick={() => {
-            setValues([MIN, MAX]);
-            func && func([]);
-          }}
-        >
-          <FaEraser size={14} color="#9f3248" />
-          <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-            Clear Filter
-          </span>
-        </div>
-        <div className="cursor-pointer relative group" onClick={toggle}>
-          {open ? (
-            <FaAngleUp size={16} color="#9f3248" />
-          ) : (
-            <FaAngleDown size={16} color="#9f3248" />
-          )}
-          <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
-            Select Range
-          </span>
+        <div className="flex gap-2 items-center">
+          <div
+            className="cursor-pointer relative group"
+            onClick={() => {
+              setValues([MIN, MAX]);
+              func && func([]);
+            }}
+          >
+            <FaEraser size={14} color="#9f3248" />
+            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
+              Clear Filter
+            </span>
+          </div>
+          <div className="cursor-pointer relative group" onClick={toggle}>
+            {open ? (
+              <FaAngleUp size={16} color="#9f3248" />
+            ) : (
+              <FaAngleDown size={16} color="#9f3248" />
+            )}
+            <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
+              Select Range
+            </span>
+          </div>
         </div>
       </div>
 
