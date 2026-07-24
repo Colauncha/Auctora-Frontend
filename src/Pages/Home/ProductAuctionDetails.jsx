@@ -118,7 +118,6 @@ const ProductAuctionDetails = () => {
         endpoint: `${endpoint}auctions/${id}`,
         method: 'GET',
       });
-      console.log('Auction data', data);
       setAuction(data.data);
       setImages(() =>
         [
@@ -130,13 +129,30 @@ const ProductAuctionDetails = () => {
           data?.data?.item[0]?.image_link_4?.link || null,
         ].filter((val) => val !== null)
       );
-      setBids(data?.data.bids);
+      // setBids(data?.data.bids);
       setSeller(data?.data.user);
       setSellerLoading(false);
       setSellerImage(data?.data.user?.image_link?.link || '');
     };
 
+    const fetchBids = async () => {
+      const response = await runFetch({
+        endpoint: `${endpoint}auctions/bids/list?auction_id=${id}`,
+        method: 'GET',
+      });
+      // console.log('fetchBids: ', response);
+      const bidData = response.data.map((bid_) => ({
+        id: bid_.id,
+        username: bid_.username,
+        amount: bid_.amount,
+        created_at: bid_.created_at,
+        avatar: bid_.user.image_link.link,
+      }));
+      setBids(bidData);
+    };
+
     fetchAuctionData();
+    fetchBids();
     setBiddersLoading(false);
     setLoading(false);
   }, [endpoint, id, runFetch, refresh]);
@@ -317,6 +333,10 @@ const ProductAuctionDetails = () => {
       };
 
       socket.send(JSON.stringify(data));
+      setAuction((prevAuction) => ({
+        ...prevAuction,
+        current_price: data.amount,
+      }));
       setPlaceBidLoading(false);
       return;
     }
@@ -333,6 +353,20 @@ const ProductAuctionDetails = () => {
         'Bid amount must be greater than the current price.'
       );
       return;
+    } else if (amount <= bids[0]?.amount) {
+      setPlaceBidLoading(false);
+      toastWarn(
+        'Invalid Bid',
+        'Bid amount must be greater than the current price.'
+      );
+      return;
+    } else if (timeLeft.totalInSeconds <= 0) {
+      setPlaceBidLoading(false);
+      toastWarn(
+        'Auction Ended',
+        'Auction has ended, you will be notified of your standing.'
+      );
+      return;
     }
     try {
       const resp = await runFetch({
@@ -341,28 +375,23 @@ const ProductAuctionDetails = () => {
         data: { auction_id, amount },
       });
       if (resp) {
-        console.log(resp);
         setPlaceBidLoading(false);
         setBiddersPrice(0);
         // Replace the previous bids where Id == new bid
-        let newBidList = bids.filter((bid) => bid.id !== resp.data.id);
+        let newBidList = bids.filter(
+          (bid) => bid.username !== resp.data?.username
+        );
         setBids([
           ...newBidList,
           {
             id: resp.data.id,
             username: resp.data.username,
             amount: resp.data.amount,
+            created_at: resp.data.created_at,
+            avatar: resp.data.user.image_link.link,
           },
         ]);
 
-        // setBids((newBidList) => [
-        //   ...newBidList,
-        //   {
-        //     id: resp.data.id,
-        //     username: resp.data.username,
-        //     amount: resp.data.amount,
-        //   },
-        // ]);
         setAuction((prevAuction) => ({
           ...prevAuction,
           current_price: resp.data.amount,
@@ -811,9 +840,16 @@ const ProductAuctionDetails = () => {
                         className={`${style.activeBids} border border-gray-200 bg-gray-50 p-4 rounded-lg transition-bg duration-500 ease-in-out hover:bg-gray-100`}
                       >
                         <div className="flex items-center">
-                          <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center mr-4">
-                            <FiUser className="text-purple-500" size={20} />
-                          </div>
+                          {bid_?.avatar && bid_?.avatar !== '' ? (
+                            <img
+                              src={bid_?.avatar}
+                              className="w-8 h-8 rounded-full mr-4"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center mr-4">
+                              <FiUser className="text-purple-500" size={20} />
+                            </div>
+                          )}
                           <div>
                             <div>{bid_?.username || 'Unknown Bidder'}</div>
                             <div className="text-[10px] text-gray-400">

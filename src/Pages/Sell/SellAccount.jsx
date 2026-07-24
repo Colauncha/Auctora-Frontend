@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import Loader from '../../assets/loader2';
 import { current, authFetch } from '../../utils';
 import { toastSuccess, toastError, toastWarn } from '../../utils/toast';
+import { FaClipboardList } from 'react-icons/fa';
 
 const SellAccount = () => {
-  const [otp, setOtp] = useState([]);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const refBox0 = useRef();
   const refBox1 = useRef();
   const refBox2 = useRef();
@@ -107,18 +108,37 @@ const SellAccount = () => {
     }
   };
 
-  const moveFocus = (event, nextRef) => {
-    if (event.key >= '0' && event.key <= '9') {
-      setOtp((prev) => [...prev, event.target.value]);
-      if (nextRef?.current) {
-        nextRef.current.focus();
-      }
-    } else if (event.key === 'Backspace') {
-      event.target.value = '';
-      otp.pop();
-      setOtp(otp);
+  const otpRefs = [refBox0, refBox1, refBox2, refBox3, refBox4, refBox5];
+
+  const handleOtpChange = (event, index, nextRef) => {
+    const char = event.target.value.slice(-1);
+    setOtp((prev) => {
+      const next = [...prev];
+      next[index] = char;
+      return next;
+    });
+    if (char && nextRef?.current) {
+      nextRef.current.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (event, index) => {
+    if (event.key === 'Backspace' && !otp[index]) {
       event.target.previousElementSibling?.focus();
     }
+  };
+
+  const handlePaste = async () => {
+    const text = await navigator.clipboard.readText();
+    const chars = text.replace(/\D/g, '').slice(0, 6).split('');
+    setOtp((prev) => {
+      const next = [...prev];
+      chars.forEach((char, idx) => {
+        next[idx] = char;
+      });
+      return next;
+    });
+    otpRefs[Math.max(chars.length - 1, 0)]?.current?.focus();
   };
 
   return (
@@ -139,62 +159,76 @@ const SellAccount = () => {
                   <div className="flex gap-2">
                     <input
                       ref={refBox0}
-                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center"
-                      onKeyUp={(e) => {
-                        moveFocus(e, refBox1);
-                      }}
+                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center outline-1 focus:outline-[#5e1a28]"
+                      onChange={(e) => handleOtpChange(e, 0, refBox1)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, 0)}
+                      value={otp[0]}
                       type="text"
                       maxLength={1}
                     />
                     <input
                       ref={refBox1}
-                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center"
-                      onKeyUp={(e) => {
-                        moveFocus(e, refBox2);
-                      }}
+                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center outline-1 focus:outline-[#5e1a28]"
+                      onChange={(e) => handleOtpChange(e, 1, refBox2)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, 1)}
+                      value={otp[1]}
                       type="text"
                       maxLength={1}
                     />
                     <input
                       ref={refBox2}
-                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center"
-                      onKeyUp={(e) => {
-                        moveFocus(e, refBox3);
-                      }}
+                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center outline-1 focus:outline-[#5e1a28]"
+                      onChange={(e) => handleOtpChange(e, 2, refBox3)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, 2)}
+                      value={otp[2]}
                       type="text"
                       maxLength={1}
                     />
                     <input
                       ref={refBox3}
-                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center"
-                      onKeyUp={(e) => {
-                        moveFocus(e, refBox4);
-                      }}
+                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center outline-1 focus:outline-[#5e1a28]"
+                      onChange={(e) => handleOtpChange(e, 3, refBox4)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, 3)}
+                      value={otp[3]}
                       type="text"
                       maxLength={1}
                     />
                     <input
                       ref={refBox4}
-                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center"
-                      onKeyUp={(e) => {
-                        moveFocus(e, refBox5);
-                      }}
+                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center outline-1 focus:outline-[#5e1a28]"
+                      onChange={(e) => handleOtpChange(e, 4, refBox5)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, 4)}
+                      value={otp[4]}
                       type="text"
                       maxLength={1}
                     />
                     <input
                       ref={refBox5}
-                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center"
-                      onKeyUp={(e) => {
-                        moveFocus(e, null);
-                      }}
+                      className="w-14 border border-gray-300 rounded-lg px-2 py-2 text-center outline-1 focus:outline-[#5e1a28]"
+                      onChange={(e) => handleOtpChange(e, 5, null)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, 5)}
+                      value={otp[5]}
                       type="text"
                       maxLength={1}
                     />
                   </div>
-                  <p className="text-gray-500 mt-4">
-                    The code will be sent via email.
-                  </p>
+                  <div className="w-full flex gap-6 items-center">
+                    <p className="text-gray-500 mt-4">
+                      The code will be sent via email.
+                    </p>
+                    <span
+                      className="flex gap-1 items-center text-gray-500 text-sm mt-4 cursor-pointer group relative"
+                      onClick={handlePaste}
+                    >
+                      <FaClipboardList
+                        size={16}
+                        className="group-hover:text-[#5e1a28] transition-colors duration-500 ease-in-out"
+                      />
+                      <p className="group-hover:text-[#5e1a28] transition-colors duration-500 ease-in-out">
+                        Paste
+                      </p>
+                    </span>
+                  </div>
                   <div className="flex flex-row items-center gap-5 space-y-5 mt-6">
                     <button
                       onClick={Verify}
@@ -233,8 +267,8 @@ const SellAccount = () => {
                   AUCTION ON BIDDIUS
                 </h2>
                 <p className="mt-4 text-lg text-center">
-                  Ready to showcase your products to a global audience? Create
-                  an Biddius seller account now! Tap into the excitement of
+                  Ready to showcase your products to a global audience? Create a
+                  Biddius seller account now! Tap into the excitement of
                   auctions, connect with eager buyers, and turn your items into
                   extraordinary finds. Join the auction adventure today!
                 </p>

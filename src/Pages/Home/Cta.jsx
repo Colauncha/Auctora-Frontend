@@ -37,7 +37,7 @@ const Cta = () => {
   if (!useCta) return null;
 
   return (
-    <section className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] rounded-md h-[200px] lg:h-[177px] px-[24px] md:px-[64px] flex items-center justify-center">
+    <section className="bg-gradient-to-r from-[#7B2334] to-[#9F3247] rounded-3xl h-[200px] lg:h-[177px] px-[24px] md:px-[64px] flex items-center justify-center">
       {isModalOpen && (
         <NewsLetterModal
           isOpen={isModalOpen}
