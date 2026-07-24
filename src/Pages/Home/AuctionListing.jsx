@@ -170,7 +170,7 @@ const AuctionListing = () => {
                 startDate={item.start_date}
                 to={`/product-details/${item.slug}`}
                 status={item.status}
-                className="w-[600px] max-w-[600px] min-h-[500px]"
+                className="w-[600px] max-w-[600px] min-h-[300px]"
               />{' '}
             </div>
           ))}{' '}
