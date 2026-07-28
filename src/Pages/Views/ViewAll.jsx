@@ -41,7 +41,7 @@ const ViewAll = () => {
     page = 1,
     others = null,
   }) => {
-    let endPoint = `${endpoint}?page=${page}&per_page=${per_page}`;
+    let endPoint = `${endpoint}page=${page}&per_page=${per_page}`;
     if (others !== null) {
       let queryString = '';
       for (let k in others) {
@@ -49,7 +49,6 @@ const ViewAll = () => {
       }
       endPoint = `${endPoint}${queryString}`;
     }
-    console.log(endPoint);
     const response = await fetch(endPoint, {
       method: method,
       headers: {
@@ -71,14 +70,16 @@ const ViewAll = () => {
   useEffect(() => {
     setLoading(true);
     window.scrollTo(0, 0);
+    let search = window.location.search || '';
+    search = search.startsWith('?') ? `${search.slice(1, search.length)}&` : '';
+
     const fetchData = async () => {
       try {
-        const endpoint = `${current}auctions/?status=ACTIVE&`;
+        const endpoint = `${current}auctions/?status=ACTIVE&${search}`;
         const resp = await runFetch({ endpoint, per_page: itemsPerPage });
         let data = resp.data;
         setTotalPages(resp.pages);
         setAuctions(data);
-        console.log(data);
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -170,7 +171,6 @@ const ViewAll = () => {
     if (statusQuery !== null) {
       queries.status = statusQuery;
     }
-    console.log('Queries:', queries);
 
     window.scrollTo(0, 0);
     setLoading(true);
@@ -186,7 +186,6 @@ const ViewAll = () => {
         let data = resp.data;
         setTotalPages(resp.pages);
         setAuctions(data);
-        console.log(data);
         setLoading(false);
       } catch (error) {
         console.error(error);

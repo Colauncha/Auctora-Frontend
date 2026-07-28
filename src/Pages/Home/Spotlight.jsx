@@ -1,8 +1,5 @@
-
-
-
-import CountDown from "../../Components/CountDown";
-import Carousel from "../../Components/Carousel";
+import CountDown from '../../Components/CountDown';
+import Carousel from '../../Components/Carousel';
 
 const Spotlight = () => {
   return (

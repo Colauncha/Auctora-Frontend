@@ -1,15 +1,3 @@
-// import { ps_5, user } from "../Constants";
-
-// const Carousel = () => {
-//   return (
-//     <div className="p-[80px]">
-//       <img src={ps_5} fetchPriority="high" alt="PS5" />
-//     </div>
-//   );
-// };
-
-// export default Carousel;
-
 import { useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';

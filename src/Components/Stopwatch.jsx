@@ -2,7 +2,7 @@ import React from "react";
 
 const Stopwatch = ({ days, hours, minutes, seconds }) => {
   return (
-    <div className="w-[320px] h-[40px] flex items-center justify-between">
+    <div className="w-[260px] h-[40px] flex items-center justify-between">
       <div className="w-12 h-12 bg-black rounded-[50%] text-white text-[14px] ">
         <div className="flex flex-col place-items-center pt-2 ">
           <span>{days}</span>

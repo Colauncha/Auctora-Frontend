@@ -9,9 +9,9 @@ const footerArr = [
     heading: 'Company',
     links: [
       { name: 'About', url: '/about-us' },
-      { name: 'Features', url: '/features' },
-      { name: 'Works', url: '/construction/works' },
-      { name: 'Career', url: '/construction/career' },
+      // { name: 'Features', url: '/features' },
+      // { name: 'Works', url: '/construction/works' },
+      // { name: 'Career', url: '/construction/career' },
       { name: 'Blog', url: '/blog' },
     ],
   },
@@ -19,7 +19,7 @@ const footerArr = [
     heading: 'Help',
     links: [
       { name: 'Customer Support', url: '/contact-us' },
-      { name: 'Delivery Details', url: '/construction/delivery-details' },
+      // { name: 'Delivery Details', url: '/construction/delivery-details' },
       { name: 'Terms & Conditions', url: '/terms-conditions' },
       { name: 'Privacy Policy', url: '/privacy-policy' },
     ],
@@ -27,11 +27,11 @@ const footerArr = [
   {
     heading: 'Contact',
     links: [
-      { name: 'Account', url: '/construction/account' },
+      { name: 'Contact us', url: '/contact-us' },
+      // { name: 'Account', url: '/construction/account' },
       { name: 'Manage Deliveries', url: '/construction/delivery' },
-      { name: 'Orders', url: '/construction/orders' },
-      { name: 'Payments', url: '/construction/payments' },
-      
+      // { name: 'Orders', url: '/construction/orders' },
+      // { name: 'Payments', url: '/construction/payments' },
     ],
   },
 ];
