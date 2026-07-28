@@ -1,5 +1,5 @@
 import { useState } from "react"; // Import useState for state management
-import Button from "../../Components/Button";
+// import Button from "../../Components/Button";
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from "../../Store/AuthStore";
 
@@ -12,6 +12,10 @@ const Ads = () => {
 
   const signup = () => {
     navigate('/sign-up', { state: { referrer: 'Hompage' } });
+  };
+
+  const login = () => {
+    navigate('/sign-in', { state: { referrer: 'Hompage' } });
   };
 
   const closeAds = () => {
@@ -37,12 +41,33 @@ const Ads = () => {
         ) : (
           <>
             <p className="text-white">Sign up and get your first order.</p>
-            <Button
+            {/* <Button
               label="Sign Up Now"
               className="text-white bg-transparent h-[28px] border border-[#ffffff55] px-3 py-1 rounded-md hover:bg-[#9F3247] hover:text-[#ffffff] transition-all"
               onClick={signup}
               aria-label="Sign Up Now"
-            />
+            /> */}
+            <span
+              className="relative group px-3 py-1 cursor-pointer h-[28px] flex items-center justify-center"
+              onClick={signup}
+              aria-label="Sign Up Now"
+            >
+              <div className="absolute top-0 rounded-[4px] left-0 w-0 h-full group-hover:w-full transition-all duration-500 ease-in-out bg-white opacity-20"></div>
+              <p className=" text-white text-xs font-normal underline underline-offset-2">
+                Sign Up Now
+              </p>
+            </span>
+            <p className="text-white">or Login</p>
+            <span
+              className="relative group px-3 py-1 cursor-pointer h-[28px] flex items-center justify-center"
+              onClick={login}
+              aria-label="Log in Now"
+            >
+              <div className="absolute top-0 rounded-[4px] left-0 w-0 h-full group-hover:w-full transition-all duration-500 ease-in-out bg-white opacity-20"></div>
+              <p className=" text-white text-xs font-normal underline underline-offset-2">
+                Log in
+              </p>
+            </span>
           </>
         )}
       </div>

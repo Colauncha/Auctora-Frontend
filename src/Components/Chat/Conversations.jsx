@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 const Conversations = ({ setChatId, showModal }) => {
   const ConvoRef = useRef(null);
 
+  const firstViewRef = useRef(true);
+
   const identity = useAuthStore((state) => state.data);
   const token = useAuthStore((state) => state.token);
   const [conversations, setConversations] = useState([]);
@@ -31,9 +33,15 @@ const Conversations = ({ setChatId, showModal }) => {
   }, [token]);
 
   useEffect(() => {
-      setInterval(() => {
-        fetchConversations();
-      }, 30000);
+    if (firstViewRef.current === true) {
+      fetchConversations();
+      firstViewRef.current = false;
+    }
+    const interval = setInterval(() => {
+      fetchConversations();
+    }, 30000);
+
+    return clearInterval(interval);
   }, [fetchConversations, conversations]);
 
   const getLastMessage = (conversation) => {

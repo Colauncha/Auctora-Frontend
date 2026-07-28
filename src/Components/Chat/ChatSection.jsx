@@ -12,9 +12,10 @@ import useAuthStore from '../../Store/AuthStore';
 import Bubble from './Bubble';
 import { quickActionOptions, getStatusIcon } from './util';
 import { toast } from 'react-toastify';
+import { current } from '../../utils';
+
 
 const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
-  const token = JSON.parse(sessionStorage.getItem('websocket-allowance'));
   const identity = useAuthStore((s) => s.data);
 
   const [socket, setSocket] = useState(null);
@@ -33,6 +34,8 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
   const messagesEndRef = useRef(null);
   const chatSectionRef = useRef(null);
 
+  const websocketToken = useAuthStore((state) => state.websocketToken);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -49,12 +52,12 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
 
   /** WebSocket Setup */
   useEffect(() => {
-    if (!showState || !token || chatId === undefined) return;
+    if (!showState || !websocketToken || chatId === undefined) return;
 
-    const ws = new WebSocket(`wss://api.biddius.com/api/chats/ws/${chatId}`, [
-      // const ws = new WebSocket(`ws://localhost:8000/api/chats/ws/${chatId}`, [
+    let endpoint = current.replace('http', 'ws');
+    const ws = new WebSocket(`${endpoint}chats/ws/${chatId}`, [
       'auth',
-      token,
+      websocketToken,
     ]);
     setSocket(ws);
 
@@ -79,8 +82,8 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
             prev.map((m) =>
               Number(m.chat_number) === Number(data.payload.chat_number)
                 ? { ...m, status: 'read' }
-                : m,
-            ),
+                : m
+            )
           );
         }
       } catch {
@@ -92,7 +95,7 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
     ws.onclose = () => setOnline(false);
 
     return () => ws.close();
-  }, [showState, chatId, token]);
+  }, [showState, chatId, websocketToken]);
 
   /** Send Message */
   const sendMessage = (e) => {
@@ -196,10 +199,10 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
                     showMsgInfo.status === 'read'
                       ? 'bg-blue-100 text-blue-700'
                       : showMsgInfo.status === 'delivered'
-                      ? 'bg-green-100 text-green-700'
-                      : showMsgInfo.status === 'sending'
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : 'bg-red-100 text-red-700'
+                        ? 'bg-green-100 text-green-700'
+                        : showMsgInfo.status === 'sending'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-red-100 text-red-700'
                   }`}
                 >
                   {getStatusIcon(showMsgInfo.status)}
