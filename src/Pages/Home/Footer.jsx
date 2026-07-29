@@ -28,7 +28,7 @@ const footerArr = [
     heading: 'Contact',
     links: [
       { name: 'Contact us', url: '/contact-us' },
-      // { name: 'Account', url: '/construction/account' },
+      { name: 'FAQ', url: '/blog' },
       { name: 'Manage Deliveries', url: '/construction/delivery' },
       // { name: 'Orders', url: '/construction/orders' },
       // { name: 'Payments', url: '/construction/payments' },

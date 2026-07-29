@@ -116,6 +116,16 @@ const BottomDock = ({ notifTotal }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const userData = useAuthStore((state) => state.data);
 
+  const [userPic, setUserPic] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    setUserPic(userData?.image_link?.link);
+    setUserName(userData?.username);
+    setUserEmail(userData?.email);
+  }, [userData]);
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-1px_10px_rgba(0,0,0,0.07)]"
@@ -138,9 +148,9 @@ const BottomDock = ({ notifTotal }) => {
             >
               {isProfile && isAuthenticated ? (
                 <NavAvatar
-                  imageUrl={userData?.image_link?.link}
-                  username={userData?.username}
-                  email={userData?.email}
+                  imageUrl={userPic}
+                  username={userName}
+                  email={userEmail}
                   size="sm"
                   className={isActive ? 'ring-[#9f3247]' : ''}
                 />
@@ -191,6 +201,16 @@ const Nav = () => {
   const location = useLocation();
   const path = location.pathname;
   const canGoBack = isPWA && path !== '/';
+
+  const [userPic, setUserPic] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    setUserPic(userData?.image_link?.link);
+    setUserName(userData?.username);
+    setUserEmail(userData?.email);
+  }, [userData]);
 
   useEffect(() => {
     setMobileSearchOpen(false);
@@ -373,9 +393,9 @@ const Nav = () => {
                 />
                 {isAuthenticated ? (
                   <NavAvatar
-                    imageUrl={userData?.image_link?.link}
-                    username={userData?.username}
-                    email={userData?.email}
+                    imageUrl={userPic}
+                    username={userName}
+                    email={userEmail}
                     onClick={() => navigate('/dashboard')}
                   />
                 ) : (
@@ -505,9 +525,9 @@ const Nav = () => {
               />
               {isAuthenticated ? (
                 <NavAvatar
-                  imageUrl={userData?.image_link?.link}
-                  username={userData?.username}
-                  email={userData?.email}
+                  imageUrl={userPic}
+                  username={userName}
+                  email={userEmail}
                   size="sm"
                   onClick={() => navigate('/dashboard')}
                 />
@@ -540,10 +560,7 @@ const Nav = () => {
       )}
 
       {/* Dynamic Spacer */}
-      <div
-        style={{ height: `${isScrolled ? 0 : 60}px` }}
-        className="w-full"
-      />
+      <div style={{ height: `${isScrolled ? 0 : 60}px` }} className="w-full" />
 
       {/* Bottom dock — mobile PWA only */}
       {isMobile && isPWA && <BottomDock notifTotal={notifTotal} />}
