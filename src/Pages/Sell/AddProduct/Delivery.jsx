@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import LoaderW from '../../../assets/loaderWhite';
@@ -13,19 +13,19 @@ const Delivery = ({
   updateFormValidity,
 }) => {
   const [selectedOptions, setSelectedOptions] = useState(
-    formData.delivery?.options || [],
+    formData.delivery?.options || []
   );
   const [pickupAddress, setPickupAddress] = useState(
-    formData.delivery?.address || '',
+    formData.delivery?.address || ''
   );
   const [useHomeAddress, setUseHomeAddress] = useState(false);
 
   const [currentLocation, setCurrentLocation] = useState(false);
   const [pickupLongitude, setPickupLongitude] = useState(
-    formData.delivery?.pickup_longitude || null,
+    formData.delivery?.pickup_longitude || null
   );
   const [pickupLatitude, setPickupLatitude] = useState(
-    formData.delivery?.pickup_latitude || null,
+    formData.delivery?.pickup_latitude || null
   );
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -64,7 +64,7 @@ const Delivery = ({
     if (!navigator.geolocation) {
       toastError(
         'Geolocation not supported',
-        'Please enable location services in your browser settings',
+        'Please enable location services in your browser settings'
       );
       return;
     }
@@ -142,13 +142,16 @@ const Delivery = ({
     setSelectedOptions((prev) =>
       prev.includes(option)
         ? prev.filter((item) => item !== option)
-        : [...prev, option],
+        : [...prev, option]
     );
   };
 
   const handleNext = async () => {
     if (selectedOptions.length === 0) {
-      toastWarn('Please select at least one delivery option', 'This field is required');
+      toastWarn(
+        'Please select at least one delivery option',
+        'This field is required'
+      );
       return;
     }
 
@@ -166,7 +169,11 @@ const Delivery = ({
     const runFetch = async ({ endpoint, method, data, isFormData = false }) => {
       const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
 
-      const response = await authFetch(endpoint, { method, headers, body: data });
+      const response = await authFetch(endpoint, {
+        method,
+        headers,
+        body: data,
+      });
 
       const result = await response.json();
 
@@ -239,9 +246,9 @@ const Delivery = ({
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full">
-      <div className="formatter">
-        <div className="bg-white rounded-lg p-6 md:p-10 mb-4 mt-4">
-          <h4 className="w-full text-xl font-bold mb-4 md:mb-6">
+      <div className="formatter px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg p-4 sm:p-6 md:p-10 mb-4 mt-4">
+          <h4 className="w-full text-lg sm:text-xl font-bold mb-4 md:mb-6">
             Select delivery options <span className="text-red-500">*</span>
           </h4>
 
@@ -256,7 +263,7 @@ const Delivery = ({
                   checked={selectedOptions.includes(option)}
                   onChange={() => handleOptionChange(option)}
                   disabled={option === 'Courier delivery' ? true : false}
-                  className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800"
+                  className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800 shrink-0"
                 />
                 <span className="text-gray-700">{option}</span>
               </label>
@@ -265,26 +272,26 @@ const Delivery = ({
 
           <div className="mt-4 md:mt-6">
             <h3 className="text-sm md:text-base font-medium">Pickup Address</h3>
-            <label className="flex items-center space-x-2 cursor-pointer w-[30%] md:w-1/2 lg:w-1/3 mt-1 p-2 md:p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+            <label className="flex items-center space-x-2 cursor-pointer w-full md:w-1/2 lg:w-1/3 mt-1 p-2 md:p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
               <input
                 type="checkbox"
                 checked={currentLocation}
                 onChange={toggleCurrentLocation}
                 disabled={false}
-                className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800"
+                className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800 shrink-0"
               />
-              <span className="text-gray-700">
+              <span className="text-gray-700 break-words">
                 Use current location{' '}
                 {currentLocation && `[${pickupLatitude} - ${pickupLongitude}]`}
               </span>
             </label>
-            <label className="flex items-center space-x-2 cursor-pointer w-[30%] md:w-1/2 lg:w-1/3 mt-1 p-2 md:p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+            <label className="flex items-center space-x-2 cursor-pointer w-full md:w-1/2 lg:w-1/3 mt-1 p-2 md:p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
               <input
                 type="checkbox"
                 checked={useHomeAddress}
                 onChange={() => handleUseHome(useHomeAddress)}
                 disabled={false}
-                className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800"
+                className="w-4 h-4 md:w-5 md:h-5 rounded border-gray-400 text-red-800 focus:ring-red-800 shrink-0"
               />
               <span className="text-gray-700">Use Home address</span>
             </label>
@@ -303,25 +310,25 @@ const Delivery = ({
             />
           </div>
 
-          <div className="flex gap-4 items-center justify-between mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between mt-6">
             <button
               onClick={() => handleStepChange(activeStep - 1)}
-              className="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300"
+              className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300 order-2 sm:order-1"
             >
               Previous
             </button>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 order-1 sm:order-2">
               <button
                 onClick={handleReset}
-                className="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
+                className="flex-1 sm:flex-none px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
               >
                 Reset
               </button>
               <button
                 onClick={handleNext}
                 disabled={selectedOptions.length === 0 || loading}
-                className={`px-6 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full ${
+                className={`flex-1 sm:flex-none flex items-center justify-center px-6 py-2 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full ${
                   selectedOptions.length === 0
                     ? 'opacity-50 cursor-not-allowed'
                     : 'hover:from-maroon hover:to-maroon'
@@ -345,8 +352,8 @@ Delivery.propTypes = {
   handleStepChange: PropTypes.func.isRequired,
   activeStep: PropTypes.number.isRequired,
   updateFormValidity: PropTypes.func.isRequired,
-  formData: PropTypes.object.isRequired,         // Updated propType
-  updateFormData: PropTypes.func.isRequired,     // New propType
+  formData: PropTypes.object.isRequired, // Updated propType
+  updateFormData: PropTypes.func.isRequired, // New propType
 };
 
 export default Delivery;

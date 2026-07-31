@@ -121,7 +121,7 @@ const Description = ({
         .map((email) => email.trim())
         .filter((email) => email !== '');
       const uniqueParticipants = Array.from(
-        new Set([...participants, ...newParticipants]),
+        new Set([...participants, ...newParticipants])
       );
       setParticipants(uniqueParticipants);
       updateFormData({
@@ -137,7 +137,7 @@ const Description = ({
 
   const removeParticipant = (value) => {
     const updatedParticipants = participants.filter(
-      (participant) => participant !== value,
+      (participant) => participant !== value
     );
     setParticipants(updatedParticipants);
     updateFormData({
@@ -199,17 +199,17 @@ const Description = ({
 
   return (
     <div className="bg-[#F2F0F1] min-h-screen w-full">
-      <div className="formatter">
-        <div className="bg-white rounded-lg p-10 mb-4 mt-4">
-          <h5 className="text-xl font-bold mb-4">
+      <div className="formatter px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg p-4 sm:p-6 md:p-10 mb-4 mt-4">
+          <h5 className="text-lg sm:text-xl font-bold mb-4">
             Fill in the basic information about your item
           </h5>
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="grid gap-6 md:grid-cols-2 sm:grid-cols-1"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2"
           >
             {/* Left Side */}
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 min-w-0">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Product name <span className="text-red-500">*</span>
@@ -238,7 +238,7 @@ const Description = ({
                   placeholder="Enter product details..."
                   value={formData.item.description}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-white h-[500px] sm:h-[400px]"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-white h-[220px] sm:h-[320px] md:h-[420px] lg:h-[500px] resize-y"
                   maxLength={1200}
                   required
                 />
@@ -249,19 +249,19 @@ const Description = ({
             </div>
 
             {/* Right Side */}
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 min-w-0">
               <div className="group relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                   <input
                     type="checkbox"
                     name="refundable"
                     checked={formData.product.refundable}
                     onChange={handleProductChange}
-                    className="mr-2"
+                    className="mr-2 shrink-0"
                   />
                   Allow Refund
                 </label>
-                <span className="absolute left-0 bottom-full mb-1 hidden w-max bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block">
+                <span className="absolute left-0 bottom-full mb-1 hidden w-max max-w-[90vw] sm:max-w-xs bg-gray-700 text-white text-xs rounded py-1 px-2 group-hover:block z-10">
                   If selected the buyer can choose to request a{' '}
                   <strong>refund </strong> if they are not satistfied with the
                   product.
@@ -328,15 +328,15 @@ const Description = ({
                 </label>
 
                 {/* Fused input container - minimal */}
-                <div className="flex items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
+                <div className="flex flex-col xs:flex-row sm:flex-row items-stretch sm:items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
                   {/* Checkbox section */}
-                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors shrink-0">
                     <input
                       type="checkbox"
                       name="buy_now"
                       checked={formData.product.buy_now}
                       onChange={handleProductChange}
-                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
+                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1 shrink-0"
                     />
                     <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
                       Buy Now
@@ -354,7 +354,7 @@ const Description = ({
                         ? 'Enter Buy Now price'
                         : 'Check Buy Now box to enable'
                     }
-                    className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
+                    className={`w-full sm:flex-1 min-w-0 px-3 py-3 bg-white border-none outline-none transition-all ${
                       !formData.product.buy_now
                         ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
                         : 'text-gray-900'
@@ -376,16 +376,16 @@ const Description = ({
                 </label>
 
                 {/* Fused input container - minimal */}
-                <div className="flex items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
                   {/* Checkbox section */}
-                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors shrink-0">
                     <input
                       type="checkbox"
                       name="use_reserve_price"
                       checked={formData.product.use_reserve_price}
                       onChange={handleProductChange}
                       // disabled={true}
-                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
+                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1 shrink-0"
                     />
                     <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
                       Reserve Price
@@ -402,7 +402,7 @@ const Description = ({
                         ? 'Enter Reserve price'
                         : 'Check Reserve price box to enable'
                     }
-                    className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
+                    className={`w-full sm:flex-1 min-w-0 px-3 py-3 bg-white border-none outline-none transition-all ${
                       !formData.product.use_reserve_price
                         ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
                         : 'text-gray-900'
@@ -425,15 +425,15 @@ const Description = ({
                 </label>
 
                 {/* Fused input container - minimal */}
-                <div className="flex items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center border-2 border-gray-100 rounded-md shadow-sm focus-within:border-[#9F3247] transition-colors bg-white overflow-hidden">
                   {/* Checkbox section */}
-                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                  <label className="flex items-center gap-2 px-3 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors shrink-0">
                     <input
                       type="checkbox"
                       name="private"
                       checked={formData.product.private}
                       onChange={handleProductChange}
-                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1"
+                      className="w-4 h-4 text-[#9F3247] bg-white border-2 border-gray-300 rounded focus:ring-[#9F3247] focus:ring-1 shrink-0"
                     />
                     <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
                       Private
@@ -457,7 +457,7 @@ const Description = ({
                         ? 'Enter invited participants email addresses'
                         : 'Check private box to enable'
                     }
-                    className={`flex-1 px-3 py-3 bg-white border-none outline-none transition-all ${
+                    className={`w-full sm:flex-1 min-w-0 px-3 py-3 bg-white border-none outline-none transition-all ${
                       !formData.product.private
                         ? 'text-gray-400 bg-gray-50 cursor-not-allowed'
                         : 'text-gray-900'
@@ -468,11 +468,11 @@ const Description = ({
                   {participants.map((participant, index) => (
                     <span
                       key={index}
-                      className="flex items-center gap-3 bg-gray-200 text-gray-800 px-2 py-2 rounded-full text-xs"
+                      className="flex items-center gap-3 bg-gray-200 text-gray-800 px-2 py-2 rounded-full text-xs max-w-full break-all"
                     >
-                      <span>{participant}</span>
+                      <span className="break-all">{participant}</span>
                       <span
-                        className="text-[12px] cursor-pointer hover:text-[14px] transition-text duration-200"
+                        className="text-[12px] cursor-pointer hover:text-[14px] transition-text duration-200 shrink-0"
                         onClick={() => removeParticipant(participant)}
                       >
                         x
@@ -483,11 +483,11 @@ const Description = ({
               </div>
             </div>
 
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:col-span-2">
               <button
                 onClick={handleReset}
                 type="button"
-                className="flex flex-row item-center justify-evenly w-1/3 py-4 bg-gray-500 text-white rounded-full focus:outline-none hover:bg-gray-600"
+                className="flex flex-row items-center justify-center sm:justify-evenly w-full sm:w-1/3 py-3 sm:py-4 bg-gray-500 text-white rounded-full focus:outline-none hover:bg-gray-600"
               >
                 Reset
               </button>
@@ -495,7 +495,7 @@ const Description = ({
                 onClick={handleNext}
                 type="button"
                 disabled={!validateForm() || loading}
-                className={`flex flex-row item-center justify-evenly w-1/3 py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon ${
+                className={`flex flex-row items-center justify-center sm:justify-evenly w-full sm:w-1/3 py-3 sm:py-4 bg-gradient-to-br from-[#5e1a28] to-[#e65471] text-white rounded-full focus:outline-none hover:from-maroon hover:to-maroon ${
                   !validateForm() ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
