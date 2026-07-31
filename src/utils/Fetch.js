@@ -110,6 +110,8 @@ const Fetch = async ({
     credentials: 'include',
   });
 
+  // console.log(await res.json());
+
   if (res.status === 401) {
     const newToken = await ensureFreshToken();
 

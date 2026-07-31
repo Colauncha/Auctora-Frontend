@@ -140,13 +140,12 @@ const ProductAuctionDetails = () => {
         endpoint: `${endpoint}auctions/bids/list?auction_id=${id}`,
         method: 'GET',
       });
-      // console.log('fetchBids: ', response);
       const bidData = response.data.map((bid_) => ({
-        id: bid_.id,
-        username: bid_.username,
-        amount: bid_.amount,
-        created_at: bid_.created_at,
-        avatar: bid_.user.image_link.link,
+        id: bid_?.id,
+        username: bid_?.username,
+        amount: bid_?.amount,
+        created_at: bid_?.created_at,
+        avatar: bid_?.user?.image_link?.link || '',
       }));
       setBids(bidData);
     };

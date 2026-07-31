@@ -90,7 +90,7 @@ const Conversations = ({ setChatId, showModal }) => {
   return (
     <section
       ref={ConvoRef}
-      className="flex flex-col rounded-t-3xl fixed bg-white bottom-0 right-0 w-[30%] z-50 shadow-2xl max-h-[80vh]"
+      className="flex flex-col rounded-t-3xl fixed bg-white bottom-0 right-0 w-full lg:w-[40dvw] z-50 shadow-2xl max-h-[80vh]"
     >
       {/* Header */}
       <div className="bg-gradient-to-r from-[#9f3247] to-[#b83d56] text-white rounded-t-3xl font-bold p-4 flex justify-between items-center sticky top-0 z-10 shadow-md">

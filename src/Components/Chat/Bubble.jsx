@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { formatTime, getStatusIcon, clipboardCopy } from './util';
 
-const Bubble = ({ msg, isOwnMessage, socket, showMsgInfoFunc }) => {
+const Bubble = ({ msg, isOwnMessage, socket, showMsgInfoFunc, sourceName }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
   const bubbleRef = useRef(null);
@@ -68,21 +68,35 @@ const Bubble = ({ msg, isOwnMessage, socket, showMsgInfoFunc }) => {
   return (
     <>
       <div
-        ref={bubbleRef}
-        onContextMenu={openMenu}
-        className={`relative max-w-[75%] rounded-xl px-4 py-2 ${
-          isOwnMessage ? 'bg-[#9f3247] text-white' : 'bg-gray-200 text-gray-800'
+        className={`flex flex-col max-w-[75%] ${
+          isOwnMessage ? 'items-end' : 'items-start'
         }`}
       >
-        <p className="text-sm break-words">{msg.message}</p>
+        {!isOwnMessage && sourceName && (
+          <span className="text-[11px] font-medium text-gray-500 px-1 mb-0.5 capitalize">
+            {sourceName}
+          </span>
+        )}
 
         <div
-          className={`flex items-center gap-1 mt-1 text-[10px] ${
-            isOwnMessage ? 'text-gray-200' : 'text-gray-500'
+          ref={bubbleRef}
+          onContextMenu={openMenu}
+          className={`relative rounded-xl px-4 py-2 ${
+            isOwnMessage
+              ? 'bg-[#9f3247] text-white'
+              : 'bg-gray-200 text-gray-800'
           }`}
         >
-          <span>{formatTime(msg.timestamp)}</span>
-          {isOwnMessage && getStatusIcon(msg.status)}
+          <p className="text-sm break-words">{msg.message}</p>
+
+          <div
+            className={`flex items-center gap-1 mt-1 text-[10px] ${
+              isOwnMessage ? 'text-gray-200' : 'text-gray-500'
+            }`}
+          >
+            <span>{formatTime(msg.timestamp)}</span>
+            {isOwnMessage && getStatusIcon(msg.status)}
+          </div>
         </div>
       </div>
 
@@ -133,6 +147,7 @@ Bubble.propTypes = {
   isOwnMessage: PropTypes.bool.isRequired,
   socket: PropTypes.object.isRequired,
   showMsgInfoFunc: PropTypes.func,
+  sourceName: PropTypes.string,
 };
 
 export default Bubble;
