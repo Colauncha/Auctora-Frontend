@@ -109,10 +109,7 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
     if (!showState || !websocketToken || chatId === undefined) return;
 
     let endpoint = current.replace('http', 'ws');
-    const ws = new WebSocket(`${endpoint}chats/ws/${chatId}`, [
-      'auth',
-      websocketToken,
-    ]);
+    const ws = new WebSocket(`${endpoint}chats/ws/${chatId}/${websocketToken}`);
     setSocket(ws);
 
     ws.onopen = () => {
