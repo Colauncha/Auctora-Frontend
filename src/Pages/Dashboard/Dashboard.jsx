@@ -329,7 +329,8 @@ const Dashboard = () => {
       >
         {Icon && <Icon className="w-4 h-4" />}
         {image && <img className="w-5 h-5" src={image} />}
-        {label}
+        {/* {label} */}
+        <span className="flex-1 text-left">{label}</span>
       </button>
     );
   };

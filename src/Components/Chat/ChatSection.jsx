@@ -131,7 +131,6 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
             auctionId: data.payload.auction_id,
           });
         } else if (data.type === 'read_message') {
-          console.log('Message read:', data.payload);
           setMessages((prev) =>
             prev.map((m) =>
               Number(m.chat_number) === Number(data.payload.chat_number)
