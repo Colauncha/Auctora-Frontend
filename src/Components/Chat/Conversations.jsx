@@ -2,10 +2,10 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { current, Fetch } from '../../utils';
 import PropTypes from 'prop-types';
 import useAuthStore from '../../Store/AuthStore';
-import { MessageCircle, User, CheckCheck } from 'lucide-react';
+import { MessageCircle, CheckCheck, XCircle, ShoppingBag } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-const Conversations = ({ setChatId, showModal }) => {
+const Conversations = ({ setChatId, showModal, close }) => {
   const ConvoRef = useRef(null);
 
   const firstViewRef = useRef(true);
@@ -78,13 +78,17 @@ const Conversations = ({ setChatId, showModal }) => {
   const getUnreadCount = (conversation) => {
     if (!conversation) return 0;
     return conversation.filter(
-      (msg) => msg.sender_id !== identity?.id && msg.status !== 'read',
+      (msg) => msg.sender_id !== identity?.id && msg.status !== 'read'
     ).length;
   };
 
   const truncateMessage = (message, maxLength = 40) => {
     if (!message || message.length <= maxLength) return message;
     return message.substring(0, maxLength) + '...';
+  };
+
+  const handleClose = () => {
+    close();
   };
 
   return (
@@ -97,9 +101,12 @@ const Conversations = ({ setChatId, showModal }) => {
         <span className="flex gap-2 items-center text-lg">
           <MessageCircle size={22} />
           <span>Conversations</span>
+          <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-semibold">
+            {conversations.length}
+          </span>
         </span>
-        <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-semibold">
-          {conversations.length}
+        <span className="bg-white bg-opacity-20 p-2 rounded-full text-sm font-semibold">
+          <XCircle size={18} className="cursor-pointer" onClick={handleClose} />
         </span>
       </div>
 
@@ -136,7 +143,15 @@ const Conversations = ({ setChatId, showModal }) => {
                   {/* Avatar */}
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#9f3247] to-[#b83d56] flex items-center justify-center text-white font-bold shadow-md group-hover:shadow-lg transition-shadow">
-                      <User size={24} />
+                      {convo?.auction?.item?.[0].image_link ? (
+                        <img
+                          src={convo?.auction?.item?.[0].image_link?.link}
+                          alt="Item"
+                          className="w-full h-full object-cover rounded-full hover:scale-105 transition-transform duration-300 ease-linear"
+                        />
+                      ) : (
+                        <ShoppingBag size={24} />
+                      )}
                     </div>
                   </div>
 
@@ -144,7 +159,7 @@ const Conversations = ({ setChatId, showModal }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
                       <h4 className="font-semibold text-gray-800 text-sm truncate">
-                        Auction #{convo.auctions_id.slice(0, 8)}
+                        Auction ({convo?.auction?.item?.[0].name})
                       </h4>
                       {lastMsg && (
                         <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
@@ -214,6 +229,7 @@ const Conversations = ({ setChatId, showModal }) => {
 Conversations.propTypes = {
   setChatId: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
+  close: PropTypes.func.isRequired,
 };
 
 export default Conversations;

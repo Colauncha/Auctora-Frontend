@@ -162,14 +162,14 @@ const Photos = ({
           <div className="border-2 border-dotted border-gray-300 p-4 rounded-lg bg-gray-50 flex flex-wrap gap-4 min-h-[400px]">
             {/* Upload Button */}
             <div className="w-[100px] flex-shrink-0">
-              <div className="border-2 border-blue-500 p-2 rounded-lg w-[100px] h-[100px] flex flex-col items-center justify-center cursor-pointer">
+              <div className="relative border-2 border-blue-500 p-2 rounded-lg w-[100px] h-[100px] flex flex-col items-center justify-center cursor-pointer">
                 <img src={uploadIcon} alt="Upload" className="w-6 h-6 mb-1" />
                 <input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={handleFileUpload}
-                  className="hidden"
+                  className="hidden absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-20"
                   id="upload-photo"
                 />
                 <label

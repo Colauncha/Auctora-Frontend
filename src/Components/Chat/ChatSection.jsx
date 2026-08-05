@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageCircle,
+  ArrowLeft,
 } from 'lucide-react';
 import useAuthStore from '../../Store/AuthStore';
 import Bubble from './Bubble';
@@ -19,7 +20,7 @@ import { toastError } from '../../utils/toast';
 import Avatar from '../../Pages/Dashboard/Avatar';
 import Loader from '../../assets/loaderWhite';
 
-const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
+const ChatSection = ({ chatId, showState, showFunc, profileImage, source }) => {
   const identity = useAuthStore((s) => s.data);
 
   const [socket, setSocket] = useState(null);
@@ -265,7 +266,13 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage }) => {
         </span>
 
         <span className="p-1.5 rounded-full hover:bg-white/10 transition-colors">
-          {showState ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+          {source === 'dashboard' ? (
+            <ArrowLeft size={18} />
+          ) : showState ? (
+            <ChevronDown size={18} />
+          ) : (
+            <ChevronUp size={18} />
+          )}
         </span>
       </div>
 
@@ -440,6 +447,7 @@ ChatSection.propTypes = {
   showState: PropTypes.bool.isRequired,
   showFunc: PropTypes.func.isRequired,
   profileImage: PropTypes.string,
+  source: PropTypes.string,
 };
 
 export default ChatSection;
