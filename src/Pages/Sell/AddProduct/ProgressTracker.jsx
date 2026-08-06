@@ -45,7 +45,7 @@ const ProgressTracker = () => {
     photos: [],
     delivery: {
       options: [],
-      address: '',
+      pickup_address: '',
       pickup_longitude: null,
       pickup_latitude: null,
     },

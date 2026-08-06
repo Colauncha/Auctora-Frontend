@@ -9,6 +9,8 @@ import { HiOutlineReceiptRefund } from 'react-icons/hi2';
 import { TbClockHour4 } from 'react-icons/tb';
 import { MdViewInAr } from 'react-icons/md';
 import { FiUser } from 'react-icons/fi';
+import { Star } from 'lucide-react';
+import PropTypes from 'prop-types';
 import useAuthStore from '../../Store/AuthStore';
 import ChatSection from '../../Components/Chat/ChatSection';
 
@@ -21,12 +23,15 @@ const ReviewPage = () => {
   const [fLoading, setFLoading] = useState(false);
   const [iLoading, setILoading] = useState(false);
   const [rLoading, setRLoading] = useState(false);
+  const [reload, setReload] = useState(false);
   const [showChatSection, setShowChatSection] = useState(false);
+  // const [reviewSection, setReviewSection] = useState(false);
   const navigate = useNavigate();
   const id = useLocation().pathname.split('/').pop();
   const user = useAuthStore((state) => state.data);
 
   useEffect(() => {
+    setReload(false);
     const endpoint = `${current}auctions/${id}`;
     const fetchAuctionDetails = async () => {
       try {
@@ -67,7 +72,7 @@ const ReviewPage = () => {
       }
     };
     fetchAuctionDetails();
-  }, [id, navigate, user]);
+  }, [id, navigate, user, reload]);
 
   const paymentStatMap = {
     pending: { cls: 'bg-blue-100 text-blue-800', icon: TbClockHour4 },
@@ -82,11 +87,12 @@ const ReviewPage = () => {
 
   const Icon = paymentStatMap[payment?.status]?.icon || '';
 
-  const runFetch = async ({ endpoint, method }) => {
+  const runFetch = async ({ endpoint, method, body }) => {
     try {
       const response = await authFetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
+        body,
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -106,10 +112,12 @@ const ReviewPage = () => {
     const method = 'PUT';
 
     let resp = await runFetch({ endpoint, method });
-    if (resp.success) {
+    console.log('Handle inspecting resp: ', resp);
+    if (resp) {
       setILoading(false);
       toastSuccess('Inspection mode activated', 'Product is being inspected');
-      // navigate(`/product-details/${id}`);
+      setReload(true);
+      // navigate(`/product/finalize/${id}`);
     } else {
       setILoading(false);
       toastError('Unable to start inspection', 'Please try again');
@@ -122,10 +130,11 @@ const ReviewPage = () => {
     const method = 'GET';
 
     let resp = await runFetch({ endpoint, method });
-    if (resp.success) {
+    if (resp) {
       setFLoading(false);
       toastSuccess('Auction finalized', 'Auction has been finalized');
-      // navigate(`/product-details/${id}`);
+      setReload(true);
+      // setReviewSection(true);
     } else {
       setFLoading(false);
       toastError('Unable to finalize auction', 'Please try again');
@@ -138,14 +147,63 @@ const ReviewPage = () => {
     const method = 'GET';
 
     let resp = await runFetch({ endpoint, method });
-    if (resp.success) {
+    if (resp) {
       setRLoading(false);
       toastSuccess('Refund requested', 'Refund request has been sent');
+      setReload(true);
     } else {
       setRLoading(false);
       toastError('Unable to request refund', 'Please try again');
     }
     // navigate(`/product-details/${id}`);
+  };
+
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+
+  const StarRating = ({ rating = 0 }) => {
+    const displayRating = hoverRating || selectedRating || rating;
+
+    return (
+      <>
+        {Array.from({ length: 5 }, (_, i) => (
+          <Star
+            key={i}
+            className={`w-7 h-7 cursor-pointer transition-colors ${
+              i < displayRating
+                ? 'text-yellow-400 fill-yellow-400'
+                : 'text-gray-300 fill-transparent'
+            }`}
+            onMouseEnter={() => setHoverRating(i + 1)}
+            onMouseLeave={() => setHoverRating(0)}
+            onClick={() => setSelectedRating(i + 1)}
+          />
+        ))}
+      </>
+    );
+  };
+
+  StarRating.propTypes = {
+    rating: PropTypes.number,
+  };
+
+  const handleRating = () => {
+    // Handle the rating submission logic here
+    const userId = payment.to_id || auctions.user.id;
+    const endpoint = `${current}users/rating/${userId}?rating=${selectedRating}`;
+
+    try {
+      const resp = runFetch({
+        endpoint,
+        method: 'PUT',
+        body: JSON.stringify({ rating: selectedRating }),
+      });
+      if (resp) {
+        toastSuccess('Rating submitted', 'Thank you for your feedback!');
+      }
+    } catch (error) {
+      toastError('Error', error.message || 'Failed to submit rating');
+    }
   };
 
   return (
@@ -218,7 +276,10 @@ const ReviewPage = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
+            <div
+              id="actions"
+              className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8"
+            >
               <h2 className="text-2xl font-bold text-[#9F3247] mb-6 border-b pb-2">
                 Seller&apos;s Details
               </h2>
@@ -316,10 +377,7 @@ const ReviewPage = () => {
                     className="bg-[#9F3247] text-white font-bold py-2 px-4 rounded"
                     onClick={() => handleInspecting()}
                     disabled={
-                      iLoading ||
-                      fLoading ||
-                      payment?.status === 'inspecting' ||
-                      'completed'
+                      iLoading || fLoading || payment?.status === 'inspecting'
                     }
                   >
                     {iLoading ? <LoaderW /> : 'Inspecting'}
@@ -342,6 +400,32 @@ const ReviewPage = () => {
                     {rLoading ? <LoaderW /> : 'Request Refund'}
                   </button>
                 )}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 mb-8">
+              <div className="flex justify-between items-end mb-6 border-b pb-2 gap-2 flex-wrap">
+                <h2 className="text-2xl font-bold text-[#9F3247]">
+                  Review and Rate Seller
+                </h2>
+              </div>
+              <p className="text-gray-700 mb-6">
+                After finalizing the auction, you can leave a review and rate
+                the seller based on your experience. Your feedback helps other
+                buyers make informed decisions and helps maintain a trustworthy
+                marketplace.
+              </p>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <StarRating />
+                </div>
+                <button
+                  className="bg-[#9F3247] w-40 text-xs text-white font-bold py-2 px-4 rounded"
+                  onClick={() => handleRating()}
+                  disabled={payment?.status !== 'completed'}
+                >
+                  Leave a Review
+                </button>
               </div>
             </div>
 

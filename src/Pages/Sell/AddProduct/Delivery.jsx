@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import LoaderW from '../../../assets/loaderWhite';
 import { current, authFetch } from '../../../utils';
-import { toastSuccess, toastError, toastWarn } from '../../../utils/toast';
+import {
+  toastSuccess,
+  toastError,
+  toastWarn,
+  toastErrorWithButton,
+} from '../../../utils/toast';
 
 const Delivery = ({
   activeStep,
@@ -16,7 +21,7 @@ const Delivery = ({
     formData.delivery?.options || []
   );
   const [pickupAddress, setPickupAddress] = useState(
-    formData.delivery?.address || ''
+    formData.delivery?.pickup_address || ''
   );
   const [useHomeAddress, setUseHomeAddress] = useState(false);
 
@@ -113,7 +118,7 @@ const Delivery = ({
       ...prev,
       delivery: {
         options: selectedOptions,
-        address: pickupAddress,
+        pickup_address: pickupAddress,
         pickup_longitude: pickupLongitude,
         pickup_latitude: pickupLatitude,
       },
@@ -184,6 +189,7 @@ const Delivery = ({
       return result;
     };
 
+    let auctionId;
     try {
       const postEndpoint = `${current}auctions/`;
       const created = await runFetch({
@@ -198,6 +204,7 @@ const Delivery = ({
       );
 
       const itemId = created?.data.item?.[0]?.id;
+      auctionId = created?.data?.id;
       if (!itemId) throw new Error('Missing item ID from response');
 
       const imgEndpoint = `${current}items/upload_images?item_id=${itemId}`;
@@ -220,10 +227,16 @@ const Delivery = ({
 
       navigate('/product-success');
     } catch (error) {
-      console.error(error);
-      toastError(
+      toastErrorWithButton(
         'Submission Failed',
-        error.message || 'An error occurred during submission'
+        error.message || 'An error occurred during submission',
+        () => {
+          navigate(`/dashboard/products/${auctionId}#image_section`, {
+            replace: true,
+            state: { setUpdate: true },
+          });
+        },
+        'Update Images'
       );
     } finally {
       setLoading(false);

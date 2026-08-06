@@ -265,6 +265,8 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage, source }) => {
           </span>
         </span>
 
+        <span className="flex justify-between items-center gap-2 text-[11px] font-normal text-white/70 bg-white/40"></span>
+
         <span className="p-1.5 rounded-full hover:bg-white/10 transition-colors">
           {source === 'dashboard' ? (
             <ArrowLeft size={18} />

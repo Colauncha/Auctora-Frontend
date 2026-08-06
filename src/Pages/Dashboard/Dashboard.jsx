@@ -47,8 +47,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const logoutUser = useAuthStore((state) => state.logout);
   const offCta = ctaContext((state) => state.turnOff);
-  const [quickActionsExpanded, setQuickActionsExpanded] = useState(false);
-  const [settingsExpanded, setSettingsExpanded] = useState(false);
+  const [quickActionsExpanded, setQuickActionsExpanded] = useState(true);
+  const [settingsExpanded, setSettingsExpanded] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef(null);
   const token = useAuthStore((state) => state.token);
