@@ -9,10 +9,12 @@ import {
   ChevronRight,
   MessageCircle,
   ArrowLeft,
+  EllipsisVertical,
 } from 'lucide-react';
 import useAuthStore from '../../Store/AuthStore';
 import Bubble from './Bubble';
 import { quickActionOptions, getStatusIcon } from './util';
+import ChatOptions from './Options';
 import { toast } from 'react-toastify';
 import { charLimit, current, Fetch } from '../../utils';
 import { ensureFreshToken } from '../../utils/Fetch';
@@ -36,6 +38,8 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage, source }) => {
   const [showMsgInfo, setShowMsgInfo] = useState(null);
   const [userType, setUserType] = useState('buyer'); // 'buyer' or 'seller'
   const [responseUser, setResponseUser] = useState(null);
+
+  const [chatOptionsVisible, setChatOptionsVisible] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -84,7 +88,6 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage, source }) => {
         endpoint: `${current}users/retrieve/${id}`,
         method: 'GET',
       });
-      console.log('Chat user: ', data);
       setResponseUser(data.data);
     };
 
@@ -129,7 +132,7 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage, source }) => {
           setMeta({
             buyerId: data.payload.buyer_id,
             sellerId: data.payload.seller_id,
-            auctionId: data.payload.auction_id,
+            auctionId: data.payload.auctions_id,
           });
         } else if (data.type === 'read_message') {
           setMessages((prev) =>
@@ -224,10 +227,7 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage, source }) => {
       className="flex flex-col rounded-t-3xl fixed bottom-0 right-0 w-full lg:w-[40dvw] lg:right-6 pt-3 z-50 shadow-[0_-8px_40px_-8px_rgba(0,0,0,0.35)] ring-1 ring-black/5 overflow-hidden bg-gradient-to-br from-[#9f3247] via-[#a8384f] to-[#c24a63]"
     >
       {/* Header */}
-      <div
-        className="text-white font-semibold px-4 py-2.5 flex justify-between items-center cursor-pointer select-none hover:bg-white/5 transition-colors"
-        onClick={() => showFunc(!showState)}
-      >
+      <div className="text-white font-semibold px-4 py-2.5 flex justify-between items-center cursor-pointer select-none hover:bg-white/5 transition-colors">
         <span className="flex gap-3 items-center">
           <span className="relative shrink-0">
             <Avatar
@@ -265,17 +265,33 @@ const ChatSection = ({ chatId, showState, showFunc, profileImage, source }) => {
           </span>
         </span>
 
-        <span className="flex justify-between items-center gap-2 text-[11px] font-normal text-white/70 bg-white/40"></span>
-
-        <span className="p-1.5 rounded-full hover:bg-white/10 transition-colors">
-          {source === 'dashboard' ? (
-            <ArrowLeft size={18} />
-          ) : showState ? (
-            <ChevronDown size={18} />
-          ) : (
-            <ChevronUp size={18} />
+        <div className="flex gap-1 items-center">
+          {showState && (
+            <span className="relative flex justify-between items-center cursor-pointer z-20 hover:bg-white/10 transition-colors ease-linear duration-300 p-1.5 rounded-full">
+              <EllipsisVertical
+                size={18}
+                className="text-white"
+                onClick={() => setChatOptionsVisible(!chatOptionsVisible)}
+              />
+              {chatOptionsVisible && (
+                <ChatOptions id={meta && meta?.auctionId} />
+              )}
+            </span>
           )}
-        </span>
+
+          <span
+            className="p-1.5 rounded-full hover:bg-white/10 transition-colors ease-linear duration-300"
+            onClick={() => showFunc(!showState)}
+          >
+            {source === 'dashboard' ? (
+              <ArrowLeft size={18} />
+            ) : showState ? (
+              <ChevronDown size={18} />
+            ) : (
+              <ChevronUp size={18} />
+            )}
+          </span>
+        </div>
       </div>
 
       <div

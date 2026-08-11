@@ -11,7 +11,6 @@ import {
   Wallet,
   Download,
   DollarSign,
-  Star,
   TrendingUp,
   Eye,
   ChevronDown,
@@ -19,6 +18,7 @@ import {
   ChartArea,
   MessageCircleMore,
 } from 'lucide-react';
+import StarRating from '../../Components/Star';
 import Loader from '../../assets/loader2';
 import BidPoint from '../../assets/svg/bidPoint.svg';
 import BidCredit from '../../assets/svg/bidCredit.svg';
@@ -269,26 +269,26 @@ const Dashboard = () => {
     );
   };
 
-  const StarRating = ({ rating }) => (
-    <>
-      {Array(5)
-        .fill(0)
-        .map((_, i) => (
-          <Star
-            key={i}
-            className={`${
-              i < Math.floor(rating)
-                ? 'text-yellow-400 fill-yellow-400'
-                : 'text-gray-300'
-            } w-5 h-5`}
-          />
-        ))}
-    </>
-  );
+  // const StarRating = ({ rating }) => (
+  //   <>
+  //     {Array(5)
+  //       .fill(0)
+  //       .map((_, i) => (
+  //         <Star
+  //           key={i}
+  //           className={`${
+  //             i < Math.floor(rating)
+  //               ? 'text-yellow-400 fill-yellow-400'
+  //               : 'text-gray-300'
+  //           } w-5 h-5`}
+  //         />
+  //       ))}
+  //   </>
+  // );
 
-  StarRating.propTypes = {
-    rating: PropTypes.number.isRequired,
-  };
+  // StarRating.propTypes = {
+  //   rating: PropTypes.number.isRequired,
+  // };
 
   const CustomButton = ({
     icon: Icon,

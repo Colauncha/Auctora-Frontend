@@ -231,7 +231,7 @@ const Delivery = ({
         'Submission Failed',
         error.message || 'An error occurred during submission',
         () => {
-          navigate(`/dashboard/products/${auctionId}#image_section`, {
+          navigate(`/dashboard/products/${auctionId}`, {
             replace: true,
             state: { setUpdate: true },
           });

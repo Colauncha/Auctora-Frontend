@@ -31,8 +31,9 @@ const ProductAuctionDetails = () => {
   const [bids, setBids] = useState(null);
   const [biddersPrice, setBiddersPrice] = useState(0);
   const [images, setImages] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  // const [refresh, setRefresh] = useState(false);
   const completionHandledRef = useRef(false);
+  const auctionRef = useRef(null);
 
   // Loaders
   const [loading, setLoading] = useState(false);
@@ -104,57 +105,193 @@ const ProductAuctionDetails = () => {
     []
   );
 
-  // Auction effects
+  const fetchAuctionData = useCallback(
+    async ({ showLoading = false } = {}) => {
+      if (showLoading) {
+        setLoading(true);
+        setSellerLoading(true);
+      }
+
+      try {
+        const response = await runFetch({
+          endpoint: `${endpoint}auctions/${id}`,
+          method: 'GET',
+        });
+
+        if (!response?.data) return null;
+
+        const auctionData = response.data;
+
+        setAuction(auctionData);
+
+        setImages(
+          [
+            auctionData?.item?.[0]?.image_link?.link ||
+              'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg',
+            auctionData?.item?.[0]?.image_link_1?.link || null,
+            auctionData?.item?.[0]?.image_link_2?.link || null,
+            auctionData?.item?.[0]?.image_link_3?.link || null,
+            auctionData?.item?.[0]?.image_link_4?.link || null,
+          ].filter(Boolean)
+        );
+
+        setSeller(auctionData?.user || null);
+        setSellerImage(auctionData?.user?.image_link?.link || '');
+
+        return auctionData;
+      } finally {
+        if (showLoading) {
+          setLoading(false);
+          setSellerLoading(false);
+        }
+      }
+    },
+    [endpoint, id, runFetch]
+  );
+
+  const fetchBids = useCallback(
+    async ({ showLoading = false } = {}) => {
+      if (showLoading) {
+        setBiddersLoading(true);
+      }
+
+      try {
+        const response = await runFetch({
+          endpoint: `${endpoint}auctions/bids/list?auction_id=${id}`,
+          method: 'GET',
+        });
+
+        if (!response?.data) return null;
+
+        const bidData = response.data.map((bid) => ({
+          id: bid?.id,
+          username: bid?.username,
+          amount: bid?.amount,
+          created_at: bid?.created_at,
+          avatar: bid?.user?.image_link?.link || '',
+        }));
+
+        setBids(bidData);
+
+        return bidData;
+      } finally {
+        if (showLoading) {
+          setBiddersLoading(false);
+        }
+      }
+    },
+    [endpoint, id, runFetch]
+  );
+
   useEffect(() => {
-    if (refresh) setRefresh(false);
     window.scrollTo(0, 0);
-    setSellerLoading(true);
-    setBiddersLoading(true);
 
-    setLoading(true);
-
-    const fetchAuctionData = async () => {
-      const data = await runFetch({
-        endpoint: `${endpoint}auctions/${id}`,
-        method: 'GET',
-      });
-      setAuction(data.data);
-      setImages(() =>
-        [
-          data?.data?.item[0]?.image_link?.link ||
-            'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg',
-          data?.data?.item[0]?.image_link_1?.link || null,
-          data?.data?.item[0]?.image_link_2?.link || null,
-          data?.data?.item[0]?.image_link_3?.link || null,
-          data?.data?.item[0]?.image_link_4?.link || null,
-        ].filter((val) => val !== null)
-      );
-      // setBids(data?.data.bids);
-      setSeller(data?.data.user);
-      setSellerLoading(false);
-      setSellerImage(data?.data.user?.image_link?.link || '');
+    const loadAuction = async () => {
+      await Promise.all([
+        fetchAuctionData({ showLoading: true }),
+        fetchBids({ showLoading: true }),
+      ]);
     };
 
-    const fetchBids = async () => {
-      const response = await runFetch({
-        endpoint: `${endpoint}auctions/bids/list?auction_id=${id}`,
-        method: 'GET',
-      });
-      const bidData = response.data.map((bid_) => ({
-        id: bid_?.id,
-        username: bid_?.username,
-        amount: bid_?.amount,
-        created_at: bid_?.created_at,
-        avatar: bid_?.user?.image_link?.link || '',
-      }));
-      setBids(bidData);
+    loadAuction();
+  }, [fetchAuctionData, fetchBids]);
+
+  useEffect(() => {
+    auctionRef.current = auction;
+  }, [auction]);
+
+  useEffect(() => {
+    if (live) return;
+
+    const pollAuction = async () => {
+      const currentAuction = auctionRef.current;
+
+      // Don't poll before the initial auction has loaded
+      if (!currentAuction) return;
+
+      // Don't poll after auction has ended
+      const endTime = new Date(currentAuction.end_date).getTime();
+
+      if (Date.now() >= endTime) {
+        return;
+      }
+
+      await Promise.all([fetchAuctionData(), fetchBids()]);
     };
 
-    fetchAuctionData();
-    fetchBids();
-    setBiddersLoading(false);
-    setLoading(false);
-  }, [endpoint, id, runFetch, refresh]);
+    const interval = setInterval(pollAuction, 10_000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [live, fetchAuctionData, fetchBids]);
+
+  // // Auction effects
+  // useEffect(() => {
+  //   if (refresh) setRefresh(false);
+  //   window.scrollTo(0, 0);
+  //   setSellerLoading(true);
+  //   setBiddersLoading(true);
+
+  //   setLoading(true);
+
+  //   const fetchAuctionData = async () => {
+  //     const data = await runFetch({
+  //       endpoint: `${endpoint}auctions/${id}`,
+  //       method: 'GET',
+  //     });
+  //     setAuction(data.data);
+  //     setImages(() =>
+  //       [
+  //         data?.data?.item[0]?.image_link?.link ||
+  //           'https://res.cloudinary.com/dtkv6il4e/image/upload/v1748091825/Biddius_logo_lkme0j.jpg',
+  //         data?.data?.item[0]?.image_link_1?.link || null,
+  //         data?.data?.item[0]?.image_link_2?.link || null,
+  //         data?.data?.item[0]?.image_link_3?.link || null,
+  //         data?.data?.item[0]?.image_link_4?.link || null,
+  //       ].filter((val) => val !== null)
+  //     );
+  //     // setBids(data?.data.bids);
+  //     setSeller(data?.data.user);
+  //     setSellerLoading(false);
+  //     setSellerImage(data?.data.user?.image_link?.link || '');
+  //   };
+
+  //   const fetchBids = async () => {
+  //     const response = await runFetch({
+  //       endpoint: `${endpoint}auctions/bids/list?auction_id=${id}`,
+  //       method: 'GET',
+  //     });
+  //     const bidData = response.data.map((bid_) => ({
+  //       id: bid_?.id,
+  //       username: bid_?.username,
+  //       amount: bid_?.amount,
+  //       created_at: bid_?.created_at,
+  //       avatar: bid_?.user?.image_link?.link || '',
+  //     }));
+  //     setBids(bidData);
+  //   };
+
+  //   fetchAuctionData();
+  //   fetchBids();
+  //   setBiddersLoading(false);
+  //   setLoading(false);
+  // }, [endpoint, id, runFetch, refresh]);
+
+  // // pooling effect
+  // const poolingTimer = useRef(null);
+  // useEffect(() => {
+  //   if (!auction || live || timeLeft.totalInSeconds <= 0) return;
+
+  //   poolingTimer.current = setInterval(() => {
+  //     setRefresh(true);
+  //   }, 10_000);
+
+  //   return () => {
+  //     clearInterval(poolingTimer.current);
+  //     poolingTimer.current = null;
+  //   };
+  // }, [auction, timeLeft.totalInSeconds, live]);
 
   // Optimized countdown timer
   useEffect(() => {
@@ -337,6 +474,7 @@ const ProductAuctionDetails = () => {
         current_price: data.amount,
       }));
       setPlaceBidLoading(false);
+      // setRefresh(true);
       return;
     }
 
@@ -396,6 +534,7 @@ const ProductAuctionDetails = () => {
           current_price: resp.data.amount,
         }));
         toastSuccess('Bid Successfully Placed');
+        // setRefresh(true);
       }
     } catch (error) {
       setPlaceBidLoading(false);
@@ -436,6 +575,7 @@ const ProductAuctionDetails = () => {
           current_price: resp.amount,
           status: 'Completed',
         }));
+        // setRefresh(true);
         toastSuccess(
           'Bid successful',
           'You have successfully placed your bid.'
@@ -473,18 +613,19 @@ const ProductAuctionDetails = () => {
     completionHandledRef.current = true;
 
     setLoading(true);
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       if (auction?.payment?.from_id === user.id) {
         handleConfetti();
         return;
       }
 
-      setRefresh(true);
+      // setRefresh(true);
+      await Promise.all([fetchAuctionData(), fetchBids()]);
     }, 5000);
 
     setLoading(false);
     return () => clearTimeout(timer);
-  }, [timeLeft, auction, user]);
+  }, [timeLeft, auction, user, fetchAuctionData, fetchBids]);
 
   // Floating overlay collapse/expand + drag-to-reposition (collapsed state only)
   const [overlayCollapsed, setOverlayCollapsed] = useState(true);
@@ -986,6 +1127,6 @@ const ProductAuctionDetails = () => {
       </main>
     </div>
   );
-};;
+};;;
 
 export default ProductAuctionDetails;

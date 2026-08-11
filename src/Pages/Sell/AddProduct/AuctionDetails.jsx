@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../../../Components/Breadcrumbs';
 import { capitalize, currencyFormat, formatDateTime } from '../../../utils';
@@ -26,10 +26,14 @@ import {
 const AuctionDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const id = location.pathname.split('/').pop();
+  const state = location.state;
+
   const [auction, setAuction] = useState(null);
   const [payment, setPayment] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(state?.setUpdate ? true : false);
   const [isRestarting, setIsRestarting] = useState(false);
   const [images, setImages] = useState({
     0: '',
@@ -73,7 +77,9 @@ const AuctionDetails = () => {
     buyNowPrice: '',
     buyNow: false,
   });
-  const id = location.pathname.split('/').pop();
+
+  // Updating section ref
+  const updateSectionRef = useRef(null);
 
   // User
   const identity = useAuthStore((state) => state.data);
@@ -158,23 +164,72 @@ const AuctionDetails = () => {
     }
   }, [id]);
 
+  // useEffect(() => {
+  //   const auctionData = JSON.parse(sessionStorage.getItem('_auctions'));
+  //   if (!auctionData) {
+  //     navigate('/sign-in');
+  //   } else {
+  //     const auction = auctionData.find((auction) => auction.id === id);
+  //     setAuction(auction);
+  //     setPayment(auction?.payment);
+  //     setImages((prev) => ({
+  //       ...prev,
+  //       0: auction.item[0].image_link?.link || '',
+  //       1: auction.item[0].image_link_2?.link || '',
+  //       2: auction.item[0].image_link_3?.link || '',
+  //       3: auction.item[0].image_link_4?.link || '',
+  //       4: auction.item[0].image_link_5?.link || '',
+  //     }));
+  //     setImageLink(auction.item[0].image_link?.link || '');
+  //     setAUpdateData((prev) => ({
+  //       ...prev,
+  //       startDate: auction?.start_date || '',
+  //       endDate: auction?.end_date || '',
+  //       pickUpAddress: auction?.pickup_address || '',
+  //       buyNowPrice: auction?.buy_now_price || '',
+  //       buyNow: auction?.buy_now || false,
+  //       refundable: auction?.refundable || false,
+  //       startPrice: auction?.start_price || '',
+  //       currentPrice: auction?.current_price || '',
+  //     }));
+  //     setIUpdateData((prev) => ({
+  //       ...prev,
+  //       name: auction?.item[0].name || '',
+  //       description: auction?.item[0].description || '',
+  //       height: auction?.item[0].height || '',
+  //       width: auction?.item[0].width || '',
+  //       length: auction?.item[0].length || '',
+  //       weight: auction?.item[0].weight || '',
+  //     }));
+  //     if (!auction) {
+  //       toast.info('Auction not found in user data');
+  //       navigate('/dashboard/products');
+  //       try {
+  //         getUpdatedAuction();
+  //       } catch (error) {
+  //         console.error('Error fetching auction:', error);
+  //         toast.error('Failed to fetch auction details');
+  //       }
+  //     }
+  //   }
+  // }, [id, getUpdatedAuction, navigate]);
+
   useEffect(() => {
+    // console.log('Location state:', state);
     const auctionData = JSON.parse(sessionStorage.getItem('_auctions'));
-    if (!auctionData) {
-      navigate('/sign-in');
-    } else {
+    if (auctionData && auctionData.length > 0) {
       const auction = auctionData.find((auction) => auction.id === id);
       setAuction(auction);
       setPayment(auction?.payment);
       setImages((prev) => ({
         ...prev,
-        0: auction.item[0].image_link?.link || '',
-        1: auction.item[0].image_link_2?.link || '',
-        2: auction.item[0].image_link_3?.link || '',
-        3: auction.item[0].image_link_4?.link || '',
-        4: auction.item[0].image_link_5?.link || '',
+        0: auction?.item[0].image_link?.link || '',
+        1: auction?.item[0].image_link_2?.link || '',
+        2: auction?.item[0].image_link_3?.link || '',
+        3: auction?.item[0].image_link_4?.link || '',
+        4: auction?.item[0].image_link_5?.link || '',
       }));
-      setImageLink(auction.item[0].image_link?.link || '');
+      setImageLink(auction?.item[0].image_link?.link || '');
       setAUpdateData((prev) => ({
         ...prev,
         startDate: auction?.start_date || '',
@@ -195,18 +250,16 @@ const AuctionDetails = () => {
         length: auction?.item[0].length || '',
         weight: auction?.item[0].weight || '',
       }));
-      if (!auction) {
-        toast.info('Auction not found in user data');
-        navigate('/dashboard/products');
-        try {
-          getUpdatedAuction();
-        } catch (error) {
-          console.error('Error fetching auction:', error);
-          toast.error('Failed to fetch auction details');
-        }
-      }
+    } else {
+      getUpdatedAuction();
     }
-  }, [id, getUpdatedAuction, navigate]);
+
+    if (state?.setUpdate) {
+      updateSectionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+      });
+    }
+  }, [id, getUpdatedAuction, navigate, state]);
 
   const nextImage = () => {
     const validImages = Object.values(images).filter(Boolean); // only non-empty images
@@ -461,7 +514,10 @@ const AuctionDetails = () => {
     }
 
     try {
-      const resp = await authFetch(endpoint, { method: 'PUT', body: formData_ });
+      const resp = await authFetch(endpoint, {
+        method: 'PUT',
+        body: formData_,
+      });
 
       const response = await resp.json();
 
@@ -898,7 +954,10 @@ const AuctionDetails = () => {
           </div>
 
           {isUpdating && (
-            <div className="flex items-center justify-center max-w-full mb-20 p-6">
+            <div
+              ref={updateSectionRef}
+              className="flex items-center justify-center max-w-full mb-20 p-6"
+            >
               <div className="flex w-full max-w-6xl gap-4 flex-col">
                 {/* --- */}
                 <div className="flex w-full gap-2 flex-col lg:flex-row">
@@ -1268,6 +1327,6 @@ const AuctionDetails = () => {
       </div>
     </div>
   );
-};
+};;
 
 export default AuctionDetails;

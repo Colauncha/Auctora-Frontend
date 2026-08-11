@@ -58,6 +58,7 @@ const Categories = ({
   const [addingSubCategory, setAddingSubCategory] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const subCatSectionRef = useRef(null);
   const prevValidityRef = useRef(false);
   // Use a ref so the formData sync effect doesn't re-run when the parent
   // re-renders and recreates updateFormData.
@@ -110,7 +111,16 @@ const Categories = ({
     );
   };
 
+  const scrollToSubCatSection = () => {
+    if (!subCatSectionRef.current) return;
+
+    subCatSectionRef.current?.scrollIntoView({
+      behavior: 'smooth',
+    });
+  };
+
   const handleCategoryToggle = (cat) => {
+    scrollToSubCatSection();
     setSelectedCategoryIds((prev) => {
       if (prev.includes(cat.id)) {
         // deselect: also drop all subcategories that belong to this category
@@ -282,7 +292,10 @@ const Categories = ({
                     {cat.name}
                   </label>
                   <button
-                    onClick={() => setSelectedCategoryObj(cat)}
+                    onClick={() => {
+                      scrollToSubCatSection();
+                      setSelectedCategoryObj(cat);
+                    }}
                     title="Browse subcategories"
                     className="text-gray-400 hover:text-[#9f3247] transition-colors"
                   >
@@ -329,7 +342,10 @@ const Categories = ({
 
             {!catLoading && selectedCategoryObj && (
               <>
-                <h3 className="font-semibold mb-4 text-[#9f3247]">
+                <h3
+                  ref={subCatSectionRef}
+                  className="font-semibold mb-4 text-[#9f3247]"
+                >
                   {selectedCategoryObj.name}
                   <span className="font-normal text-gray-500 text-sm ml-2">
                     — select subcategories
