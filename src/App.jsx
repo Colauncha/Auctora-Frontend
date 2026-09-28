@@ -14,6 +14,7 @@ import useAuthStore from './Store/AuthStore';
 import useModeStore from './Store/Store';
 import { NotifContext } from './Store/notifContex.jsx';
 import { current } from './utils/links';
+import { authFetch } from './utils/Fetch.js';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,6 +31,9 @@ const DetailPage = lazy(() => import('./Pages/Detail/Detail'));
 const Notification = lazy(() => import('./Pages/Notification/Notification'));
 const Dashboard = lazy(() => import('./Pages/Dashboard/Dashboard'));
 const RewardHistory = lazy(() => import('./Components/Rewards/RewardHistory'));
+const PendingPayment = lazy(
+  () => import('./Components/PendingPayment/PendingPayment')
+);
 const WalletHistory = lazy(() => import('./Pages/Dashboard/WalletHistory'));
 const SellAccount = lazy(() => import('./Pages/Sell/SellAccount'));
 const CreateAccount = lazy(() => import('./Pages/Sell/CreateAccount'));
@@ -65,31 +69,58 @@ const App = () => {
   const [notifTotal, setNotifTotal] = useState(0);
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const refreshToken = useAuthStore((state) => state.refreshToken);
+  const updateUserData = useAuthStore((state) => state.updateData);
   const { isMobile, isPWA } = useModeStore();
 
   useEffect(() => {
-    const backendOrigin = new URL(current).origin;
+    const run = async () => {
+      if (refreshToken) {
+        let res = await authFetch(`${current}users/profile`);
+        res = await res.json();
+        console.log('User data: ', res);
+        updateUserData(res.data);
+      }
+    };
+    run();
+  }, [refreshToken, login, updateUserData]);
 
+  useEffect(() => {
+    let backendOrigin = new URL(current).origin;
+    backendOrigin = backendOrigin.substring(8);
+
+    console.log('Backend origin', backendOrigin);
     const handleMessage = (event) => {
-      if (event.origin !== backendOrigin) return;
+      console.log('event: ', event);
+      // if (
+      //   event.origin !== backendOrigin ||
+      //   backendOrigin === 'http://localhost:8000'
+      // )
+      //   return;
       if (event.data?.type !== 'GOOGLE_AUTH_SUCCESS') return;
 
-      const { access_token, refresh_token, user } = event.data;
-      if (!access_token || !refresh_token) {
-        console.error(
-          'Google login popup reported success but did not include tokens.',
-        );
-        return;
-      }
+      // const { access_token, refresh_token, user } = event.data;
+      // if (!access_token || !refresh_token) {
+      //   console.error(
+      //     'Google login popup reported success but did not include tokens.',
+      //   );
+      //   return;
+      // }
+      const run = async () => {
+        let res = await authFetch(`${current}users/profile`);
+        res = await res.json();
 
-      console.log('✅ Google login successful (from popup)');
-      login(true, access_token, refresh_token, user);
-      navigate('/dashboard');
+        console.log('✅ Google login successful (from popup)');
+        login(true, null, null, res.data);
+        updateUserData(res.data);
+        navigate('/dashboard');
+      };
+      run();
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [navigate, login]);
+  }, [navigate, login, updateUserData]);
 
   return (
     <div className={isMobile && isPWA ? 'pb-24' : ''}>
@@ -99,129 +130,137 @@ const App = () => {
         <Nav />
         <Tracking>
           <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Layout />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/category" element={<CategoryResult />} />
-            <Route path="/category/:slug" element={<DetailPage />} />
-            <Route path="/Ongoing-Auction" element={<ViewAll />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/bgsection" element={<BlogSection />} />
-            <Route
-              path="/notification"
-              element={
-                <ProtectedRoute>
-                  <Notification />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Admin Routes */}
-            <Route path="/admin">
-              <Route path="dashboard" element={<AdminPage />} />
-              <Route path="login" element={<AdminAuth />} />
-            </Route>
-
-            {/* Auth Routes */}
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-
-            {/* Sell Routes */}
-            <Route path="/otp" element={<SellAccount />} />
-            <Route path="/update-profile" element={<CreateAccount />} />
-            <Route path="/update-address" element={<AddressForm />} />
-            <Route path="/bank-account" element={<AccountForm />} />
-            <Route path="/verification" element={<Verification />} />
-            <Route path="/getstarted" element={<GetStarted />} />
-
-            {/* 404 Route */}
-            <Route path="*" element={<NotFound />} />
-
-            <Route path="/construction/*" element={<Construction />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-
-            {/* Privacy Policy */}
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-
-            {/* Terms and Conditions */}
-            <Route path="/terms-conditions" element={<TermsCondition />} />
-
-            {/* Progress Tracker Routes */}
-            <Route
-              path="/Add-Product"
-              element={
-                <ProtectedRoute>
-                  <ProgressTracker />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/product-details/:id"
-              element={<ProductAuctionDetails />}
-            />
-            <Route
-              path="/product/finalize/:id"
-              element={
-                <ProtectedRoute>
-                  <ReviewPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/product-success"
-              element={
-                <ProtectedRoute>
-                  <ProductSuccess />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Protected Routes */}
-            <Route path="/dashboard">
+            <Routes>
+              <Route path="/" element={<Layout />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/category" element={<CategoryResult />} />
+              <Route path="/category/:slug" element={<DetailPage />} />
+              <Route path="/Ongoing-Auction" element={<ViewAll />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/bgsection" element={<BlogSection />} />
               <Route
-                path=""
+                path="/notification"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <Notification />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Admin Routes */}
+              <Route path="/admin">
+                <Route path="dashboard" element={<AdminPage />} />
+                <Route path="login" element={<AdminAuth />} />
+              </Route>
+
+              {/* Auth Routes */}
+              <Route path="/sign-up" element={<SignUp />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+
+              {/* Sell Routes */}
+              <Route path="/otp" element={<SellAccount />} />
+              <Route path="/update-profile" element={<CreateAccount />} />
+              <Route path="/update-address" element={<AddressForm />} />
+              <Route path="/bank-account" element={<AccountForm />} />
+              <Route path="/verification" element={<Verification />} />
+              <Route path="/getstarted" element={<GetStarted />} />
+
+              {/* 404 Route */}
+              <Route path="*" element={<NotFound />} />
+
+              <Route path="/construction/*" element={<Construction />} />
+              <Route path="/contact-us" element={<ContactUs />} />
+
+              {/* Privacy Policy */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
+              {/* Terms and Conditions */}
+              <Route path="/terms-conditions" element={<TermsCondition />} />
+
+              {/* Progress Tracker Routes */}
+              <Route
+                path="/Add-Product"
+                element={
+                  <ProtectedRoute>
+                    <ProgressTracker />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="rewards"
-                element={
-                  <ProtectedRoute>
-                    <RewardHistory />
-                  </ProtectedRoute>
-                }
+                path="/product-details/:id"
+                element={<ProductAuctionDetails />}
               />
               <Route
-                path="products/:id"
+                path="/product/finalize/:id"
                 element={
                   <ProtectedRoute>
-                    <AuctionDetails />
+                    <ReviewPage />
                   </ProtectedRoute>
                 }
               />
+
               <Route
-                path="products"
+                path="/product-success"
                 element={
                   <ProtectedRoute>
-                    <YourProduct />
+                    <ProductSuccess />
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="wallet-history"
-                element={
-                  <ProtectedRoute>
-                    <WalletHistory />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-          </Routes>
+
+              {/* Protected Routes */}
+              <Route path="/dashboard">
+                <Route
+                  path=""
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="rewards"
+                  element={
+                    <ProtectedRoute>
+                      <RewardHistory />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="pending-payments"
+                  element={
+                    <ProtectedRoute>
+                      <PendingPayment />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="products/:id"
+                  element={
+                    <ProtectedRoute>
+                      <AuctionDetails />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="products"
+                  element={
+                    <ProtectedRoute>
+                      <YourProduct />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="wallet-history"
+                  element={
+                    <ProtectedRoute>
+                      <WalletHistory />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
+            </Routes>
           </Suspense>
 
           {/* Add ToastContainer here */}

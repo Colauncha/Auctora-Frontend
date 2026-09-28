@@ -256,6 +256,10 @@ const Dashboard = () => {
     navigate(`/product-details/${id}`);
   };
 
+  const PendingPayments = () => {
+    navigate('/dashboard/pending-payments');
+  };
+
   const currencyFormatIcon = (num) => {
     const kobo = (num % 1).toFixed(2).substring(2);
     const naira = Math.floor(num)
@@ -514,13 +518,20 @@ const Dashboard = () => {
                   }}
                   variant="outline"
                 />
+                <CustomButton
+                  icon={CreditCard}
+                  className="w-full justify-start"
+                  label="Pending Payments"
+                  onClick={() => PendingPayments()}
+                  variant="outline"
+                />
                 {user?.role === 'admin' && (
                   <CustomButton
                     icon={ChartArea}
                     className="w-full justify-start"
                     label="Admin Dashboard"
                     onClick={() => navigate('/admin/dashboard')}
-                    variant="outline"
+                    variant="secondary"
                   />
                 )}
               </div>
