@@ -7,7 +7,6 @@ import {
   toastSuccess,
   toastError,
   toastWarn,
-  toastErrorWithButton,
 } from '../../../utils/toast';
 
 const Delivery = ({
@@ -165,78 +164,49 @@ const Delivery = ({
     const { item, product, delivery, photos: photoEntries } = formData;
     const photos = photoEntries.map((photo) => photo.file);
 
-    const payload = JSON.stringify({
-      item,
-      ...product,
-      ...delivery,
-    });
+    // Auction data and images go in one multipart request; the backend
+    // uploads the images first and rolls them back if the create fails.
+    const formData_ = new FormData();
+    formData_.append(
+      'data',
+      JSON.stringify({
+        item,
+        ...product,
+        ...delivery,
+      })
+    );
+    photos
+      .filter(Boolean)
+      .forEach((image, index) => formData_.append(`image${index + 1}`, image));
 
-    const runFetch = async ({ endpoint, method, data, isFormData = false }) => {
-      const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
-
-      const response = await authFetch(endpoint, {
-        method,
-        headers,
-        body: data,
+    try {
+      // No Content-Type header: the browser sets the multipart boundary.
+      const response = await authFetch(`${current}auctions/with-images`, {
+        method: 'POST',
+        body: formData_,
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result?.message || 'An error occurred during request');
+        throw new Error(
+          result?.message ||
+            result?.detail?.[0]?.msg ||
+            (typeof result?.detail === 'string' && result.detail) ||
+            'An error occurred during request'
+        );
       }
 
-      return result;
-    };
-
-    let auctionId;
-    try {
-      const postEndpoint = `${current}auctions/`;
-      const created = await runFetch({
-        endpoint: postEndpoint,
-        method: 'POST',
-        data: payload,
-      });
-
       toastSuccess(
-        'Product Submitted successfully',
-        'Uploading product images'
-      );
-
-      const itemId = created?.data.item?.[0]?.id;
-      auctionId = created?.data?.id;
-      if (!itemId) throw new Error('Missing item ID from response');
-
-      const imgEndpoint = `${current}items/upload_images?item_id=${itemId}`;
-      const formData_ = new FormData();
-      photos.forEach((image, index) => {
-        if (image) formData_.append(`image${index + 1}`, image);
-      });
-
-      await runFetch({
-        endpoint: imgEndpoint,
-        method: 'PUT',
-        data: formData_,
-        isFormData: true,
-      });
-
-      toastSuccess(
-        'Product images uploaded successfully',
-        'Your product images have been uploaded successfully'
+        'Product submitted successfully',
+        'Your product and images have been uploaded'
       );
 
       navigate('/product-success');
     } catch (error) {
-      toastErrorWithButton(
+      toastError(
         'Submission Failed',
-        error.message || 'An error occurred during submission',
-        () => {
-          navigate(`/dashboard/products/${auctionId}`, {
-            replace: true,
-            state: { setUpdate: true },
-          });
-        },
-        'Update Images'
+        error.message || 'An error occurred during submission'
       );
     } finally {
       setLoading(false);
