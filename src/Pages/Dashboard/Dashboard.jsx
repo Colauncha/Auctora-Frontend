@@ -35,7 +35,7 @@ import FundWithdrawable from '../../Components/modals/FundWithdrawable';
 import Conversations from '../../Components/Chat/Conversations';
 import ChatSection from '../../Components/Chat/ChatSection';
 import RewardToolTip from '../../Components/ToolTips/RewardToolTip';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
@@ -121,7 +121,7 @@ const Dashboard = () => {
         }
       } catch (err) {
         console.error(err);
-        toast.error('Failed to fetch auctions. Please try again later.');
+        // toast.error('Failed to fetch auctions. Please try again later.');
       }
     };
 
@@ -143,7 +143,7 @@ const Dashboard = () => {
         }
       } catch (err) {
         console.error(err);
-        toast.error('Failed to fetch bids. Please try again later.');
+        // toast.error('Failed to fetch bids. Please try again later.');
       }
     };
 
