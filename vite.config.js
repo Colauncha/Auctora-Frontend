@@ -45,7 +45,10 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/(api\.biddius\.com)\/.*/i,
+            // Never cache auth exchanges — responses contain tokens.
+            urlPattern: ({ url }) =>
+              url.hostname === 'api.biddius.com' &&
+              !url.pathname.startsWith('/api/users/google/'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',

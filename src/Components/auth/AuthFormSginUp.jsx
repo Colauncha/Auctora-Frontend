@@ -1,7 +1,7 @@
-import { google_auth } from '../../Constants';
 import Button from '../Button';
 import PropTypes from 'prop-types';
 import Input from './Input';
+import GoogleAuthButton from './GoogleAuthButton';
 import useModeStore from '../../Store/Store';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
@@ -86,22 +86,6 @@ const AuthFormSginUp = ({ heading }) => {
   };
 
   const SignIn = () => navigate('/sign-in');
-
-  const googleSignUp = async () => {
-    const response = await fetch(`${current}users/google/auth`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data);
-      window.open(data.data.url, '_blank');
-    } else {
-      const errorData = await response.json();
-      toastError(errorData.message, errorData.detail);
-    }
-  };
 
   const validatePassword = (pwd) => {
     const startsWithCapital = /^[A-Z]/.test(pwd);
@@ -236,19 +220,7 @@ const AuthFormSginUp = ({ heading }) => {
         </fieldset>
       </form>
 
-      <div className="flex flex-col gap-3 mt-2 items-center">
-        <p>Or Sign Up with</p>
-        <div
-          onClick={googleSignUp}
-          className="bg-[#f5f5f5] p-3 rounded-full cursor-pointer hover:bg-[#de506d] hover:scale-105 transition-transform duration-300"
-        >
-          <img
-            src={google_auth}
-            alt="Google Auth"
-            className="w-10 h-10 cursor-pointer"
-          />
-        </div>
-      </div>
+      <GoogleAuthButton label="Or Sign Up with" />
     </div>
   );
 };

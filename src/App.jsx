@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 
 // Eagerly loaded — rendered on every page
@@ -24,6 +23,7 @@ const Layout = lazy(() => import('../src/Pages/Home/Layout/Layout'));
 const AboutUs = lazy(() => import('../src/Pages/About/About'));
 const SignUp = lazy(() => import('./Pages/Auth/SignUp'));
 const SignIn = lazy(() => import('./Pages/Auth/SignIn'));
+const GoogleCallback = lazy(() => import('./Pages/Auth/GoogleCallback'));
 const ForgotPassword = lazy(() => import('./Pages/Auth/ForgotPassword'));
 const ViewAll = lazy(() => import('./Pages/Views/ViewAll'));
 const CategoryResult = lazy(() => import('./Pages/Category/CategoryResult'));
@@ -67,7 +67,6 @@ const PageLoader = () => (
 // App function component
 const App = () => {
   const [notifTotal, setNotifTotal] = useState(0);
-  const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
   const refreshToken = useAuthStore((state) => state.refreshToken);
   const updateUserData = useAuthStore((state) => state.updateData);
@@ -78,49 +77,11 @@ const App = () => {
       if (refreshToken) {
         let res = await authFetch(`${current}users/profile`);
         res = await res.json();
-        console.log('User data: ', res);
         updateUserData(res.data);
       }
     };
     run();
   }, [refreshToken, login, updateUserData]);
-
-  useEffect(() => {
-    let backendOrigin = new URL(current).origin;
-    backendOrigin = backendOrigin.substring(8);
-
-    console.log('Backend origin', backendOrigin);
-    const handleMessage = (event) => {
-      console.log('event: ', event);
-      // if (
-      //   event.origin !== backendOrigin ||
-      //   backendOrigin === 'http://localhost:8000'
-      // )
-      //   return;
-      if (event.data?.type !== 'GOOGLE_AUTH_SUCCESS') return;
-
-      // const { access_token, refresh_token, user } = event.data;
-      // if (!access_token || !refresh_token) {
-      //   console.error(
-      //     'Google login popup reported success but did not include tokens.',
-      //   );
-      //   return;
-      // }
-      const run = async () => {
-        let res = await authFetch(`${current}users/profile`);
-        res = await res.json();
-
-        console.log('✅ Google login successful (from popup)');
-        login(true, null, null, res.data);
-        updateUserData(res.data);
-        navigate('/dashboard');
-      };
-      run();
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [navigate, login, updateUserData]);
 
   return (
     <div className={isMobile && isPWA ? 'pb-24' : ''}>
@@ -156,6 +117,7 @@ const App = () => {
               {/* Auth Routes */}
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/auth/google/callback" element={<GoogleCallback />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
 
               {/* Sell Routes */}
